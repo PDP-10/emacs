@@ -1,0 +1,47 @@
+* Mount the tape image.
+
+* Prepare disk space.
+
+	@enable
+	$build <emacs>
+	$$perm 5000
+	$$work 5000
+	$$
+	$build <info>
+	$$perm 5000
+	$$work 5000
+	$$
+	$
+
+* Restore <EMACS> and <INFO>.
+
+	$dumper
+	DUMPER>tape mta0:
+	DUMPER>restore toed:<emacs>*.*.* ps:<emacs>*.*.*
+	DUMPER>restore toed:<info>*.*.* ps:<info>*.*.*
+	DUMPER>exit
+
+* Install MIDAS.EXE and IDDT.EXE where the system can find them.
+
+* Rebuild EMACS.EXE.
+
+	$define emacs: ps:<emacs>
+	$define info: ps:<info>
+	$define sys: emacs:,sys:
+	$connect emacs:
+	$midas
+	*temp_teco
+	[...]
+	$iddt
+	;ytemp
+	purify$g
+	mmrun$purify$dump$nemacs.exe$
+	mmrun$einit$? document$
+	^Z
+	$delete temp.exe
+
+* Rebuild INFO.EXE.
+
+	$teco
+	er info:info.init$@y m(hfx*)$
+	^Z
