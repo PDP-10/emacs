@@ -1,0 +1,42 @@
+
+File: Calc,		 Node: Top,				Up: Emacs
+
+To get simple calculator functions, it is best to escape to Teco.
+
+Just enter the minibuffer (Meta-Altmode), type your expression with
+liberal parenthesis, and the four basic operators (+,-,*,/), edit it
+to what you want, end the expression with an equal sign, and exit the
+minibuffer with two escapes in a row (type the escapes after all your
+text).  All operations are integer operations.  You can represent the
+number of characters up to the point by a period (".") and the number
+of characters in the whole buffer by the letter, Z.
+
+If you want variables, do assignment by "<argument>U<any character>"
+and referencing by "Q<the character>" (e.g "(3*.)Ua  (Qa-7)Ub  Qb*4="
+would type 3 times 2 times the number of characters up to the point
+minus 4 times 7).  These are QRegisters, and they will stick around
+between times you use the minibuffer.
+
+To automatically insert the number into your buffer, just use a
+backslash ("\") instead of the equal sign.  You may have as many
+expressions as you like in the minibuffer at once.  Just end each one
+with the equals or backslash, and end it all with the escape escape.
+
+A word of warning: you are dealing with TECO here, and you are giving
+TECO commands.  DON'T EXPERIMENT with other characters, and CHECK your
+expression carefully.  TECO is at the same time very powerful and very
+wierd; you will find terrible things happening to you and your files
+if you are not careful.
+
+
+File: Calc,		Node: Other Bases,		Up: Top.
+
+To get your numbers written in another base (e.g. base 8) do
+"8[..E  <expressions> ^\ $$" .   To force TECO to read your numbers in
+in a different base, do "<new base>fs ibase$ <expressions> 10fs ibase$
+$$ ".  You can of course mix these two, and mix in expressions in
+different modes--just be sure each push into ..E ([..E) is matched by
+a control backslash, and that you put 10 back into fs ibase$ at the
+end.  Note, that to enter a number in base 8, it is not necessary to
+change fs ibase$.  Just follow the number immediately with a "."
+(period) and TECO will interpret it as being base 8.

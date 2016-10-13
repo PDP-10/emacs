@@ -1,0 +1,24 @@
+
+
+; SITE.INIT.19 & LOTSA:SITE.INIT.36  9-Jul-85 2339	PAGE 1
+
+
+
+LINE 12, PAGE 1
+1)	!* implement BEMACS !
+1)	FS XJName:F6 [J
+1)	((f=jBEMACS)*(f=jETEACH))"e	    !* use restricted command set for!
+1)					    !* BEMACS and ETEACH!
+1)	    :ej EMACS;NOVICE :EJ	    !* load the NOVICE library!
+1)	    m(m.m & Load Disable Profile)   !* load user's or system profile!
+1)	    '
+1)	LINE 12, PAGE 1
+2)	
+2)	!* implement BEMACS !
+2)	FS XJName:F6 [J
+2)	(f=jBEMACS)*(f=jETEACH)"e 	    !* use restricted command set for BEMACS!
+2)	    :ej EMACS;NOVICE :EJ	    !* load the NOVICE library!
+2)	    m(m.m & Setup Novice Library)  !* and start it!
+2)	    '
+2)	
+2)	

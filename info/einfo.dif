@@ -1,0 +1,149 @@
+
+;COMPARISON OF PS:<INFO162>EMACS.INFO.116 AND PS:<INFO165>EMACS.INFO.117
+;OPTIONS ARE    /3
+
+**** FILE PS:<INFO162>EMACS.INFO.116, 2-11 (359)
+* Distrib::      How to get a copy of EMACS, or an EMACS manual.
+**** FILE PS:<INFO165>EMACS.INFO.117, 1-17 (360)
+* Distrib::     How to get a copy of EMACS, or an EMACS manual.
+***************
+
+**** FILE PS:<INFO162>EMACS.INFO.116, 6-793 (69930)
+                Meta-P moves up a line and starts a comment.  *Note
+**** FILE PS:<INFO165>EMACS.INFO.117, 1-1558 (69934)
+                Meta-P moves down a line and starts a comment.  *Note
+***************
+
+**** FILE PS:<INFO162>EMACS.INFO.116, 7-22 (81277)
+**** FILE PS:<INFO165>EMACS.INFO.117, 1-1847 (81284)
+BACKQ           provides a feature for Maclisp, similar to automatic
+                display of matching parentheses: when you insert a comma
+                or atsign, the cursor moves momentarily to the backquote
+                which dominates it.
+***************
+
+**** FILE PS:<INFO162>EMACS.INFO.116, 8-397 (111983)
+Page Delimiter (Control-L) 
+**** FILE PS:<INFO165>EMACS.INFO.117, 1-2537 (112248)
+Page Delimiter (
+) 
+***************
+
+**** FILE PS:<INFO162>EMACS.INFO.116, 9-65 (124574)
+* Modeline::     Interpreting the mode line.
+**** FILE PS:<INFO165>EMACS.INFO.117, 2-249 (124830)
+* Modeline::    Interpreting the mode line.
+***************
+
+**** FILE PS:<INFO162>EMACS.INFO.116, 11-194 (142057)
+* Ideal::        for keyboards that have a "Meta" key.
+* EditKey::      for keyboards that have an "Edit" key.
+* Losers::       for keyboards that have neither "Meta" nor "Edit."
+**** FILE PS:<INFO165>EMACS.INFO.117, 2-562 (142314)
+* Ideal::       for keyboards that have a "Meta" key.
+* EditKey::     for keyboards that have an "Edit" key.
+* Losers::      for keyboards that have neither "Meta" nor "Edit."
+***************
+
+**** FILE PS:<INFO162>EMACS.INFO.116, 11-205 (142523)
+* NoLowerCase::  for how to use them.
+**** FILE PS:<INFO165>EMACS.INFO.117, 2-573 (142777)
+* NoLowerCase:: for how to use them.
+***************
+
+**** FILE PS:<INFO162>EMACS.INFO.116, 11-212 (142784)
+* Printing::     for how.
+**** FILE PS:<INFO165>EMACS.INFO.117, 2-580 (143037)
+* Printing::    for how.
+***************
+
+**** FILE PS:<INFO162>EMACS.INFO.116, 95-3 (470235)
+EMACS  Node: Top209
+EMACS  Node: Intro6714
+EMACS  Node: Distrib9620
+EMACS  Node: Glossary11628
+EMACS  Node: CommandIndex37894
+EMACS  Node: LibCat80496
+EMACS  Node: VarIndex92365
+EMACS  Node: Screen121113
+EMACS  Node: ModeLine124643
+EMACS  Node: Characters131184
+EMACS  Node: Basic142831
+EMACS  Node: Arguments150020
+EMACS  Node: M-X153913
+EMACS  Node: MMArcana161731
+EMACS  Node: Subsystems168113
+EMACS  Node: Recursive170187
+EMACS  Node: Exiting173577
+EMACS  Node: Subforks176022
+EMACS  Node: Mail183471
+EMACS  Node: Help184350
+EMACS  Node: Mark190035
+EMACS  Node: Killing196637
+EMACS  Node: Un-Killing201523
+EMACS  Node: Copying206871
+EMACS  Node: Search210283
+EMACS  Node: Text218201
+EMACS  Node: Words219649
+EMACS  Node: Sentences223037
+EMACS  Node: TextIndent227287
+EMACS  Node: Filling232976
+EMACS  Node: Case238067
+EMACS  Node: Underlining240075
+EMACS  Node: SCRIBE242657
+EMACS  Node: Dissociation247305
+EMACS  Node: Fixit249438
+EMACS  Node: Files257547
+EMACS  Node: Visiting258451
+EMACS  Node: Revert265008
+EMACS  Node: AutoSave266326
+EMACS  Node: ListDir271981
+EMACS  Node: CleanDir273255
+EMACS  Node: DIRED275464
+EMACS  Node: Filadv281076
+EMACS  Node: Buffers283925
+EMACS  Node: Display290902
+EMACS  Node: Windows297277
+EMACS  Node: Narrowing304569
+EMACS  Node: Pages306427
+EMACS  Node: PAGE310971
+EMACS  Node: Replace315150
+EMACS  Node: TECOsearch320886
+EMACS  Node: MajorModes322713
+EMACS  Node: Programs325999
+EMACS  Node: Compile327618
+EMACS  Node: Indenting329910
+EMACS  Node: Matching332524
+EMACS  Node: Comments336292
+EMACS  Node: Lisp342626
+EMACS  Node: Lists344875
+EMACS  Node: Defuns352642
+EMACS  Node: Grinding353962
+EMACS  Node: MIDAS362587
+EMACS  Node: Other Langs365996
+EMACS  Node: MinorModes367958
+EMACS  Node: Libraries372794
+EMACS  Node: Variables376744
+EMACS  Node: Syntax382096
+EMACS  Node: FS Flags388102
+EMACS  Node: Init391494
+EMACS  Node: Locals402176
+EMACS  Node: KBDMAC406569
+EMACS  Node: Minibuffer413657
+EMACS  Node: Quitting419715
+EMACS  Node: Lossage422078
+EMACS  Node: Undo429748
+EMACS  Node: Journals431566
+EMACS  Node: Bugs441571
+EMACS  Node: PICTURE449439
+EMACS  Node: Sort452556
+EMACS  Node: Ideal454065
+EMACS  Node: EditKey454882
+EMACS  Node: Losers456407
+EMACS  Node: Term Types458956
+EMACS  Node: NoLowerCase463246
+EMACS  Node: Printing466473
+**** FILE PS:<INFO165>EMACS.INFO.117, 10-3129 (470557)
+this is a dummy.  TAGS will fill in the real stuff.
+***************
+

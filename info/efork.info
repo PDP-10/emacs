@@ -1,0 +1,55 @@
+-*-Text-*-
+This file documents EFORK.
+
+EFORK  Node: Top,   Up: (EMACS)
+
+The EFORK library
+
+The EFORK library consists of several functions to make it possible
+for the user to invoke (multiple) inferior forks running whatever
+program he wants.  Typically it is used to invoke an inferior EXEC
+or LISP.  It consists of macros to create or resume a fork, destroy
+a fork, and list the "names" of the forks you have created.
+
+* Menu:
+
+* Create::	How to create (or resume) an inferior fork
+* Destroy::	How to destroy a previously created fork
+* List::	How to list the "names" of inferior forks
+
+EFORK	Node: Create,  Up: Top, Previous: Top, Next: Destroy
+
+Creating or resuming an inferior fork
+
+In order to utilize EFORK, it first must be loaded by doing:
+MM Load Library$EFORK$
+Once loaded a fork is created by pressing M-+.  EFORK will prompt
+for a "handle" by saying handle: at the bottom of your screen.  Any
+"name" is legal here, but EFORK will use the name to try to figure
+out which program you mean to run.  If you reply "exec", EFORK will
+assume you mean to create a new EXEC.  If you reply "lisp" it will
+assume you mean to create a new LISP fork.  In general,	; if the
+file SYS:"name".exe exists, EFORK will assume that you mean to run
+that program.  If SYS:"name".exe does not exist, EFORK will assume
+you are trying to run "name".exe on your own directory.  In any
+event, it will ask you before it runs anything, giving you a chance
+to tell it different.
+
+To resume a previously created fork, just type M-+ and give the "name"
+of the fork.  If the "name" is the previous fork created or resumed, then
+just type carriage return.
+
+EFORK  Node: Destroy,  Up: Top, Previous: Create, Next: List
+
+Destroying an inferior fork
+
+To destroy an inferior fork type M-,.  EFORK will prompt for the
+"name" of the fork to destroy and will then destroy it.
+
+EFORK  Node: List,  Up: Top,  Previous: Destroy
+
+Listing the "name"s of all of your forks.
+
+MM List Handles$ will type a list of the "name"s of all of your forks.
+
+

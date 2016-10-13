@@ -1,0 +1,192 @@
+-*-Text-*-
+This is the file INFO;DIR >, which contains the topmost node of the
+info hierarchy.  The first time you invoke INFO you start off
+looking at that node ( "(INFO;DIR)Top" ).
+
+File: DIR	Node: Top	This is the top of the tree
+
+This is the Directory node of INFO.  The "D" command comes back here.
+The directory is a list of all the major topics that INFO knows about.
+You can see it, starting ten lines or so below this line.
+
+If you need help in using INFO, "?" will get you a brief refresher
+listing all the commands, and "H" will show you a primer.  If this is
+your first use of INFO, you should definitely type "H".  To exit INFO
+type "Q".
+
+Everyone is encouraged and asked, urged and exhorted, implored and cajoled,
+to add documentation to this tree. (Visit Menu item INFO for how).
+
+* Menu: The "Menu" is the list of topics.  Here it is:
+
+* INFO:	(INFO)Top	INFO is this program.  Look here for how to
+			add documentation to the tree.
+  ^^ Notice that INFO is the topic, while (INFO)Top is the node name.
+* EMACS: (EMACS)Top	EMACS is an editor / collection of subsystems.
+* Twenex::
+* Text Editors::
+* Mail Readers::
+* Formatting Systems::
+* Programming Systems::     (a few, from MIT)
+* Utilities::
+* Debugging Facilities::
+* Terminal Support::
+* Miscellaneous Topics::
+* Research Systems::
+* Languages: (LANGUAGES)	(all you ever heard of, briefly)
+
+Node: Twenex, Up: (DIR), Previous: (DIR), Next: Mail Readers
+
+* Menu:
+
+* JSYS: (JSYSAF)	An online form of the monitor calls manual. (Rel 3A)
+* JSYS4: (JSYS4AF)	An online form of the monitor calls manual. (Rel 4)
+			(Preliminary version)
+
+* EXEC: (EXEC)		Documents all the EXEC commands, and how to invoke
+			many utility programs such as compilers.
+
+* PDP-10: (PDP-10)	PDP-10 Assembly language, in general. See the
+			Languages node for specific assemblers.
+
+Node: Text Editors, Up: (DIR), Previous: Twenex, Next: Mail Readers
+
+* Menu:
+
+* EMACS: (EMACS)Top	EMACS is an editor / collection of subsystems.
+
+* TAGS: (TAGS)		TAGS, an EMACS library, remembers the location
+			of every tag in one or more files, so you can
+			go to any of them very quickly.
+
+* BABYL: (BABYL)Top	Babyl is an EMACS-based mail reader.
+
+* ZBabyl: (ZBabyl)	ZBabyl is an experimental extension to Babyl which
+			offers some additional features inspired by ZMail.
+			Its mail file format is compatible with Babyl's, so
+			it is possible to go back and forth.
+			New users are encouraged to use normal Babyl.
+
+Node: Mail Readers, Up: (DIR), Previous: Text Editors, Next: Formatting Systems
+
+
+There are at least two standard mail readers on OZ, MM and Babyl:
+
+* Menu:
+
+* BABYL: (BABYL)Top	Babyl is an EMACS-based mail reader.
+* MM: (DOC:MM.DOC)*	Powerful line-mode mail reader.
+			(This file is not info-ized.)
+
+Node: Formatting Systems, Up: (DIR), Previous: Mail Readers, Next: Utilities
+
+* Menu:
+
+* ATSIGN: (ATSIGN)	Generates program or text listings with
+			cross references, table of contents, etc.
+
+* R: (RGUIDE)		A general, multi-font, multi-device, multi-system
+* RGUIDE: (RGUIDE)	text formatter, with many advanced features such
+			as footnotes, table of contents, etc., available.
+			Currently the most popular formatter in the LCS/AI
+			community.  Runs on ITS, VAX, and UNIX, too.
+			
+* RMAN: (DOC:R20.MANUAL)*
+			The R reference manual.  You probably
+			want the R GUIDE, instead.
+
+* TeX:   (PS:<TEX.DOC>TBASE)
+* Tbase: (PS:<TEX.DOC>TBASE)
+* XTEX:  (PS:<TEX.DOC>TBASE)
+		        The TeX formatting system.  Produces much
+			higher quality output than R, especially
+			when setting mathematics.  Its use is
+			described in conjunction with the Tbase
+			macro package, which makes basic document
+			formatting fairly easy (a la the R
+			standard macro package.)  TeX also runs
+			on ITS and the VAX.
+
+* ISPELL: (SPELL)
+* SPELL: (SPELL)	This is a program to check and correct spelling.
+			It understands the syntax of source documents
+			for the formatters TJ6, R, PUB, SCRIBE, and TEX.  It is
+			available (under the name SPELL) on ITS also.
+
+Node: Programming Systems, Up: (DIR), Previous: Formating Systems, Next: Utilities
+
+(These entries are generally to large to be useful.  Perhaps they will
+ be restructured someday...)
+
+* Menu: 
+
+* TECO: (TECORD)*
+			An editing system in which higher level editor
+			packages such as EMACS are written.
+
+* TECOA: (TECO ARCHIV)*
+			A record of TECO updates.
+
+* MIDAS: (MIDAS)	The powerful assembly/macro language in which
+			most machine language programs on ITS are
+			written.
+
+* LIBRARIES: (LIBRARIES)
+			Subroutine libraries for the Midas assembler.
+
+* PALX: (PALX ORDER)*
+			A cross assembler for PDP-11 assembly language.
+
+Node: Utilities, Up: (DIR), Previous: Programming Systems, Next: Debugging Facilities
+
+* SRCCOM: (SRCCOM)	A source-compare utility, with options for 
+			manual or automatic merging.
+
+Node: Debugging Facilities, Up: (DIR), Previous: Utilities, Next: Terminal Support
+
+* Menu:
+
+* TDEBUG: (TDEBUG)Top
+			TDEBUG provides a stepping facility for
+			Teco macros.
+
+Node: Terminal Support, Up: (DIR), Previous: Debugging Facilities, Next: Miscellaneous Topics
+
+* Menu:
+
+* Terminals: (TERMS)
+			This is a description of various display
+			terminals. 
+
+* ITSTTY: (ITSTTY)
+			Describes the terminal subsystem of the ITS
+			operating system.
+
+Node: Miscellaneous Topics, Up: (DIR), Previous: Terminal Support, Next: Research Systems
+
+* Menu:
+
+* XGP: (XGP)
+			This is a description of the facilities
+			of the XGP device, its spooler, and the
+			XGP program, which is used to queue
+			files for output on the XGP.
+
+* ISIS: (<PAO.ISIS.DOC>ISIS)
+			This is a description of the Interactive
+			Student Information System, an online
+			grade database manipulator.
+
+* COMRED: (ISISD:COMRED)
+			This is a description of a formatted input
+			system for MACLISP.  It was written for the
+			ISIS subsystem.
+
+Node: Research Systems, Up: (DIR), Previous: Miscellaneous Topics, Next: (DIR)
+
+* Menu: 
+
+* ANALOGY: (ANALOGY)Top		Winston's ANALOGY system and Katz's natural
+				language system.
+
+* CONLAN: (CONLAN)Top		A Constraint language.

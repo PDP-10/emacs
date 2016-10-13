@@ -1,0 +1,264 @@
+Stanford local JFNS, INFO file generated from HLP:JSYS.HLP
+
+File: JSYS-LOCAL,  Node: Top,  Next: MONRD,  Up: (JSYSAF)Top
+
+	A jsys is a machine instruction that invokes the operating
+system to perform certain actions that are usually I/O or informational
+in nature. Jsys is an acronym for Jump to SYStem; jsyses are also
+refered to as monitor calls.
+
+	The Stanford monitor has three local monitor calls: GTWAA%, IDLE%,
+and HANDS%.  The SYSDPY program installs another jsys, MONRD%, to
+facilitate its information gathering functions.  These monitor calls are
+documented in this help file.
+
+* Menu:
+
+* MONRD::
+* GTWAA::
+* HANDS::
+* IDLE::
+
+File: JSYS-LOCAL,  Node: MONRD,  Next: GTWAA,  Previous: Top,  Up: (JSYSAF)Top
+
+                       MONRD%     JSYS 717
+
+
+The MONRD% is used by non-privileged program to obtain  information  from
+the JSB, PSB, a monitor symbol (restricted set of), and fork status.
+
+ACCEPTS IN AC1:  function code
+
+     AC2 through AC4:  dependent on the function (see description below)
+
+RETURNS     +1:  always
+
+Code  Symbol                         Meaning
+
+  0   .RDTST     The test function is used in order to see if the MONRD%
+                 JSYS is  implemented.  If  implemented, the  JSYS  will
+                 return a value of .TSTNY  (123456 octal) if the  MONRD%
+                 JSYS can  be executed  by anybody,  and .TSTNN  (654321
+                 octal)  if  the  user  must  have  WHEEL  or   OPERATOR
+                 capabilities enabled.  (AC2 must be zero.)
+
+  1   .RDSYM     The read symbol function will get the  definition  (the
+                 address  in  the  monitor) of the SIXBIT symbol in AC1.
+                 If successful AC2 will contain the  definition  of  the
+                 symbol.
+
+  2   .RDJSB     The read JSB function allows you to read the contents a
+                 word  in  the  JSB  (Job  Storage  Block).  The word is
+                 referenced by an  offset  (contained  in  AC3)  from  a
+                 symbol  (the  SIXBIT  value  of  which is in AC2).  AC4
+                 contains the  job  number.   (Symbols  implemented  are
+                 listed  below.)  On  successful return AC2 will contain
+                 the contents of that word.
+
+  3   .RDPSB     The read  PSB  function  is  the  same  as  the  .RDJSB
+                 function except that it allows you to read from the PSB
+                 (Proccess Storage Block) and not the JSB.  AC4 contains
+                 the system fork number.
+
+  4   .RDSTS     The read fork status function  returns  the  same  fork
+                 information  as  the RFSTS JSYS in AC2 (if successful).
+                 AC2 (on entry) contains the absolute fork  number  (not
+                 relative fork handle) of the fork in question.
+
+  5   .RDMAP     The read fork map function reads the access of a user
+                 core page, given a page number (in AC2) and a system
+                 fork number (in AC3). On a successful return, AC2
+                 contains a page pointer:
+
+	0		This page and all further pages are nonexistant
+	0,,N		This page nonexistant, next existant page is N
+	1XXXXX,,XXXXXX	Private page
+	2XXXXX,,Fork	Shared page with given system fork index
+	2XXXXX,,-OFN	Shared page with given file ofn
+	3XXXXX,,Fork	Indirect page with given fork index
+	3XXXXX,,-OFN	Indirect page with given file ofn
+
+  6   .RDFST     The read fork status function, given a system fork
+                 number (in AC2), returns the FKSTAT word for that
+                 fork in AC2.  (This word is displayed by SYSDPY as
+                 the scheduler test.)
+
+  7   .RDPID     The read IPCF header function reads a word from the
+                 header of a PID (given in AC2; the offset into the
+                 header should be in AC3).
+
+ 10   .RDDLL     The read DECNET function dumps out the DECnet logical
+                 link blocks into core. The right half of AC2 should
+                 contain the address of a block into which to dump the
+                 links, and the left half should contain the length of
+                 the block.  The size of each link will be returned in
+                 the left half of AC2, and the number of links will be
+                 returned in the right half.
+
+ 11   .RDTTY     The read terminal database function gets a word from
+                 the TTACTL data table.  AC2 should contain a symbol
+                 name, AC3 the offset from the symbol, and AC4 the
+                 terminal number.  The given word in the table will be
+                 returned in AC2.
+
+ 12   .RDTTS     The read TTSTAT word function reads the terminal
+                 characteristics word for a terminal (number given in
+                 AC2) and returns it in AC2.
+
+ 13   .RDWSP     The read FKWSP word function, given a system fork
+                 number in AC2, returns the FKWSP word for that fork
+                 in AC2.  This word contains in the right half the
+                 number of physical pages currently assigned to each
+                 fork, and in the left half the preload size of the
+                 fork when it enters the balance set.
+
+ 14   .RDRES     The read system resource status function, called with
+                 the type of resource in AC2, returns the initial
+                 value of the resource in AC3, and the current calue
+                 in AC2.  Defined pools are:
+
+	0    Total frdee resident blocks
+	1    Swappable storage
+	2    ENQ blocks
+	3    Swappable network (DECnet core)
+	4    Number of OFNs
+	5    SPT slots
+	6    Swapping pages
+	7    Pages of user core used
+       10    Number of forks used
+
+Function:  Test  Read symbol  Read JSB   Read PSB  Fork status  Read page map
+ AC1:     .RDTST  .RDSYM       .RDJSB     .RDPSB     .RDSTS        .RDMAP
+ AC2:        0   sym-name     sym-name   sym-name  sys-fork-#      page-#
+ AC3:       --      --         offset     offset       --        sys-fork-#
+ AC4:       --      --          job-#   sys-fork-#     --            --
+
+Function:  FKStat     IPCF  Decnet link   TTY Data  TTStat   FKWSP    Resources
+ AC1:      .RDFST    .RDPID   .RDDLL       .RDTTY   .RDTTS   .RDWSP    .RDRES
+ AC2:    sys-Fork-#    PID  -length,,buf  sym-name  tty-#  sys-fork-#   pool
+ AC3:        --      offset     --         offset     --       --        --
+ AC4:        --        --       --          tty-#     --       --        --
+
+where:  sym-name is the SIXBIT value of the symbol to look for; sys-fork-#  is
+        an absolute fork number; offset is the offset (from the symbol  name);
+        job-# is the job number of the whose JSB or PSB to look at; length  is
+        the size of the buffer to store the information in; pool is the number
+        of the system resource pool, and tty-# is the terminal number (not tty
+        designator) to get information for.
+
+                       Table of Symbols for MONRD%
+
+        CAPENB  CAPMSK  DSKDTB  FILBYN  FILBYT  FILDDN  FILDNM  FILNEN
+        FILSTS  FILVER  FILOFN  FILDEV  FKCNT   FKPTRS  FKRT    INTDF
+        JOBNO   JSVAR   JSVARZ  KIMUU1  LSTERR  MAXJFN  MLJFN   NUFKS
+        PPC     PSVAR   PSVARZ  RESQTL  RSCNBP  SYSFK   TRAPPC  TTFLG1
+        TTFLGS  TTICT   TTLINK  TTOCT   UPDL    UTRPCT
+
+Generates illegal instruction interrupt if not implemented.
+
+File: JSYS-LOCAL,  Node: GTWAA,  Next: IDLE,  Previous: MONRD,  Up: (JSYSAF)Top
+
+			GTWAA%  JSYS 702
+
+Get weekly account allocation information.  NOTE:  this is a temporary
+jsys, and may not be defined in future releases.
+
+ACCEPTS IN AC1:  directory or user number.
+
+	   AC2:  function bits in left half,length of argument block
+		 in the right.
+
+		  B0	(wa%rd)  Get allocation information and store in
+				 data block.  Note: if both wa%rd and wa%in
+				 are set, the new information is returned in
+				 the argument block.
+
+		  B1	(wa%wr)  Update allocation information from data block.
+	
+		  B2	(wa%in)  Increment allocation information from data
+				 block.  Note: if both wa%wr and wa%in are
+				 set, wa%in is ignored.
+
+	   AC3:   address of argument block
+
+RETURNS:   +1:   Always, with B17 (wa%ft) of AC2 set if current time is in the
+		 "free time" block.
+
+This is a temporary jsys, and may not be defined in future releases.
+The argument block may be up to eighteen words in length. Its format
+is given below.
+
+	.WALW==:0		weekly console (login) allocation
+	.WACW==:1		weekly cpu allocation
+	.WAPW==:2		weekly pages-printed allocation
+	.WALA==:3		this week's console (login) allocation
+	.WACA==:4		this week's cpu allocation
+	.WAPA==:5		this week's pages-printed allocation
+	.WALC==:6		console time charged this week
+	.WACC==:7		cpu time charged
+	.WAPC==:10		pages charged
+	.WALU==:11		console time used (cumulative this week)
+	.WACU==:12		cpu time used (cumulative this week)
+	.WAPU==:13		pages used (cumulative this week)
+	.WALQ==:14		console time chargeable (cumul. this quarter)
+	.WACQ==:15		cpu time chargeable (cumulative this quarter)
+	.WAPQ==:16		pages chargeable (cumulative this quarter)
+	.WALT==:17		console time used (cum. this quarter)
+	.WACT==:20		cpu time used (cum. this quarter)
+	.WAPT==:21		pages printed (cum. this quarter)
+
+GTWAA% ERROR MNEMONICS:
+
+ILINS2: Undefined JSYS
+
+CAPX1:  WHEEL or OPERATOR capability required
+
+GTWAX1: Invalid function code
+
+GTWAX2: Invalid argument block length
+
+STRX02: Insufficient system resources
+
+DELFX6:	Internal format of directory is incorrect
+
+DATEX6: System date and time are not set
+
+File: JSYS-LOCAL,  Node: IDLE,  Next: HANDS,  Previous: GTWAA,  Up: (JSYSAF)Top
+
+			IDLE%  JSYS 701
+
+Determines the idle time of a job.
+
+ACCEPTS IN AC1:	 job number
+
+RETURNS:   +1:	 always, with the number of milliseconds since any fork
+		 of the job was last in the run queue in AC1.
+
+IDLE% ERROR MNEMONICS:
+
+ARGX08:	No such job
+
+
+File: JSYS-LOCAL,  Node: HANDS,  Previous: IDLE,  Up: (JSYSAF)Top
+
+			HANDS%  JSYS 700
+
+Used to access system tables efficiently.  Accepts a list of monitor
+tables to be returned in their entirety to the user.
+
+ACCEPTS IN AC1:	 Negative length of table in left half, address of table
+		 in right half
+
+RETURNS:    +1:	 Always, with the entirety of the specified system tables
+		 transferred to the user's area.
+
+The table entries are of the form <table number>,,<destination address>.
+
+HANDS% ERROR MNEMONICS:
+
+ARGX17:	Invalid argument block length
+
+GTABX1:	Invalid table number
+
+GTABX3:	GETAB capability required
+

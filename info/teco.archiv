@@ -1,0 +1,2616 @@
+TECO 1181:
+Ethan Bradford 09/83:  Change history.
+
+We now keep a list of the last 100 insertions or deletions.  This is
+used to implement updating marks.  See FS CngBuf for details.
+
+TECO 1132:
+RMS 08/05/81  TECO 1132: ^S in search strings, local editing protocol
+
+1) ^S is now a special character in search strings.
+To search for a ^S, you must put ^Q^S in the search string.
+An unquoted ^S searches for a character with a particular
+Lisp syntax as specified in Q..D.  The ^S is followed by the
+character which is the syntax value to look for.
+Thus, S^S( searches for any character whose Lisp syntax
+code is "(".
+
+2) TECO-based real time editors can now use the SUPDUP
+local editing protocol, which allows a programmable terminal
+or local system to perform certain editing commands itself,
+thus reducing the load on the PDP-10 and improving response time.
+This is implemented only on ITS; it requires a system which
+supports a SUPDUP server.
+
+To implement support for local editing in a TECO-based editor,
+you must set up FS LEDEFS with a qvector containing alternating
+command character definitions and local editing protocol
+"function codes".  TECO will automatically find all ^R command
+characters that have each definition listed, and tell the terminal
+the corresponding function code.  FS LEDEFS can also be a string
+which, when executed, sets FS LEDEFS to the desired qvector.
+This can be used for autoloading the qvector only when necessary.
+
+To implement support for local editing in a terminal or SUPDUP
+user end, see RMS;LEP > and the Lisp machine SUPDUP, LMWIN;SUPDUP >.
+
+
+TECO 1078:
+RMS 2/21/81  FS IF LINKP, echo area use on startup
+*) FS IF LINKP is -1 if the open input file was reached via a link.
+It is zero otherwise.  So it is always zero on Twenex, and in versions
+of ITS too old to be able to tell TECO this information.
+
+*) TECO will no longer clear a line in the echo area when it starts
+up.  It defers this to the first time the echo area is used.  As a
+result, some stand-alone programs written in TECO can avoid display
+peculiarities.
+
+
+TECO 1067:
+RMS 1/25/81  FS Tab Width, FS ^R TTM1.
+*) FS Tab Width is the width of a tab, on output.
+It defaults to 8, for the standard 8-character tab stops
+which used to be the only size offered.
+
+FS HPOS and FS SHPOS are also controlled by FS Tab Width.
+
+*) FS ^R TTM1 is a hook for handling display updating on
+printing terminals.  It is called after each operation for which
+^R mode's built in printing terminal updating routines do not
+know what to do.  See TECORD for more information.
+I hope that users will experiment with definitions for this.
+
+
+TECO 1011:
+8/01/80 FS EXPUNGE
+expunges the connected directory on T(w)enex.
+
+
+TECO 1008
+RMS 7/27/80
+*) The FS ^R TTM1 flag can now contain a macro to be called to
+process long cursor motion on printing terminals in ^R mode (only when
+FS ^R SCAN is set).  A cursor motion  is "long" unless it stays at
+the same vertical position  or moves one screen line down.
+
+*) If FS INVMOD is nonzero, the mode line is displayed in inverse
+video.  This is not implemented on all types of terminals.
+
+*) On Twenex, if an EXEC command (as opposed to a filename) other than
+RUN was used to invoke TECO, the name of the command can be found in
+the flag FS XJNAME.  Otherwise that flag contains, as before, the
+filename of the file which was run.
+
+*) FS MSNAME is now writable on T(w)enex.  Writing to it connects to
+the specified directory.
+
+TECO 964
+RMS 4/20/80 @P
+The P command now outputs 0 in the low bit of every word output.
+It may clear the low bits in the buffer as well.  To output without
+clearing, use @P.  @P on word boundaries outputs the low bits in the
+buffer accuraterly.
+
+
+TECO 914
+RMS 3/20/80 FS ^R STAR
+The star only appears in the mode line if FS ^R STAR is nonzero.
+It is nonzero by default.
+
+
+TECO 912
+RMS 3/19/80 Failing searches in ^P sorts, FS X MODIFIED
+*) It is no longer the case that a failing search inside a ^P
+sort command ends the scan for dividing the buffer up into sort
+records.  If you were actually making use of this feature, you
+can probably get the same effect by putting a ^B command after
+the search command.
+
+*) FS X MODIFIED is like FS MODIFIED but maintained independently.
+They are both set whenever the buffer is changed, but only FS MODIF
+causes a star to appear in the mode line (so that old TECO programs
+which predate FS X MODIF do not have permanent stars).  The intended
+application is that FS X MODIF is cleared when an auto save is done
+and FS MODIF is cleared when a real save is done.
+
+
+TECO 904:
+RMS 3/7/80 Journal files, mode line, FS TYO VPOS, E?, stupid terminals
+*) The main new feature is the journal file.
+TECO can write a journal file containing all the commands it reads
+from the terminal, and then it can replay the file later, re-executing the commands.
+There is a special section in TECORD entitled "Journal Files" which
+describes this feature.  There are many new flags to control it, with
+names starting with FS JRN.
+
+A star appears at the end of the mode line when the buffer has
+modifications in it.
+In addition, TECO can now redisplay only the tail end of the mode line
+when that is all that has changed.
+
+A new flag FS TYO VPOS joins FS TYO HPOS.  Now you can tell the exact
+position of the cursor during typeout (T and FT commands, etc).
+
+The E? command can now be used to test for the existence of a job
+without risk of creating an inferior.  It also will not set the
+reference date of a file.
+
+Also, in the Twenex version, for terminals which can't clear to end of line,
+TECO will now sometimes clear the whole screen before redisplaying,
+when it knows this is probably more efficient.
+
+
+TECO 836:
+RMS 11/1/79  System echo, error handling, displaying matching parens.
+*) @:< is now a new construct similar to an errset.  It is called an
+error catch.  It regains control on an error after the printing of the
+error message or the execution of the ..P error handler, instead of
+before.  As you would expect, a :@< has effect only if there are no
+^R's or ordinary errsets active within it.  The way the ..P error
+handler returns to the :@< is by using FS ERR THROW, which returns to
+the innermost :@< or ^R, or to the TECO command loop.
+
+*) The flag FS ^R PAREN, if nonzero, is called after each
+self-inserting character whose Lisp syntax is ")".  This can be used
+to show the matching open-parenthesis character.  If FS ^R PAREN is
+zero then all works as before.  You can get the same results by just
+redefining the characters appropriately, but this makes them change
+automatically as the syntax table changes.
+
+*) FS ^R EC SD is designed to make system echoing work with
+auto-filling.  The flag should be set to the definition which Space
+gets when auto-fill is turned on.  Whenever the definition of Space
+matches the value of this flag, Space will be echoed by the system,
+just as if it were a normal self-inserting character, except that
+system echoing will only be used up to column whose number is in FS
+ADLINE.  The definition of Space will not actually be executed when
+Space is echoed, but this will not matter since that will only happen
+at columns where auto-filling would not do anything.
+   If the definition of Space does not match the value of FS ^R
+EC SD, then Space will be echoed iff it is a normal character, and
+system echoing will in any case go until the right margin.  There is
+no longer any FS ^R ECWD flag.
+
+*) FS ^R V MIN and FS ^R H MIN are the vertical and horizontal
+positions on the screen of the first change which needs to be
+redisplayed.  If no change needs to be redisplayed, they will be very
+large positive numbers.  If FS WINDOW is negative they should not be
+used.  They are useful for telling how far down the screen redisplay
+has got when it is interrupted by type-in.
+
+
+teco 824:
+RMS 10/9/79  I/D char, system echoing, C-B and C-F, FS RUB MACRO,
+    ^T, FS .TYI BACK, FS IF REAP, 1,ER, FS PAD DELAY.
+Incompatible: the TECO ^T (printing terminal line editor) command
+ has been flushed.
+
+*) ^R mode display can now use insert/delete character to redisplay a
+change within a line in the most efficient fashion.
+
+*) System echoing can now be used for self-inserting characters, some
+of the time.  This results in faster response.
+The flag FS ^R ECWD controls the use of system interrupt echoing.
+It should be set to the horizontal position at or beyond
+which system echoing cannot be used (this is so that Auto Fill mode
+can set it to equal the fill column).  Normally it is zero, turning
+off system echoing.  System echoing is now used only on ITS, but may
+be implemented for Twenex as well (but not Tenex).  It requires a
+system call that is not installed in ITS yet; do not set FS ^R ECWD
+nonzero when running ITS versions that do not have this system call,
+or you will lose (TECO will halt).
+
+*) C-B and C-F in ^R mode now treat a CRLF as one character.
+
+*) FS RUB MACRO if nonzero is a macro to be called to handle
+the Rubout and C-D commands with explicit numeric arguments.
+(The standard definitions of Rubout and C-D call them
+regardless of what characters were used to invoke those definitions).
+
+*) The ^T command has been flushed.
+
+*) FS .TYI BACK now backs up the pointer used by FS .TYI NXT
+for examining the ring buffer of recent type-in.
+
+*) FS IF REAP reads and writes the input file's don't-reap bit.
+It is analogous to FS IF DUMP.
+
+*) 1,ER does not set the reference date of the file.
+
+*) It should now really be true that the G command will not randomly
+set the low bit of words in the buffer.  A gross bug was found in this.
+
+Twenex only
+
+*) FS PAD DELAY if nonzero causes time delays
+to be used instead of padding.
+
+
+TECO 752:
+RMS 4/4/79  FS VARMAC, FS MODE MAC, FS D FORCE, @M and F^K, F^G,
+0:S, FS :EJ PAGE, FS TYO HASH, :ED, Twenex-only changes.
+*) This and future versions of TECO are not available to ML, MC and DM
+because of their inhospitable account policies.  This is in effect
+indefinitely until future notice.
+
+*) Setting FS VARMAC to a nonzero value turns on a feature whereby a
+named variable can run a macro when its value is changed.  The macro
+is specific to an individual variable;  it receives the new value of
+the variable as its argument, and can propagate the change by changing
+appropriate flags or q-registers.  Here is how the macro is found:
+the symbol table is assumed to allocate three or more words per
+symbol, and the third word is the one which can contain the macro.
+However, the contents of that third word are interpreted as a macro
+only if it is a string whose first character is "!".
+
+*) You can supply a macro to be called to recompute ..J when it is
+about to be displayed.  At such a time, if FS MODE CHANGE is nonzero
+and Q.F equals Q..F, FS MODE MAC will be called if it is not zero.
+It should alter ..J if it wishes to.  FS MODE CHANGE will be set to
+zero automatically.
+
+*) If FS D FORCE is nonzero, redisplay proceeds even despite
+pending input, and the mode line is not updated.  This is for when
+buffer display is being used to put a specific thing on the screen
+that is not really part of the buffer normally selected.
+
+*) Specifying the @ flag when calling a macro now not only causes its
+default argument to be 1;  it also causes F^K commands within the
+macro to act as if the macro were called directly from ^R rather than
+by another macro.  Also, :M passes the @ flag along to the macro being
+jumped to if it was set in the macro which contained the :M (this is
+unlike the way arguments are treated;  they are respecified with the
+:M command and F^X must be used to pass them along if that is
+desired).  In particular, @MMFoo is now equivalent to @M(M.MFoo).
+An example of the use of this is that @M(M.MQuery Replace) will make
+Query Replace read its arguments from the terminal.
+
+*) It no longer matters what values you return to ^R when you return
+with a different buffer selected.  ^R will notice that by itself and
+take appropriate action.
+
+*) It should no longer be the case that doing random G commands can
+cause low bits to be turned on in the buffer (unless the G is done on
+a buffer containing low bits)
+
+*) @F^G and :F^G are modified forms of F^G, which swaps local variable
+values in and out of a local symbol table.  @F^G only copies the
+variable values into the local symbol table, and :F^G only sets the
+variable values from the contents of the local symbol table.  :@F^G is
+a no-op which should not be used.
+
+*) 0:S... will now return a value, -1.
+
+*) Setting FS :EJ PAGE will now cause the pages which cease to be
+part of pure string space to be removed from the address space.
+
+*) On ITS, :ED deletes the currently open input file.
+
+*) The hash algorithm for display lines has been changed to make
+accidental hash matches less frequent.
+
+*) -1,<n>FS TYO HASH sets the hash code of screen line <n> to -1,
+which will cause it to be redisplayed by the next full redisplay.
+
+*) FS LOAD AV on Twenex will return the load average.
+
+*) On Twenex, <m>FS IFDB returns word <m> of the open input file's
+file descriptor block.  <n>,<m>FS IFDB sets it to <n>.
+
+*) On Twenex, FS RGETTY can now be set, in case TECO has the wrong
+idea of your terminal type.  This may not be easy to use correctly!
+FS :ET MODE now exists to control how file defaulting is used by the
+:ET command.
+
+
+TECO 709:
+RMS 11/2/78  FS ^R MORE, FS TYI BEG
+*) If FS ^R MORE is negative, nothing but the contents of ..J is
+displayed in the mode line -- no --MORE-- and no --TOP-- or --nn%--.
+..J can then use the entire width of the line.
+
+*) Numeric argument setting ^R commands are no longer counted as
+distinct commands where FS TYI BEG is concerned.  They are grouped
+together with the real commands for which they set the arguments.
+
+
+TECO 708:
+RMS 10/31/77  Keyboard macros possible.
+*) Whenever TECO wishes to read a character from the keyboard,
+it will call the macro in FS TYI SOURCE if that is nonzero.
+The intent is that FS TYI SOURCE be used to extract characters
+from a "keyboard macro", a macro composed of keystrokes to be
+used as simulated input from the user.  The FS TYI SOURCE
+macro gives characters to TECO by putting them in FS REREAD
+and returning a single value (anything;  it is for ^R display
+purposes.  The tyi source should not be altering the buffer, so it
+should return one value).  If FS TYI SOURCE is nonzero, display is
+suppresses on the assumption that input is available, so as soon as
+the tyi source macro sees that it has no more input to supply it
+should remove itself with 0FS TYI SOURCE.  Any command that wishes to
+do display even if invoked within a keyboard macro must do
+0F[TYI SOURCE before doing the display.
+
+Errors and quitting and anything that discards keyboard input also
+zero FS TYI SOURCE.
+
+*) Whenever TECO reads a character other than from FS TYI SOURCE,
+that character is passed as an argument to FS TYI SINK if the latter
+is nonzero (the exception of FS TYI SOURCE characters is inescapable,
+but you are free to make FS TYI SOURCE call FS TYI SINK).
+This is in addition to the normal processing of the character.
+FS TYI SINK can be used for defining a keyboard macro and executing
+the definition as it is typed in.
+
+*) FS TYI COUNT is a new name for FS IN COUNT.  FS TYI BEG contains
+the value of FS TYI COUNT as of the begining of the last ^R command.
+Since FS TYI COUNT has already been incrememted when FS TYI SINK is
+called, FS TYI SINK can check for the first character of a new ^R
+command by comparing FS TYI COUNT against FS TYI BEG+1.
+
+*) FS OLD MODE is the last ..J string to be actually displayed in the
+mode line.  If you set this to zero, TECO will think that ..J has
+changed and will redisplay the mode line at the next opportunity.
+
+
+TECO 699:
+RMS 10/14/77  Many changes
+*) Incompatible: EO command deleted.
+
+*) The mode line will now display --nn%-- when you are in the middle
+of the buffer, where nn% is the approximate percentage of the buffer
+above the screen.  --TOP-- and --BOT-- are still used at the ends.
+The mode line will never overflow the line allocated to it.
+..J will be truncated if necessary to make things fit.
+
+*) Setting FS READ ONLY non-zero makes the current buffer read-only.
+This switch is remembered individually for each buffer, but you can
+set it only for the selected buffer (like FS MODIFIED).
+
+*) Self-inserting characters in replace mode (FS ^R REPLACE not 0)
+will now update the display efficiently.
+
+*) A display inefficiency whereby inserting and deleting characters
+at the end of a line would cause that line eventually perhaps to be
+reprinted needlessly has been fixed by a new hashing algorithm for
+screen lines.  Insertion or deletion in the middle of a line
+can still cause the problem.  Also, another inefficiency that caused
+some lines to be reprinted when moving text downward has been reduced.
+
+*) :^@ will interchange two arguments.  1,2:^@ returns 2,1.
+
+*) Spaces can now be used freely around arithmetic operators,
+although spaces in lieu of an operator are still equivalent
+to a plus sign.
+
+*) <string-ptr>:F^^ now can be used to test whether the contents
+of the string are a valid short q-register name.  If they are,
+then the :FS QP HOME value for that q-register (never zero)
+is returned.  Otherwise, zero is returned.
+
+*) :M to a built-in function now works.
+
+*) Failing conditionals skip over the conditionalized text faster.
+";" skips to the end of the iteration faster.
+
+*) @> is like > except it does not decrement the iteration count
+and goes back to the < unconditionally.  Use it in !<!@>, when you
+want to restart an iteration and you don't want to decrement the count.
+
+*) FS DD FAST is -1 if the default device is "fast".  This is
+DSK: on Twenex and the local machine on ITS.
+
+*) The :^B command after a failing FB bounded search now goes to
+the beginning or end of the range searched, rather than the beginning
+or end of the buffer.
+
+*) ^G's will now be put in the ring buffer of recent type-in
+even if they cause quitting and are never actually read by macros.
+
+ITS only:
+
+*) The new init file scheme is installed.  <hsname>;<xuname> TECO
+comes first, followed by <hsname>;* TECO and .TECO.;* TECO.
+
+*) The default device is never DSK:.  If you set it to DSK:
+it becomes the name of the machine you are on, instead.
+Thus, filenames can be canonicalized for comparison by passing
+them through the TECO default filenames and reading them out again
+with FS D FILE, and this procedure will realize that DSK: and the
+name of your machine are equivalent.
+
+*) FS U HSNAME and FS U MAIL allow you to get a user's home directory
+or mail file filenames from DDT.  <user> FS U HSNAME, where <user>
+is in sixbit, returns the user's hsname in sixbit.
+<its>,<user>FS HSNAME returns his hsname on that machine.
+<user>FS U MAIL sets the default filenames to the names of the user's
+mail file, on the proper machine.  <its>,<user>FS U MAIL sets them
+to the filenames of his mail file, forcing the specified machine.
+
+*) :EF now closes the output file without renaming it.
+This is useful when you have used :EW to open specific names.
+
+*) The EO command no longer exists.  Use FS IF DUMP to read or
+set the input file's dumped-bit.  FS IF REAP will read or set
+its don't-reap bit.
+
+
+TECO 630:
+RMS 5/6/78  F^K  FS BACK RET  F^Y  FS TTYSMT  --BOTTOM--
+
+* The more-line will now display --TOP-- at the top of the buffer,
+--MIDDLE-- in the middle, or --BOTTOM-- at the bottom.  It will have
+none of those things if the entire buffer is visible.
+
+* FS BACK RETURN can be used to return control to a specified frame.
+You specify the frame with an argument, as with FS BACK ARGS:
+a negative number is the number of frames back from the current one,
+while a positive number counts from the bottom of the stack.
+
+* The F^K now looks in the variable *F^K Hook* (control-K, not uparrow)
+for the routine to read in a line.
+
+* :F^K returns -1 if the macro using it was called from TECO internals;
+it returns a positive number if the macro was called from another macro
+with M or ^].
+
+* F^Y now clears the : and @ flags, and also says what they were:
+the 4 bit is set in the result to indicate the : flag, and the
+8 bit to indicate the @ flag.  Thus, 1@F^Y returns 9.
+
+* FS TTYSMT returns the terminal's TTYSMT variable.
+
+
+TECO 629:
+RMS 4/26/78  @ F^K @; " --/\--  E? F^B  FS ^R INHIBIT  FS ECHO FLUSH
+
+* The @ command is equivalent to the ^ command, and is
+recommended because it does not lead to confusion with control characters.
+
+* F^K allows you to write a macro which can take its arguments
+either from a calling macro or from the terminal (if called from ^R).
+
+* @; exits an iteration if its argument is zero.
+@:; exits if its argument is nonzero.
+
+* Conditionals:  colon, "', and "D, "A and "U
+: now inverts a conditional.  Thus, :"G tests for <= 0.
+n"D succeeds if n is the code for a digit.
+n"A succeeds if n is the code for a letter (Alphabetic character).
+n"U succeeds if n is the code for an upper case letter.
+"' is a type of conditional that returns -1 or 0 if it
+succeeds or fails, respectively.  Thus, 0"'N is -1, but 1"'N is 0.
+0:"'G is -1.
+
+* FS ^R INHIBIT$ will if nonzero stop all display updating.
+
+* ^R will now display --/\-- to indicate that there is text
+above the top line, and --\/-- to indicate that there is text
+below the bottom line, if FS ^R MORE is zero.
+If FS ^R MORE is nonzero, or if outside of ^R,
+--MORE-- will be displayed or not, as before.
+
+* There are now no fixed limits on the sizes of buffer space and
+pure string space.  Together they may not exceed 210K or so.
+There may now be up to 100 macro-call/buffer frames.
+The control stack is also larger.
+
+* <n>F[B BIND will bind the buffer to a temporary one
+which will be created <n> characters long.
+
+* E? will now return the system error code for a file which
+cannot be opened.
+
+* <pos>,<ch>F^B<string> skips <pos> characters of <string>
+and then searches the rest of <string> for <ch>.
+The position of the first occurrence (a number >= <pos>)
+is returned, or -1 if <ch> is not found.
+
+* TECO records the last 60 input characters in a ring buffer.
+FS .TYIPT returns a b.p. to that buffer.
+FS .TYINXT does an ILDB down that pointer
+to get the character TECO read 60 characters ago,
+as an ^ FI then might have returned it.
+Here is how you can print the entire ring buffer contents,
+in the process running the pointer all around the buffer back
+to its original position:
+  FS .TYIPT[1 [2
+  < FS .TYINXT U2
+    do something to print the character in Q2.
+    FS .TYIPT-Q1@;>
+
+* If FS ECHO FLUSH is nonzero, ^R will clear the echo area
+at the end of each complete command, if anything has been
+written there, or, more precisely, if FS ECHO ACTIVE is -1,
+which will be the case if anything was written there.
+You can bind or set FS ECHO ACTIVE to overrule this feature.
+
+
+TECO 620:
+RMS 3/10/78  No LF after CR, F^G, ^ FS QP HOME$.
+* FI will no longer return a LF after each CR.  When a CR is
+typed in, only the CR will be read.
+
+* F^G will allow local short-named q-registers as well as local
+^R character definitions.  They are represented in the analogous
+way, using :FSQPHOME$ values for the q-registers.
+
+* ^ FS QPHOME$ will turn a numeric q-register address such as
+:FS QP HOME$ returns and F^G uses, into the name of the q-register,
+returned as a string pointer.  This should be useful in conjunction
+with local q-registers and F^G.
+
+
+TECO 615:
+RMS 3/1/78  Clock interrupts, ^ F^R, ^B, ^ L, FS INCOUNT$, FS QPHOME$.
+
+* To make real-time clock interrupts happen, put a handler macro
+into FS CLK MACRO$, and an interval in 60'ths of a second into
+FS CLK INTERVAL$.  Interrupts are not actually processed unless
+or until TECO is waiting for input.
+
+* FS IN COUNT$ is the total number of characters of input read
+by TECO so far.
+
+* The ^B command is useful to put after a search.  After a succesful
+search it does nothing.  After a failing forward search it goes to
+the end of the buffer.  After a failing backward search it goes to
+the beginning of the buffer.  :^B differs by doing an FKC after
+a successful search.
+
+* Giving the L, K or F^@ command an ^ modifier causes it to look
+for CRLFs instead of just for LFs.
+
+* <m>,<n>^ F^R reports that screen lines <m> to <n>, not including
+<n>, need redisplay.  The screen from line <n> down must still be
+correct.
+
+* FS QP HOME$ now puts a "Q" in front of the name of a q-register
+and a "FS" in front of the name of an FS flag.
+
+* The F^G command now allows for local ^R command definitions as
+well as local variables.
+
+* FS I&D CHR$ enables or disables use of the insert/delete character
+terminal commands.
+
+* The FA command no longer preserves excess spaces which are next
+to a place where a line boundary is being made.
+
+
+TECO 589:
+RMS 12/19/77  FS HELP MAC$, FS BACK STRING$, EX
+
+* FS BACK STRING$ gives you a string pointer to the macro
+being executed by a previous stack frame.
+
+* The HELP key is now returned as 4110 octal, by either ^ FI or FI.
+It is ignored as a ^R command.  However, if FS HELPMAC$ is nonzero,
+it will be executed whenever HELP is typed, INSTEAD of returning
+the 4110.  After FS HELPMAC$ returns, TECO will read another character.
+The HELP key is Top-H on TVs, ^_H on any terminal.
+
+* The EX command has been flushed.
+
+
+TECO 580:
+RMS 12/3/77  FS D VERSION$, FS OSPEED$, FS HSNAME$, stepping.
+
+* FS D VERSION$ is the default second filename, converted to
+a number if it is numeric.  Otherwise, it is 0 if the fn2 is ">",
+-2 if it is "<", or -1 for a non-numeric name other than "<" or ">".
+FS D VERSION$ can be written;  writing -1 has no effect, but anything
+else causes the default fn2 to be set appropriately.
+
+* FS OSPEED$ is the output line speed of the terminal in baud,
+or 0 if the speed is not known.  FS D WAIT$ is set nonzero by default
+for terminals KNOWN to be slower than 1200 baud.
+
+* FS HSNAME$ is the user's home directory, as a numeric sixbit word.
+On old versions of ITS that don't have home directories, it is the
+same as FS MSNAME$.  The home directory is (presumably) where such things
+as your RMAIL file are kept (and RMAIL will use it).
+
+* FS STEP MACRO$ is not invoked or processed at the beginning of a macro
+whose first character is "W".  The stepper macro itself had better begin
+with "W" to avoid an infinite loop.  Once the first line has avoided stepping,
+it can do 0F[STEP MAC$ to prevent stepping for the rest of that macro.
+
+
+TECO 572:
+RMS 11/30/77  Incompatible changes: FS BACKTRACE and FS STEP
+
+* The DEC-tape commands EK, EA and EU have been flushed.
+
+* Filename flags:
+FS IF VERSIO$ is the version # of the input file, or -1 if none or not numeric.
+FS OF VERSIO$ is the version # of the last output file closed.
+
+* Numeric sort feature:
+If the second command-string argument of a ^P sort command
+(the one whose duty it is to find the end of the record's key)
+returns a numeric value, that value is itself the sort key.
+Records with numeric sort keys are compared by comparing the
+numbers.  A numeric key is always less than any ordinary textual key.
+
+* Macro call stack examination:
+FS BACK DEPTH is number of macros on stack.
+FS BACK PC gets or sets PC of a frame.
+FS BACK ARGS returns the args of a frame.
+FS BACK QP returns the unwind-to qreg pdl level of a frame.
+The last three, and FS BACKTRACE, take as arg either a non-negative
+ frame number relative to outermost frame, or a negative one relative to
+ the current macro.  This is an incompatible change to FS BACKTRACE.
+
+* Stepping feature changes:
+FS STEP has been renamed FS STEP MACRO
+It is invoked or obeyed at the beginning of the first line of a macro,
+as well as the beginning of the remaining lines.
+FS STEP DEPTH, if not -1, limits the macro call depths
+(FS BACK DEPTH) for which stepping is done.  If FS BACK DEPTH
+is greater, stepping is inhibited.
+
+* Local variable swap command:
+<m>,<n>F^G<q> is a local variable swap command.
+<q> should be a q-vector in the format of the EMACS buffer table.
+<m> should be the offset in it (in words) of an entry.
+<n> should be the offset within the entry (in words)
+of the first local variable descriptor.  The F^G command
+swaps the values in the symbol table of the local variables
+listed in the entry with their saved-value slots in the entry itself.
+This command is for making EMACS buffer switching faster.
+
+* The garbage collector is now much faster.
+
+
+TECO 545:
+RMS 10/14/77 Display optimization, FS MP DISPLAY$, <n>ER
+* Display is now much more optimal.  Automatic scrolling
+due to cursor motion past the top or bottom of the screen
+now uses insert/delete line to save redisplay.
+
+* FS MP DISPLAY$ outputs a single character or the contents
+of a string (whose pointer is supplied as a prefix arg) in
+display mode to the main program piece of paper.
+FS ECHO DISPLAY$ and FS IMAGE OUT$ now also accept a string
+pointer as argument, outputting the entire contents.
+
+* <n>ER reads a file using mode <n>, which had better be even!
+2 is or'd into the specified argument by TECO, to get block mode.
+Thus, 4ER.FILE. (DIR) opens a file directory in image mode.
+
+* The 4 bit (bit 1.3) in FS ^R ARGP$ now means "negate the arg".
+The built-in commands C-Minus, M-Minus and C-M-Minus set this bit.
+Thus, negative arguments are now available in raw ^R mode.
+
+
+TECO 543:
+RMS 9/27/77 Display optimization, s-expression scanning, etc.
+
+* <m>:G<q> returns the character at position <m> in the string <q>,
+as a number.
+
+* F^R with no argument tells to ^R that a full redisplay must be done.
+F^R with one argument is a no-op.
+Thus, any values you can return to ^R can be fed to F^R,
+with the same effect.
+
+* :F^R chooses a new, valid, window.  Normally, TECO doesn't choose a
+new window until TECO thinks it needs one.  The window choses by :F^R
+can be found in FS WINDOW, of course.  ^R commands that wish to
+examine the window can call this first, and avoid worrying about the
+case where no window is known.
+<n>:F^R chooses a window that will put point on line <n>, if possible. 
+<n> is relative to FS TOP LINE. 
+  If you are sure the window chosen by a :F^R is still valid,
+you can return 1 value to ^R, since ^R remembers what :F^R does.
+  To make sure :F^R with no arg chooses a new window instead of
+reusing the old one, do -1FS WINDOW first.  To tell any :F^R
+not to assume that FS ^R VPOS is valid (that assumption adds speed),
+do a F^R first.
+
+* ^:F^R, with or without argument, chooses a new window like :F^R,
+and then if possible and safe uses insert/delete line to move the text
+the right number of lines up or down.  
+
+* TECO now mentions in the who-line when it is garbage collecting.
+
+* A new command F^F is designed for parsing of S-expresions including
+comments.  It operates only in the forward direction, since such
+parsing can be done reliably only in that way.  If told where the
+current DEFUN starts, it will tell you with complete accuracy whether
+a given spot is inside a comment or a vertical bar pair, and how deep
+in parentheses it is.  F^F can also be used to move forward or
+backward in the list structure because of several pointers saved in
+q..0 - q..2, and hairy termination conditions.  Full details will
+appear in TECO ORDER later.  For the moment, search for FCTLF in
+.TECO.;TECO > to find a complete description as a comment. 
+
+* ^ EJ now writes an "indirect symbol table pointer" into the file
+it produces.  Thus, programs dumped from this version of TECO
+will appear to have the TECO symbol table present, although they
+will not in fact have copies of it and TECO need not have symbols
+loaded to dump them.
+
+* Changes to the buffer in ^R mode that extend past the top of the 
+screen will now use :F^R to compute a new window so as to avoid
+retyping the unchanged text in the bottom portion of the screen. 
+
+* FS S HPOS is like FS HPOS except that it counts control characters
+as they appear on the screen.  It assumes infinitely wide lines,
+like FS HPOS, and it is always up-to-date, unlike FS ^R HPOS.
+
+NE is now an EMACS running in this version of TECO.  It is the
+same old EMACS;  only the next version will take advantage of the
+new features.
+
+
+TECO 531:
+RMS 7/23/77  Minor changes to clear the air for new development
+
+* In filenames, ^X can be used to refer to the default FN1
+and ^Y for the default FN2.  This is compatible with DDT.
+The old ^A and ^B still work.
+
+* When a CR in a TECO program causes FS STEP to be called,
+the pointer in the program will be AFTER the LF following the CR.
+In case you don't know, if a string is put in FS STEP then
+TECO will call it each time a CR is executed.  It should of
+course begin by binding FS STEP to 0 in its first line!
+
+* When one ^R command gets a --MORE--FLUSHED, then at the start
+of the next ^R command, when FS FLUSHED is cleared, its value
+is saved in FS OLDFLUSHED, where it will remain until something
+is typed out (not counting the echo area).  So if the next command
+wants to know whether the previous command was flushed, it can
+check for a nonzero FS OLDFLUSHED.
+
+* An "undefined" ^R command no longer is an error;  instead,
+it is defined to type a bell and return 1 value.  Thus, if such
+a command is run using M^R<char>, it will no longer give a "BEL"
+error.
+
+
+TECO 530:
+RMS 6/23/77  FS TRACE, FS I&D LINES, line insert and delete.
+* TECO will now try to use insert/delete line on terminals that
+support it.  When TECO starts it initializes FS I&D LINES nonzero if
+the terminal's %TOLID bit is set (terminal can insert/delete
+lines).  From then on, TECO will try to use them if FS I&D LINES
+is nonzero.
+
+* FS TRACE can now be written, or pushed and popped.
+
+* FS %TOLID and FS %TOCID now exist.
+
+
+TECO 524:
+RMS 6/19/77 ^ F^B, absolute value
+* ^ F^B with two addresses as arguments scans the buffer from
+the first address to the second (this can be forward or backward).
+The two values returned are point (NOT where the scan started) and
+the address of the character found.
+ Note that ^ F^B does not err out if the scan reaches the end of the
+buffer or the specified stopping place;  it just stops there and
+returns that address.
+
+* It has been pointed out to me that <x>,F^@^@ returns the
+absolute value of <x>.
+
+
+TECO 523:
+RMS 6/14/77  ^ F^B, Printing tty ^R improved, Quits, :FC, :F^A.
+* ^ F^B is a command that scans the buffer for the first character
+not belonging to a specified set.  ^:F^B searches for the first
+character that DOES belong to the set.  In either case, you
+specify the set with a trailing string argument, and the information
+is returned as two values: .,<address of character>.  Thus, you can
+use ^ F^B1234567890K to kill all digits after point.
+With a negative argument, F^B scans backwards and returns <addr>,.
+
+* Scan mode handles insert/delete commands better.
+^R commands that return two values and leave point at the end
+of the changed range (this includes anything that only deletes)
+now print out nicely in ^R mode as long as the number of characters
+inserted or deleted is less than FS ^R MAX, which is initially 50.
+
+* ^G no longer stays around as input after a quit, unless it was
+typed while in ^R itself (as opposed to commands called from ^R).
+
+* It is now OK to exit a macro with ^\ when inside of an errset.
+
+* :FC can uppercase a string into a string.
+After :I1abd (lower case "abd"), Q1:FC will return a string
+containing upper case "ABD".
+:FC with a number as argument is unchanged.
+
+* :F^A is an alternative kind of dispatch that expects a
+q-vector of strings as its dispatch table.  As for an ordinary F^A,
+the dispatch table contains one word for each ASCII character.
+Each word should contain either 1) 5 characters starting
+with a space, meaning the same thing it does inan ordinary F^A,
+or 2) a pointer to a string to be executed when the corresponding
+ASCII character is encountered during the scan.
+I haven't tested this, since constructing a test is painful.
+I leave that to you.
+
+
+TECO 520:
+RMS 3/10/77  ^R & ..H, FS ECHO CHAR, ^:FWL, FS NOQUIT, errsets
+1) You need no longer follow calls to ^R with 0U..H.
+ Redisplay used to be inhibited if you did not.
+2) If you put a string into FS ECHO CHAR then if ^R decides
+ to echo the command it will do so by typing out the whole string.
+ FS ECHO OUT can be given a string as argument, and will type
+ it all.
+3) ^:FWL now stops before any singlequote characters that precede
+ the next word.  It is thus compatible with ^-FWL.
+4) Quits in -1FS NOQUIT mode now flush input and, on printing terminals,
+ output.  -2FS NOQUIT is now needed to inhibit that action
+ (-2 works the same in the new TECO as in the old).
+5) An errset no longer has power through a ^R.  If you do
+ 1:< ^R > then errors inside the ^R act as if there were no
+ errset:  they pop to the ^R, or run the user error handler.
+
+
+TECO 520 -- RMS 3/7/77
+0) Incompatible:  FS I FILE and FS D FILE values, FS REFRESH,
+ :FC, ^R echoing on printing terminals.
+1) Each buffer now has a flag the is set whenever the buffer is written
+ in.  The selected buffer's flag can be read or written as FS MODIFIED.
+2) FS ECHO CHARACTER, while a ^R command is being executed,
+ holds the character that invoked that command, but it is set
+ to -1 when any type-out takes place.  When the command returns
+ to ^R, if FS ECHO CHARACTER is not -1, it is typed out.
+ The command can set the flag itself to control the echoing.
+3) FS O FILE returns, as a string, the filenames of the last
+ output file closed.  This is useful for finding out the version
+ number that was written.
+4) FS I FILE and FS D FILE now separate the names in the value
+ string with spaces instead of tabs.  It turns out that there can't
+ be any other spaces not preceded by ^Q.
+5) FS REFRESH has been improved.  It will now be called whenever the
+ screen is actually cleared, for any reason.  It's returned values are
+ no longer given to ^R mode, however (since ^R may not have been invoked).
+ In ^R mode, when FS REFRESH is run FS ^R DISPLAY will also be run.
+ FS PJATY is nonzero iff TECO's TTY has been taken away and returned,
+ telling TECO it should clear the whole screen.  Putting 0 in FS .CLRMOD
+ prevents such automatic clearing by stopping FS PJATY from being set.
+ Clearing the screen clears FS PJATY, before running FS REFRESH
+6) <ch>:FC returns the upper-case equivalent of <ch>, as a number.
+ Only letters are converted.  9-bit characters are allowed;  the control
+ and meta bits are passed on without affecting the conversion. 
+7) <m>,<n>F^R reports to ^R that the buffer has been changed between
+ positions <m> and <n>, but doesn't offer an opportunity for redisplay
+ to happen.
+8) <n> FS QPHOME returns a string giving the name of the q-register or
+ FS flag that was pushed into q-reg pdl slot <n> (where <n> can be either
+ a positive absolute index or a negative offset from the top of the stack).
+ It might look like A, ..^RX, Foo, DFILE (for FS D FILE), or * for a
+ slot that was pushed with [(...).
+ <n>:FS QP HOME returns a number that describes what was pushed into
+ slot <n>.  That is the same information that you get without a colon,
+ in its internal form, which is much faster to get.  The numeric form is
+ useful if all you want to do is find out whether two slots were pushed
+ from the same q-reg.
+9) Quitting now flushes all input except for one ^G, when FS NOQUIT is
+ zero (actually, it flushes input and puts 307 octal is FS REREAD).
+ On printing terminals output is also flushed.
+ When FS NOQUIT is nonzero input and output are not flushed.
+10)  <start>,<val>F^S<qvec> searches through <qvec> for a word containing
+ <val>, starting from the word at index <start>.  The index of the
+ first such word found is returned, or -1 if none is found.
+ <start>,<val> :F^S searchs the ^R character definition table.
+11) FS BSNOLF, if nonzero, causes backspacing and rubbing out
+ on printing terminals not to be followed by a LF.  This is
+ useful mainly on stupid displays.
+12) FS SHOW MODE, if nonzero, causes the FR command to print out
+ the mode line (Q..J) on printing terminals, if it has changed
+ since the previous FR.  It has no effect on displays.  Useful
+ on fast printing terminals.
+13) FS ECHO ERRORS, if nonzero, causes error messages to be printed
+ in the echo area.
+
+
+TECO 514:
+RMS 1/3/77 TECO changes in version 514.
+See .TECO.;TECORD 514 for full details on these topics.
+Watch out if you use: \, F^A, FA, or Tektronix terminals.
+1) ^D and Rubout in ^R mode now print more nicely on printing
+  terminals, when FS ^R SCAN is nonzero.
+
+2) The F+ and ^L commands now realy clear the screen on a
+ non-erasable display such as a Tektronix.
+
+3) Meta- and Control-Meta-digits in ^R mode now act like
+ Control-digits;  they accumulate an argument.
+
+4) More commands have been adapted to the new convention of returning
+ a string.  <n>:\ returns a string containing the printed
+ representation of the number <n>.  <n>:FS FD CONV returns a string
+ containing the printed representation of the file date <n>.  For
+ compatability, <n>:F6 returns the text for a SIXBIT word <n> (^ F6,
+ the old name for that command, still works for the moment).
+ Most important, <m>,<n>:G<q> returns a substring of the string in <q>.
+
+5) \ with no argument, that reads a number out of the buffer, has
+ been simplified.  It no longer gets confused by dots.  It notices
+ only digits.  If you want to allow an optional minus sign, use :\.
+ Note:  to convert a string of digits to a number, just macro it!
+
+6) :E_ copies a file, giving the new file the same date as the old.
+ ^ E_ copies a file, making the real names of the old file the
+ default names for the new one.  This is useful for preserving the
+ version number.
+
+7) FS I FILE returns a string containing the name of the current or
+ most recent input file.  The format resembles FS D FILE.
+ FS IF DEVICE, FS IF FN1, FS IF FN2, FS IF SNAME are the
+ individual names of that file, as SIXBIT words.  All these flags
+ are read-only.
+
+8) FS ^R INDIRECT now exists for tracing ^R-mode alias definitions;
+ given a 9-bit character, it returns what the character is
+ equivalent to.
+
+9) F^^ exists, for converting q-reg names of ^R command definitions
+ (things like .^RA for Control-A) into 9-bit characters.
+
+10) Arithmetic is no longer checked for overflow.  This means one
+ nuisance gone.
+
+11) If it comes time for ^R to run ..F, and ..F is zero, ^R makes
+ sure to run ..F immediately when it becomes nonzero.  Thus, when a
+ macro that binds the buffer, binds ..F to 0, and calls ^R
+ recursively, if the time to run ..F comes while it is running,
+ ..F will actually be run as soon as the macro returns.
+
+12) Sorry, but tabs do not actually prevent FA from filling.  You must
+ have a break at the front of the line to do that (use space-bs to
+ make an invisible break if necessary).  Tabs do prevent
+ justification, once the break is there.
+
+13) F^A's use of Q..2 is slightly different.  Instead of the address
+ of the end of the range to be scanned, in forward F^A's
+ Q..2 holds Z minus that.
+ This means that it is no longer necessary to change Q..2 if you
+ insert or delete characters in the middle of an F^A.
+
+14) Built-in functions now receive their args in accumulator 4
+ (B), for those who cons up code in buffers.
+
+
+TECO 508
+RMS 11/26/76 0) Incompatible:  Error handlers, ^A, #, and ^ V.
+1) ^R-mode on printing terminals, in scan mode (FS ^R SCAN not 0)
+will now handle cursor motion in a more attractive way,
+automatically.  In addition, any character that types nothing
+will be echoed (FS ^R ECHO should be 1, to prevent double echo).
+The ^L command will now do an additional 0T after its normal
+display of the window, to set things up for the fancy stuff to follow.
+Backward cursor motion uses FS X PROMPT to type a linefeed
+later, to avoid confusing overprinting.
+
+2) On printing terminals, if TECO is about to print something
+and FS X PROMPT is nonzero, FS X PROMPT will be typed first
+(as a single character, via FS ECHO OUT).
+
+3) When TECO is about to clear the screen because the TTY was
+taken away and returned, if FS REFRESH is nonzero it will
+be macroed.  If FS REFRESH and FS ^R DISPLAY are both
+nonzero, FS REFRESH takes priority.  This hook is intended
+for use with a multi-window facility, since at this time
+it is necessary to redisplay all the windows, not just the
+active one.
+
+4) The built-in ^R-mode definitions of ^F, ^B, Rubout and ^D
+now understand negative arguments.
+
+5) ^R-mode "indirect" character definitions:
+Now, all lower case characters, whether control, meta, both or
+neither, are defined to indirect to the corresponding upper case
+characters.  That definition will, however, find the original
+(lower case) character in Q..0;  in particular, if it is
+self-inserting, the lower case character will be inserted.
+Doing (for example) Q^RX no longer puts the code for X into
+Q..0;  only the M command now sets Q..0 in that way.  This means
+that such constructs as M(Q^R^]^V0 (]0)) will no longer work
+for self-inserting characters without an explicit Q0U..0.
+A simple M^RX will still work.
+
+6) Error handling:
+Invocations of a user error-handler macro due to a quit or
+a restart of TECO, are now to be distinguished from invocations
+due to an actual error, not by a zero in FS ERRFLG, but by a
+zero in FS ERROR (which would otherwise hold the error-string).
+FS ERRFLG will now always be nonzero (and positive) when the
+error handler is invoked.  For most error handlers this will
+cause no problem, because the FG command now prints no error message
+if given an argument of zero.
+
+FS ERRFLG now has only one function:  to suppress use of the
+first few lines of the screen by buffer display, so that error
+messages are not overwritten.  A value of -<n> preserves <n> lines.
+The FG command sets FS ERRFLG automatically.
+
+7) ^ F6 now converts a numeric word of sixbit to a string,
+so that G(FS UNAME ^ F6) is equivalent to FS UNAME F6.
+With no numeric argument, F6 reads a string argument and returns
+the sixbit equivalent, suitable for feeding to FS MSNAME, etc.
+
+8) <arg>FO<q> <string> is a new form of binary search command.
+If the name <string> is found in the table in <q>, <arg>FO
+acts just like FO with no argument:  it returns the value
+of the name.  If the name is ambiguous, <arg>FO causes an
+AVN error just like FO.  But if the name is undefined,
+<arg>FO returns <arg>.  Thus, if a macro wants to use
+the value of QFoo, but with 5 as the default,
+it can do 5FO..Q Foo.
+
+9) ^ V now ignores its argument when not in ^R mode.
+This is so that macros that try to optimize their display
+in ^R mode do not act randomly when not in ^R mode.
+To get the old effect of <arg>^ V, do
+<arg>F[ Lines  ^ V  F] Lines.
+
+10) FS TYO HPOS (read only) is now the current typeout
+horizontal position (assuming that typeout is in progress).
+
+11) The commands ^A and # have been interchanged (actually
+back in TECO 496), so that # is now exlusive-or and ^A is
+now inclusive-or.
+
+12) ^ M is now defined, and differs from plain M in how
+it defaults its arguments.  If a macro is called with M
+with no argument, but looks at ^Y anyway, its value is 0.
+If a macro is called with ^ M with no argument, and looks
+at ^Y, its value is 1.  Calling with ^ M is essentially what
+^R does, and ^ M is provided for things like metizer macros
+that interface between ^R and macros expecting to be
+called directly by ^R.
+
+13) FS D DEVICE, FS D SNAME, FS D FN1, and FS D FN2
+are the current default filenames, as numeric sixbit words.
+They are read-write.
+
+
+TECO 504:
+RMS 11/9/76  Infinitely many named variables!
+1) Long-named variables now exist.  They are accessible through the
+ construct <name>, which can be used wherever a q-reg name is needed
+ (except inside ^]).  Variable names may be abbreviated, and extra
+ spaces and tabs may go at the beginning, the end, or next to any
+ space or tab.  Also, case is not significant inside q-reg names.
+ Thus, a q-reg named "Foo" could be accessed with QFOO, Q foo  or
+ (if there is no FO or FOX, etc.) with Q Fo.  Because of this
+ latitude, variables are not created if they are referenced and do
+ not exist;  instead, they must be entered explicitly in the
+ symbol table by the user.  This is easy to do, because the entire
+ symbol table data structure is user-accessible.
+ Here is a sample macro for creating variables:
+	Q..Q[..O
+	[0 :I0		! Get variable name in Q0!
+	[1 :FO..Q0U1 	! Find it, or where to put it if not found!
+	Q1"L -Q1*5J 10,0I	! If not found, put it in!
+	   10R Q0,.FSWORD'	! Install string containing variable name!
+ If it is put in QV, then MVFoo will create a variable named Foo.
+ As you can see, the symbol table is a q-vector kept in Q..Q, whose
+ contents are arranged to be suitable for FO (see below).
+
+2) Typeout
+ a) goes in the window, controlled by FS LINES and FS TOP LINE.
+  All TECO output to display terminals now goes to the region of
+  the screen selected by FS LINES and FS TOP LINE.  This includes
+  the V, ^U, T, FT and = commands.  Formerly, only buffer display did so.
+ b) FS TYPEOUT and :FT.
+  FS TYPEOUT is -1 if typeout has not been happening recently,
+  so typeout starting now would appear at the top of the window.
+  FS TYPEOUT is not -1 when typeout was the last thing to happen
+  and any more typeout will appear after the previous typeout.
+  :FT types at the top of the window by putting -1 in FS TYPEOUT
+  before typing.
+ c) FS ECHO OUT vs ^ FT.
+  FS ECHO OUT outputs characters as they would echo, so that
+  ^M will do a CRLF, and ^A will come out as uparrow-A (unless
+  you have :TCTYP SAIL).
+  ^ FT outputs in the echo area, but does not output characters
+  as they would echo.  So CR and LF do exactly that.
+
+3) ^R
+ a) FS ^R DISPLAY is evaluated (if nonzero) whenever ^R is about
+  to do nontrivial redisplay.  If the evaluation alters the needed
+  redisplay (either by returning 0 or 2 values to ^R, or by
+  doing some of the redisplay with ^V) then ^R will take note.
+  If a FS ^R DISPLAY returns no values, it will force a full
+  redisplay, thus effectively disabling ^R's short-cuts, so beware.
+ b) ^R no longer binds ..A.  ^R on a display terminal now
+  simply writes no cursor, no matter what is in ..A.  This is
+  so that if you enter a break-loop inside of ^R the cursor
+  will still be there.
+ c) FS CTL MTA if negative causes all control-meta-letters
+  to be self-inserting, suppressing any user-supplied definitions.
+  This flag is useful while editing TECO commands or other
+  text containing many control-characters.
+ d) Commands that used to clear the screen now, when FS LINES
+  or FS TOP LINE is nonzero, clear only the portion of the screen
+  that is being used by buffer display.  These commands include
+  ^L and F+, and ^L in ^R mode.
+ e) Display on the 340 is no longer supported.
+
+4) Referring to an element of a q-vector is now easier.
+ Expressions :<q>(<idx>) can be used wherever a q-reg name is
+ expected (except inside of ^]).  Thus, if QQ contains a q-vector,
+ Q:Q(0) would return the contents of its first element, while
+ G:Q(0) would insert them in the buffer.  The index is the WORD
+ number, unlike the argument to FS WORD, which is a character number.
+
+5) The new FO command does binary-searching of tables of fixed-length
+ entries.  Its syntax is FO<q> <string>, where <q> should be a
+ q-vector or pure string containing the table, and <string> is the
+ item to search for.  The table's data must be an integral
+ number of words.  The first word of the table must contain the
+ number of words per table entry;  the rest of the table is then
+ divided into entries of that size.  The first word of each entry
+ should be the entry's name, as a TECO string pointer.  This name
+ is what FO will match against its string argument.  The second
+ word of each entry should be the value;  the use of any extra words
+ is up to the user.  The entries' names must always be kept in
+ increasing order, as F~ would say, or FO's binary search will lose.
+ Also, they should not contain leading, trailing, or multiple spaces,
+ or any tabs.  Their case is ignored.
+   FO, without colon, will return the value from the entry if the
+ name is found;  otherwise, an UVN or AVN error is generated.
+   :FO returns the offset (in words) of the entry found;  if the
+ name is not found, :FO returns minus the offset (in words) of the
+ place the name ought to be inserted in the table.  The offset
+ of the first entry in the table is 1, to skip the word in the
+ front that contains the entry size.
+   If the table is a pure string, the data must start on a word
+ boundary, which means that the string's header must start in the
+ second character in its word.  In addition, the pointers to the
+ entries' names are taken to be relative to the table itself.  That
+ is, the "pointer" should be an integer which, when added to the
+ TECO string pointer to the table, should give a TECO string pointer
+ to the name of the entry.
+
+6) Commands such as :I and X which take a q-reg and ignore its old
+ contents can now be given "*" as a q-reg name, in which cased they
+ return as a value what they would have stored in a q-reg.
+ Thus, :I*FOO returns a string containing FOO.  ]* pops a value
+ off the q-reg pdl and returns it.
+
+7) F[ <flag> and F]<flag> now do not return values.  This makes them
+compatible with [ and ], and means that F[foo F[bar will not screw
+up.  Also, <arg>[<q> is now equivalent to [<q> <arg>U<q>, so [ and F[
+are compatible.
+
+8) A TECO "error code" is now just a string containing the text
+ of the error message.  Thus, <code>FE is now equivalent to
+ G(<code>) I<crlf>.  Everything up to the first tab is the "brief"
+ part of the error message;  if FS VERBOSE is 0, that is all that
+ TECO will print out.  The message should not contain any CRLFs.
+ Thus, to cause a "You Lose" error with 3-letter code LUZ, do
+		:I*LUZ<tab>You Lose  FS ERR
+   You can see if an error was an "IFN" error by doing
+ F=(FS ERROR)IFN  and seeing if the result's absolute value is 4.
+ It still works to compare against ^ FEIFN, which returns
+ the standard string that TECO always uses for internally-generated
+ IFN errors.  Users who wish to generate errors themselves with
+ the same codes that TECO uses should try to use TECO's standard
+ strings (eg, ^ FE IFN FS ERR) so that such comparisons will work.
+   I.T.S. I/O errors now have messages starting with "OPNnnn" where
+ nnn is the I.T.S. open-failure code.  Macros which used to decode
+ I/O errors by numeric comparison must switch to using F=, since
+ the strings for such errors are consed up by TECO as needed.
+
+
+TECO 495
+RMS 10/17/76  a year's worth of changes after a year of stagnation
+1) The TECO assembly listing feature has been eliminated;
+use the @ program instead.  The ^B and ^E commands have
+been eliminated, as has the ^D command (but the F^D
+command can be used instead).
+
+2) Buffer display is now approximately twice as fast.
+Also, in addition to controlling the size of the window
+with FS LINES$, you can control the vertical position
+of the window with FS TOP LINE$.  This can get you
+started on implementing multiple windows;  you can't make
+them work with perfect smoothness, but you can make it
+clear exactly what TECO needs to do so that they will.
+FS WINDOW$ is now implicitly set to -1 only by clearing
+the screen.
+The price is that buffer display on the 340 may not work now.
+Does anybody care?
+
+3) Vectors of q-registers now exist.  They are really buffers
+except that each word is marked by garbage collection, so
+that you can safely store strings and buffers in them
+with FS WORD$.  <n>*5FSQVECTOR$ returns a q-reg vector
+<n> words long.  As a side effect, <n>FS BCONS$ returns
+a new buffer with <n> characters in it.  Both initialize
+the contents to zero, and the default argument is zero.
+
+4) Certain commands that used to require a qregister, whose
+contents were used and not altered, can now accept an
+expression in parentheses whose value is used instead.
+The commands are G, M, F^E, F^A, FQ, and F= (and F~).
+Thus, G(Q0) is equivalent to G0, and G(FS S STRING$)
+will insert the default search string in the buffer.
+Unfortunately, parenthesized expressions are not yet
+allowed inside of ^].
+
+5) Saved environments (EJ'able files) are now runnable programs
+in their own right;  they have been provided with a bootstrap
+routine to load in the pure parts of the appropriate version of
+TECO from the file .TECO.;TECPUR <version>.  I would expect
+the various macro packages to assume standard names on SYS,
+which would be links to the appropriate EJ files.  People
+will no longer need to have .TECO. (INIT) files;  instead
+they will be able to run, explicitly, whichever TECO-based
+editor they choose, at any time.  You can also link TS TECO
+on your own directory to your favorite macro package.
+Programs that load TECO into inferiors (LISPT, QMAIL, etc)
+should always check for TS TECO on the user's own directory
+(his MSNAME) before SYS, so that they get the macros the user
+wants.
+  Meanwhile, TECO now finds INIT files according to your
+XUNAME, rather than your default directory, so that
+ A) To run a TECO with some specific person's init file,
+  do FOO$^S TECO^K, instead of FOO$$^S.  FOO$^S is a
+  less painful thing to do, since it affects nothing except
+  the next program you run.
+ B) People whose home directory is a shared directory
+  are not forced to use a shared init file, and
+  must have their own init file if they want one at all;
+ C) People who share a directory and still wish to have
+  a common set of macros can put an EJ file or a link
+  under TS TECO on that directory.
+
+6) Various data structures are easier to bind:
+ A) FS S STRING$ is the default search string, as a string.
+ B) FS D FILE$ is the current default filename, as a string
+(The format is dev:	sname;	fn1	fn2).
+Both can be read, written, pushed or popped.
+Both have ^Q's inserted where necessary to quote special
+characters such as ^N, ^O, ^X, ^Q in the search string and
+:, ; and space in the file name.  To extract the parts of
+the filename, look for the tabs, not for the : or ;, since
+there may be other :'s or ;'s that are ^Q'd.
+ C) For pushing to a temporary buffer, us F[B BIND$,
+which pushes Q..O and selects a newly created buffer.
+F]B BIND$ (or automatic unwinding) will kill the new buffer
+and reselect the old one.  To select temporarily a buffer
+whose existence has a longer time span, you should continue
+to use [..O.
+ D) For binding the virtual buffer boundaries, FS VB$ and FS VZ$
+have been created.  FS VB$'s value is the same as B, while FS VZ$'s
+value is the same as FSZ$-Z;  it is the distance between the
+virtual end of the buffer and the real end.  Both flags can be
+read, written, pushed or popped.
+
+7) Environmental information:
+ A) FS MACHINE$ is the name of the machine you are running on,
+as a numeric SIXBIT word.
+ B) FS MSNAME$ is the user's working directory name (actually,
+it is the SNAME that TECO was started with), as a numeric
+SIXBIT word.  It can be written as well as read, and it is
+one of the few things not clobbered by an EJ.
+ C) The flags FS UNAME$, FS JNAME$, FS XUNAME$ and FS XJNAME$
+now return numeric SIXBIT words, instead of inserting in the buffer.
+ D) The command F6, when given a numeric argument, treats it as
+a numeric SIXBIT word and inserts the corresponding ASCII in the
+buffer before the pointer.
+ E) FS DATE$ returns the current date and time, in disk format,
+suitable for feeding to FS FDCONV$ or FS IFCDATE$.
+ F) Information on the terminal's abilities is now available in the
+following flags, in whose values -1 means true, 0 means false:
+FS %TOSAI$	terminal can print the SAIL character set
+FS %TOFCI$	terminal can generate the full 9-bit character set
+FS %TOHDX$	terminal is half-duplex
+FS %TOOVR$	terminal is capable of overprinting
+FS %TOLWR$	terminal can generate lower case characters
+FS %TOROL$	user has selected scroll mode
+FS %TOMOR$	user wants --MORE-- processing, in general.
+These flags simply reflect the values of the similarly named bits
+in the system's TTYOPT variable.  See .INFO.;ITS TTY.  Note that
+there is no need for a FS %TOERS$ since it would be nonzero iff
+FS RGETTY$ is zero;  TECO does not treat storage tube terminals as
+displays.  Also, the flags' valuesdo not change when the terminal
+characteristics are changed, until TECO is restarted with $G or
+FS TTY INIT$ is done.
+ G) E?<filename>$ returns 0 if the file can be opened;  otherwise,
+it returns a TECO error code describing why it can't be.
+ H) FS FLUSHED$ is nonzero if a --MORE-- has been flushed, and
+type-out is therefore suppressed.  You can stop generating
+type-out when FS FLUSHED$ is nonzero, or you can clear it to make
+type-out start actually appearing again.
+
+8) ^R-mode general improvements:
+ A) The full width of the screen can be used.  You should no
+longer set FS WIDTH$ down to a multiple of 8.
+ B) Errors that occur inside of ^R now normally go back to
+the innermost invocation of ^R after printing the error message.
+^R will then display the buffer, except for the first line, which
+will be displayed properly after the next command.  Quitting is
+now normally allowed within macros called by ^R (that is, ^R
+does not bind or set FS NOQUIT$), and such quits go back to the
+innermost ^R invocation.
+ C) ^R is smart about macros that type out.  If Q..H is nonzero,
+indicating that buffer display should be suppressed, ^R will
+not do any buffer display until after the next character is typed.
+That character will be thrown away if it is a space;  otherwise,
+it will be executed as usual.
+ D) Control-digits can now be used to specify a numeric argument.
+Thus, ^1^5^F would move forward 15 characters.  FS IBASE$ is used
+as the radix for accumulating the number.
+ E) If the terminal is taken away from TECO in ^R mode, the screen
+will be redisplayed by the next command typed.
+
+9) Specific ^R features:
+ A) Control-rubout is now defined to be like rubout, except that tabs
+are converted to spaces and the spaces rubbed out one by one.  If
+FS RUBCRLF$ is nonzero, the predefined rubout, control-rubout,
+and ^D commands delete a CRLF as if it were one character.
+ B) If FS ^R REPLACE$ is set nonzero, "normal" characters start to
+replace instead of insert;  that is, they delete the character at
+the pointer.  Exceptions:  CR, LF, FF and BS are not deleted,
+and tabs are not deleted until they occupy only one position.
+Any "normal" meta-characters, however, continue to insert instead of
+replacing.  This action is like SAIL ETV's normal mode of operation.
+FS ^R REPLACE$ has no effect if FS ^R NORMAL$ has ben set nonzero,
+redefining all "normal" characters.  Note that LF, BS and TAB 
+are no longer "normal" characters;  they have been defined to
+insert themselves without deleting regardless of FS ^R REPLACE$.
+If FS ^R REPLACE$ is POSITIVE, the definitions of all meta
+non-control characters are suppressed, and they become "normal",
+thus making sure that the user has a way to insert instead of
+replacing.  ^Q, also, always inserts.
+ C) FS ^R PREV$ holds the numeric code for the previous ^R-mode
+command character, not counting argument-setting characters.  It is
+mediated by FS ^R LAST$, which holds the current command and which
+is copied into FS ^R PREV$ after each command.
+ D) ^R argument construction is now much more under program control.
+FS ^R EXPT$ still contains the ^U-count, and FS ^R ARG$ contains
+the explicit argument if any.  The change is that FS ^R ARGP$
+provides two new bits of information:  the low (1) bit is set if
+any argument has been specified (either by ^U or as an explicit arg),
+and the next (2) bit is set if an explicit argument has been given.
+FS ^R ARG$ is initialized to 0, not 1, but if FS ^R ARGP$&2 is 0
+1 is used instead.  In addition, if FS ^R ARGP$ is 0, macros are
+now told that they do not have an argument (although if they look
+at the value anyway it is still 1).
+  The big change is that it now works to alter any of the three
+argument variables in a macro, for the sake of the next command.
+To prevent ^R from reinitializing the argument for the next command,
+set FS ^R LAST$ to zero.  This also prevents FS ^R PREV$ from being
+updated, so that it will always properly contain the previous
+non-argument-setting command.
+ E) FS ^R THROW$ returns TO the innermost ^R invocation, uwinding
+te qregister pdl.
+ F) When ^R is entered (recursively or not), FS ^R ENTER$ is called
+unless it is zero.  When ^R exits normally (but not if it is thrown
+or quit through), FS ^R LEAVE$ is called if nonzero.
+ G) FM should now work properly even if ^R has never been entered.
+
+10) ^R now works much better on printing terminals.  It does no
+redisplay unless the screen is "cleared" by a ^L command or
+equivalent.  The ^L command with a numeric argument displays as many
+lines of text as the argument specifies, for the times when the
+normal window is too small.  For a real thrill, set FS ^R SCAN$ to
+nonzero and get an attempt (to be refined) at a line-editor; ^F, ^E
+and ^S echo the characters they move over, while ^D prints a #.
+Rubout prints the character it rubs out.  You will probably also
+want to turn off echoing of commands by doing 1FS^R ECHO$.
+
+11) A standard protocol for communication from a superior to TECO
+is hereby defined, which allows the superior to request space
+in the buffer for inserting text, or request that a file be
+loaded and a certain function be found.  Macro packages may
+supply functions to handle the requests instead of TECO's default
+handler.
+  A superior can make a request whenever TECO has deliberately
+returned control (by a ^K valret, FS EXIT$ or a ^C) by restarting
+TECO at a special place:  7 plus the address of the "buffer block",
+which address can be found in accumulator 2 at such times.
+Save the old PC before setting it, since you must restore the PC
+after the request is handled.  The word after the starting location
+(8 plus the buffer block address) is used for an argument.
+  There are two types of requests.  If you wish to supply
+text for TECO to edit, the argument should be the number of
+characters of text you need space for (it may be 0).  In that case,
+TECO will return (with an FS EXIT$) after making at least that
+much space in the buffer, after which you should restore the PC
+at which TECO had stopped before you made the request.  You can
+then insert the text in the buffer and restart TECO.
+  If you want TECO to read in a file, supply a negative argument
+and be prepared to supply TECO with JCL, when it asks with the
+standard .BREAK 12, describing what it should do.  When TECO does
+a .BREAK 16, (FS EXIT$) you can assume it has done its work,
+and should restore the old PC.  The formats for the JCL string are
+<filename><cr>, <filename>,<decimal number><cr>, and
+<filename>,<function name><cr>.  A decimal number should be the
+address within TECO of the place to start editing.  A function name
+can be anything that isn't a number, and its interpretation is not
+specified.
+  TECO macro packages can supply a handler for requests from the
+superior by putting it in FS SUPERIOR$.  It will receive the
+argument describing the type of request as its numeric argument
+(^Y), and can read the JCL with FJ and do an FS EXIT$ when finished.
+If FS SUPERIOR$ is zero, TECO's default actions will be taken
+Note that TECO's default handling of a request to load a file is
+to do nothing.
+
+12) Error handling:
+  TECO's default response to an error, when there is no user error
+handler (Q..P is 0) is to print an error message, throw away all
+type-ahead, and ring the bell.  Now, when there is a user error
+handler, TECO does none of those things;  the error handler can
+do any of them with the FG command.  FG with no argument just rings
+the bell;  with an uparrow modifier, it also throws away type-ahead.
+If there is a numeric argument, it is interpreted as a TECO error
+code (such as FS ERROR$ holds) and the error message for it
+is printed.  A colon in addition to the argument causes the message
+to be typed at the top of the screen.  Because FS IMAGEOUT$ now
+uses super-image output, 7FSIMAGEOUT$ may someday cease to ring the
+bell, so switch to FG which will always work.
+  Note that FG obeys FS VERBOSE$ in printing its error message, and
+uses the default file names when printing file error messages.
+  Have you heard the news about ^W (throw to top level)?  It seems
+it has broken up with its intimate companion, the "TOP" error.
+It doesn't plan to be going with any error message at all, it says.
+Meanwhile, the E-command family has decided to move up to the
+latest fashions in error messages.  Undefined "E" commands now
+give "IEC" (Undefined E-command) instead of "IUC" (Undefined Utape
+Command), which was positively "passe".
+
+13) The O command is now much faster.  In addition, the ^ O command
+allows the tag to be abbreviated;  ^ OFOO$ will find the first tag
+in the macro that begins with FOO.  This is useful in dispatches
+and in :EJ-file loader macros, but if you want to give errors for
+ambiguous names you must do it yourself.
+
+14) F~ is a new command that compares two strings, converting both
+to upper case first.  Aside from case conversion, it is like F=.
+Think of F-approximate.
+
+15) FA has been improved.  Tabs now inhibit both justification and
+filling of everything that precedes them on a line.  In addition,
+when a CRLF. is inserted due to filling at a place where there are
+several spaces (such as after the end of a sentence), the extra
+spaces are left around just before the CRLF.  Thus, if changes and
+refilling later cause the CRLF to move away, the original number
+of spaces will be preserved.
+
+15.5) The new FP command is available for testing the data type
+of an object.  Given an object as argument, it returns a number
+which says whether the object is a number, s pure string, an
+impure string, a buffer, a qvector, etc.  See NTECO ORDER.
+
+16) The = command (numeric output) now takes colon and uparrow
+modifiers.  Colon suppresses the CRLF after the numbers, and
+uparrow causes the printing to be done in the echo area instead
+of the main program area (^ T also outputs to the echo area).
+
+17) FS IMAGE OUT$ now uses super-image output, so it is guaranteed
+to send exactly the character you specify.  7FSIMAGE$ will still
+ring the bell, but in future versions of the system it may not,
+so switch to FG.  Outputting characters greater than 200. with
+FS IMAGE OUT$ can screw you totally.
+
+18) ^ FL now knows about a new type of character: '.  It does the
+right thing.
+
+19) When a catch ( F<!tag!...> ) is exited by a throw ( F;tag$ )
+the argument of the throw is returned as the value of the catch.
+
+20) If FS ^I DISABLE$ is set negative, the tab character becomes
+a no-op like space instead of a self-inserting character (as a
+TECO command, not as a ^R command).  Then you can use tabs for
+indentation in your macros.  Making the flag positive makes tabs
+an error.  The default value is zero, leaving tab self-inserting.
+
+21) The ^T command (old-fashioned printing-terminal line editor)
+now works again.
+
+22) TECO's prompt character (for printing terminals) is now &,
+by default.  The idea is to make it different from DDT.
+
+23) For the future:
+ I am thinking about the following questionable changes, so please
+comment on them, and try to avoid things that would be screwed
+by them:
+ A) <n>[<q> could push Q<q> and then set it.
+ B) F^E could return, as its value, the string or buffer being
+replaced in.
+ C) A ^P could be assumed in front of characters that are
+FS ECHO DISPLAY$ed, making it unnecessary to send one yourself.
+ D) ^P sort could have a numeric sort feature.  If the command
+string to find the end of the sort key returned a numeric value,
+that value could be the sort key for the record.
+ E) Now that string expressions exist, and can be used in G
+commands, many things that now insert text in the buffer might
+be more versatile if they returned strings.  Examples include
+\, FS FDCONV$, FS BACKTRACE$, and of course F6.
+ F) "^" was the world's worst choice for a modifier, since it can
+make the command look like a control character.  We could switch
+to "@" instead, or we could make "@" be an additional modifier.
+ G) It would be a great relief to discard truncate mode and
+340 support entirely.
+
+69) Enough?
+
+
+TECO 477:
+RMS 9/14/75 EOF CONVENTIONS, INPUT FILE CLOSING, "EC", FS UREAD$, FS ECHODISP$
+1) ALL INPUT READING COMMANDS EXCEPT "FY" (NAMELY, "A", "Y", ":A", "^ A"
+AND "^ Y") NOW HAVE A WINNING EOF CONVENTION: TRAILING ^C'S OR ^@'S
+IN THE LAST WORD OF A FILE ARE TREATED AS PADDING; OTHERWISE, ALL
+CHARACTERS ARE CONSIDERED PART OF THE DATA AND INSERTED.
+2) IT USED TO BE SO THAT INPUT FILES WERE ALWAYS CLOSED WHEN THE LAST
+REAL CHARACTER OF DATA WAS READ. NOW, INPUT FILES NORMALLY REMAIN OPEN
+UNTIL EXPLICITLY CLOSED WITH THE NEW "EC" COMMAND, WHICH TAKES NO ARGUMENTS.
+THUS, THE FILE'S ACCESS POINTER CAN BE RESET AND SOME OTHER PART OF THE
+FILE READ, FOR EXAMPLE.
+TWO SETS OF EXCEPTIONS ARE THAT "^ A" AND "^ Y" CLOSE THE INPUT FILE
+(ASSUMING THAT IF IT IS ALL IN CORE THE FILE ISN'T NEEDED), AND
+THAT "EE" AND "EX" CLOSE THE INPUT FILE. THIS MEANS THAT MOST USERS
+NEED NOT WORRY ABOUT TYING UP DISK CHANNELS UNNECESSARILY.
+AS BEFORE, FS UREAD$ IS -1 IF A FILE IS OPEN; ITS BEHAVIOR WILL
+THEREFORE BE SLIGHTLY DIFFERENT NOW.
+FS LAST PAGE$ IS -1 IF AN INPUT FILE IS OPEN AND IS NOT AT EOF
+(THE LAST DATA CHAR HAS NOT BEEN READ YET). THESE TWO FLAGS
+ARE NO LONGER REDUNDANT.
+NOTE THAT IN VERSIONS OF ITS BEFORE 979 IT MAY NOT WORK TO
+TRY TO USE A FILE AFTER REACHING EOF.
+3) FS ECHO DISPLAY$ (WRITE ONLY) OUTPUTS ITS NUMERIC ARGUMENT AS A CHARACTER TO
+THE ECHO AREA IN DISPLAY MODE. THUS, ^^^PFSECHODIS$ ^^TFSECHODIS$
+WILL MOVE THE ECHO AREA CURSOR TO THE TOP OF THE ECHO AREA.
+IF THERE IS NO ECHO AREA, FS ECHO DISPLAY$ DOES NOTHING (UNLIKE
+FS ECHO OUTPUT$).
+
+
+TECO 475:
+RMS 8/26/75 ^W
+1) THE ^W COMMAND NOW EXISTS FOR POPPING ALL THE WAY TO TOP
+LEVEL OUT OF A BREAK-LOOP. IT TEMPORARILY SUPPRESSES THE EFFECT
+OF FS *RSET$ AND THE USER-DEFINED ERROR HANDLER, THEN CAUSES
+AN ERROR.
+2) CONTROL-META-LOWERCASE CHARACTERS AND CONTROL-META-CR, ETC.
+AND CONTROL-META-J, ETC. ARE NOW INITIALLY GIVEN INDIRECT
+^R-MODE DEFINITIONS JUST LIKE THEIR NON-META COUNTERPARTS.
+3) BREAK-LOOPS ARE BETTER DOCUMENTED NOW.
+4) IF A ..P ERROR HANDLER STARTS CAUSING ERRORS, OVERFLOW OF
+SOME PDL WILL PROBABLY RESULT. TECO WILL THEN ZERO ..P IN
+ORDER TO RECOVER. THUS, A COPY OF THE POINTER TO THE ERROR
+HANDLER SHOULD BE KEPT IN SOME OTHER QREG ("Q..PUA") SO THAT
+THE ERROR HANDLER CAN BE EXAMINED ("GA") AFTER IT BOMBS.
+
+TECO 473:
+RMS 8/25/75 Y, FY, FS IF LENGTH$, QREG NAMES, CHAR SET CONVERSION.
+1) Y AND ^ Y NOW WILL NOT STOP ON ^C'S IN THE FILE. TRAILING
+ ^C'S AND ^@'S BEFORE EOF ARE CONSIDERED PADDING, AND FLUSHED.
+ THE SAME GOES FOR "A" AND "^ A".
+2) FY READS IN ALL OF THE OPEN INPUT FILE. <N>FY READS IN THE NEXT
+ <N> CHARACTERS ONLY. BOTH ARE SUITABLE FOR USE WITH BINARY DATA
+ AS NEITHER ATTEMPTS TO REMOVE ANY SORT OF PADDING.
+3) FS IF LENGTH$ IS THE LENGTH, IN CHARACTERS, OF THE OPEN INPUT
+ FILE, OR -1 IF THAT CANNOT BE DETERMINED. ERROR IF NO FILE OPEN.
+4) A QREG NAME MAY NOW USE "^^" WHERE "^R" COULD BE USED, TO SPECIFY
+ THE ^R-MODE DEFINITION OF AN ASCII CONTROL CHARACTER SUCH AS LF.
+ "Q^^J" IS EQUIVALENT TO "Q^R^J". PERIODS MAY BE USED WITH ^^ LIKE ^R.
+5) ..N UNBINDING MACROS ARE NOW PREVENTED FROM CLOBBERING THE CURRENT
+ VALUE. THUS, A MACRO THAT RETURNS VALUES AND ALSO USES "FN" NEED
+ NO LONGER TAKE SPECIAL CARE TO MAKE SURE THAT THE FN'D STRING
+ PRESERVES THE VALUES.
+6) TECO'S USE OF THE ASCII AND 9-BIT CHARACTER SETS, AND ITS ALGORITHMS
+ FOR CONVERSION, ARE NOW DOCUMENTED, FOR THE SAKE OF SUBSYSTEM WRITERS.
+7) THE SPECIAL TREATMENT OF CR IN TYPE-IN HAS BEEN DOCUMENTED.
+
+
+TECO 467:
+RMS 8/18/75 INCOMPATIBLE: CASE-CONVERSION, ALTMODES, ^R-MODE REDEFINITIONS
+
+1) CASE CONVERSION ON INPUT HAS BEEN CHANGED INCOMPATIBLY,
+ THOUGH NO PROGRAMS SHOULD BE AFFECTED. TREATMENT OF LETTERS
+ IS UNCHANGED (THEY ARE CONVERTED TO THE "NORMAL" CASE UNLESS
+ A CASE-SHIFT OR CASE-LOCK CHARACTER SAYS OTHERWISE), BUT
+ THE "UPPER CASE SPECIAL CHARACTERS" WHICH ARE "[", "]", "\",
+ "@", "^" AND "_" WILL NOW BE UNALTERED ON TYPE IN UNLESS PRECEDED
+ BY A CASE-SHIFT (WHICH WILL CONVERT THEM TO THE "LOWER-CASE SPECIAL
+ CHARACTERS" "{", "}", "|", "`", "~" AND <RUBOUT>). CASE-LOCK
+ HAS NO EFFECT ON THE UPPER-CASE SPECIAL CHARACTERS.
+ CASE FLAGGING ON OUTPUT HAS BEEN ADJUSTED TO REMAIN AN INVERSE
+ OF CASE-CONVERSION.
+ FS BOTHCASE$, IF 1, NOW CAUSES THE CASE OF LETTERS ONLY TO BE
+ IGNORED WHILE SEARCHING. IF -1, CASE IS IGNORED FOR THE SPECIAL
+ CHARACTERS TOO.
+ FS ^PCASE$ NONZERO NOW CAUSES ^P TO IGNORE ONLY THE CASE
+ OF LETTERS, NOT THE SPECIAL CHARACTERS.
+
+2) IN ^R MODE, CR, LF, TAB, BS AND ALTMODE MAY NOW BE DISTINGUISHED
+ FROM ^M, ^J, ^I, ^H AND ^[. ALTHOUGH THEY STILL HAVE THE SAME
+ ASCII CODES, THE 9-BIT CODES READ IN BY "^ FI" AND USED TO INDEX
+ THE ^R DISPATCH ARE (OCTAL) 15, 12, 11, 10 AND 33 FOR THE FORMER,
+ AND 315, 312, 311, 310 AND 333 FOR THE LATTER. THUS, ALTMODE'S
+ DEFINITION IS ACCESSIBLE AS ^33FS^RCMAC$ OR AS Q^R<ALTMODE>,
+ WHILE ^333FS^RCMAC$ OR Q.^R[ IS THE DEFINITION OF CONTROL-[.
+
+3) IN ^R MODE ON PRINTING TTYS, <RUBOUT> NOW "ECHOES" AS THE
+ CHARACTER RUBBED OUT (OF COURSE, IT ONLY ECHOES WHEN FS ^RECHO$
+ IS SET TO REQUEST ECHOING).
+
+4) STRAY ALTMODES ARE NOW NO-OPS, BY DEFAULT. FS NOOP ALTMODE$
+ STILL EXISTS BUT ITS DEFAULT SETTING HAS CHANGED. ALSO, THE
+ VALUE 0 NOW WINS VERY LITTLE DUE TO AN INTERACTION WITH
+ BREAK-LOOPS WHICH MADE IT DIFFICULT TO TELL WHETHER THE ALTMODE
+ CAME FROM A MACRO.
+
+5) BREAK-LOOPS NOW EXIST, FOR DEBUGGING TECO PROGRAMS.
+ WHEN FS *RSET$ IS NONZERO, ERRORS, QUITS AND $G'ING TECO
+ WILL ENTER A BREAK-LOOP INSTEAD OF POPPING BACK TO TOP LEVEL.
+ TO RETURN TO THE BROKEN PROGRAM, DO ")^\". THROWING TO A CATCH
+ IS ALSO OK. TO GET TO TOP LEVEL, ZERO FS *RSET$. TO EXAMINE
+ THE BROKEN PROGRAMS AT VARIOUS STACK LEVELS, USE <N>FS BACKTRACE$
+ WHICH INSERTS IN THE BUFFER THE PROGRAM EXECUTING <N> LEVELS
+ UP THE STACK, LEAVING THE POINTER AT THE PROGRAM'S PC.
+ THERE MAY NOW BE A USER-DEFINED ERROR HANDLER WHICH GETS FIRST
+ CRACK AT ERRORS, $G'S AND QUITS; IT LIVES IN Q..P.
+ TRACING HAS BEEN IMPROVED; SEVERAL CONSTRUCTS INCLUDING ITERATIONS,
+ CONDITIONALS, TAGS AND GOTOS TRACE MORE COMPREHENSIBLY.
+
+6) WHEN FS STEP$ IS NONZERO, TECO WILL PAUSE AFTER EVERY LINE
+ OF PROGRAM TO DISPLAY THE BUFFER AND AWAIT A CHARACTER OF INPUT
+ BEFORE PROCEEDING (MORE PRECISELY, ^M AS A COMMAND PAUSES).
+ THE USER ALSO HAS THE OPTION OF ENTERING ^R MODE.
+ THIS MAKES IT EASY TO FOLLOW THE PROGRESS OF A WELL-WRITTEN
+ TECO PROGRAM (ONE WHICH HAS FEW COMMANDS PER LINE).
+ SEE UNDER ^M IN NTECO ORDER FOR DETAILS.
+
+7) <N>:^S SLEEPS TILL <N> 30'THS OF A SECOND HAVE ELAPSED OR
+ THERE IS INPUT AVAILABLE; IT RETURNS NONZERO IFF THERE IS INPUT.
+
+8) "F(" IS LIKE "(", BUT RETURNS ITS ARGUMENTS. THIS FACILITATES
+ PUTTING DATA IN TWO PLACES WITHOUT USING A QREG.
+ "F)" THROWS AWAY WHAY THE MATCHING "(" SAVED, BUT RETURNS
+ ITS ARGUMENTS - SOMEWHAT LIKE "MZ" WHERE QZ HOLDS ")W F^X".
+ 'F"' IS LIKE '"' BUT PASSES ON ITS ARGUMENTS INSTEAD OF FLUSHING
+ THEM - SEE NTECO ORDER FOR USES.
+
+9) F[<FLAG>$ PUSHES FS<FLAG>$ ONTO THE QREG PDL (AND MAY SET IT AS WELL).
+ F]<FLAG>$ POPS THE QREG PDL INTO FS<FLAG>$.
+
+10) <M>,<CH>I DOES <CH>I, <M> TIMES. THAT IS, IT INSERTS <M> COPIES
+ OF THE CHARACTER WHOSE ASCII CODE IS <CH>.
+
+11) :O<TAG>$ SIMPLY FALLS THROUGH IF <TAG> IS NOT FOUND.
+
+12) FL IS NOW TABLE-DRIVEN, USING THE DELIMITER DISPATCH TABLE (..D).
+ ALSO, "^ FW" DEALS WITH LISP ATOMS, AND "^ FL" HANDLES S-EXPRESIONS
+ (EITHER ATOMS OR LISTS, DEPENDING ON WHICH ARE ENCOUNTERED).
+ "|" IS NOW UNDERSTOOD IN ACCORDANCE WITH LIS USAGE.
+
+13) ^ FE<ERRNAME>$ WHERE <ERRNAME> IS A THREE-CHARACTER ERROR NAME
+ RETURNS THE NUMERIC ERROR CODE FOR THAT ERROR. THIS IS AN INVERSE
+ OF THE <ARG>FE COMMAND. THE PROPER WAY OF ASKING WHY A COMMAND CAUSED
+ AN ERROR IS TO COMPARE THE ERROR CODE WITH THE VALUE OF "^ FE".
+ <CODE>FSERR$ WHERE <CODE> IS AN ERROR CODE CAUSES THE ERROR WITH
+ THAT CODE.
+
+14) :EI AND :EW WILL OPEN A FILE WITH ARBITRARY NAMES FOR OUTPUT.
+ NORMALLY TECO USES _TECO_ OUTPUT AND RENAMES THE FILE BEFORE CLOSING IT.
+ WITH THESE NEW COMMANDS, ANY NAMES MAY BE USED INSTEAD OF _TECO_ OUTPUT
+ (BUT THE FILE MAY STILL BE RENAMED WHEN IT IS CLOSED).
+ ^ EI ND ^ EW OPEN A FILE IN WRITEOVER MODE - GOOD FOR ALTERING AN EXISTING
+ FILE, WHEN USED WITH FS OFACCESS$ AND F IFACCESS$ WHICH SET THE OUTPUT
+ FILE AND INPUT FILE ACCESS POINTERS. NOTE THAT IT IS IMPOSSIBLE TO HAVE A
+ FILE OPEN FOR BOTH INPUT AND OUTPUT AT ONCE, SO IT MUST BE CLOSED IN ONE
+ DIRECTION AND OPENED IN THE OTHER IN ORDER TO CHANGE DIRECTION OF
+ TRANSFER.
+
+15) :EJ PAGE-MAPS A FILE SHAREABLY INTO A NEW SPACE, "PURE STRING SPACE".
+ THIS IS USEFUL FOR LOADING MACRO PACKAGES; IT IS NOT AS FAST AS PLAIN EJ
+ BUT IS MORE FLEXIBLE SINCE :EJ DOES NOT CLOBBER THE ENTIRE EXECUTION
+ ENVIRONMENT, AND SINCE SEVERAL FILES MAY BE :EJ'D. SEE NTECO ORDER FOR
+ DETAILS ON WHAT THE FILE MUST CONTAIN IN ORDER TO BE USEFUL.
+
+16) F^E<STRING>$ REPLACES <STRING> INTO THE BUFFER AFTER POINT. POINT IS
+ NOT MOVED, THE GAP IS NOT MOVED, AND THE SIZE OF THE BUFFER DOES NOT CHANGE.
+ IT IS EQUIVALENT TO <LENGTH>DI<STRING> BUT FASTER BECAUSE THE GAP NEED
+ NOT BE MOVED. ONE CAN ALSO REPLACE INTO A STRING OR BUFFER IN A QREG.
+
+17) F? NOW HAS MORE MEMORY MANAGEMENT FUNCTIONS, USEFUL FOR HAIRY TECO
+ PROGRAM SYSTEMS.
+
+18) FS .CLRMOD$ CAN NOW BE SET TO 1 TO DISABLE ALL SCREEN-CLEARING, EVEN
+ UNDER PROGRAM CONTROL. THIS MAY HELP IN DEBUGGING SOME PROGRAMS THAT
+ CLEAR THE SCREEN AND DESTROY TRACE INFORMATION.
+
+19) THE DOCUMENTATION OF FS FNAMSYNTAX$ WAS WRONG AND HAS BEEN FIXED.
+
+20) FS LISPT$ WILL BE NONZERO IF TECO WAS STARTED AT THE ALTERNATE
+ STARTING ADDRESS 2 GREATER THAN THE NORMAL STARTING ADDRESS.
+ TECO-UNDER-LISP PACKAGES SHOULD SET THIS FLAG TO INDICATE THAT COMMUNICATION
+ OF DATA IS DESIRED BY THE SUPERIOR. IF THE TECO PROGRAM WANTS MORE DETAILS,
+ IT SHOULD DO " HK 6,32I 1FSEXIT$ ". THE SUPERIOR SHOULD RESPOND TO THE
+ .BREAK 16,1 BY CLOBBERING AN INDICATION OF WHAT SORT OF PROGRAM IT IS
+ INTO THE BUFFER (NOTE THAT AC 2 WILL POINT TO THE BUFFER BLOCK; SEE
+ NTECO ORDER) AND THEN RESTARTING TECO. FOR EXAMPLE, A TECO-UNDER-LISP
+ PACKAGE MIGHT REPLACE THE FIRST 4 SPACES WITH "LISP". NOT ALL TECO
+ PACKAGES NEED ACTUALLY DO THIS. NOT ALL SUPERIORS NEED SUPPLY INFORMATION,
+ BUT THEY SHOULD AT LEAST RESTART THE TECO IMMEDIATELY AFTER A
+ .BREAK 16,1. IF ANY COMMUNICATION IS DONE, HOWEVER, THIS PROTOCOL SHOULD
+ BE USED.
+
+21) FS REAL ADDRESS$ RETURNS THE REAL CHARACTER ADDRESS OF THE
+ BEGINNING OF THE CURRENT BUFFER. WITH THIS, ONE CAN A) CREATE COMMUNICATION
+ COMMANDS FOR THE SUPERIOR THAT REFER TO THE BUFFER AS A STORAGE AREA,
+ AND B) EXECUTE THE BUFFER AS PDP-10 CODE. MAYBE THERE ARE OTHER APPLICATIONS.
+
+22) FS TTY INIT$ WILL NOW RE-EXAMINE THE SYSTEM'S TTY DESCRIPTION AND ADJUST
+ TECO'S VARIABLES ACCORDINGLY. INITIALIZATION NOW HANDLES FS ^HPRINT$ AND
+ FS ^MPRINT$ DIFFERENTLY, WITH THE RESULT THAT THEY ARE NORMALLY OFF
+ ON ALL TERMINALS, BUT IF SET ON THEY WILL BE UNALTERED UNLESS TECO FINDS
+ ITSELF WITH A TTY THAT CAN'T PERFORM AS SPECIFIED.
+
+23) TECO NOW HAS THE ABILITY TO READ AND WRITE NON-ASCII FILES, USING THE
+ FSWORD$ COMMAND TO EXAMINE OR ALTER ANY WORD IN THE CURRENT BUFFER.
+
+24) FS XUNAME$ INSERTS THE SUPERIOR'S XUNAME IN THE BUFFER, IF THE SUPERIOR
+ IS A DDT.
+
+25) FS ^R ARG$ AND FS ^R EXPT$ MAY NOW BE DEPOSITED IN TO SET THE
+ ^R ARGUMENT AND EXPONENT-OF-4, RESPECTIVELY. UNFORTUNATELY, THEY ARE
+ RESET TO 1 AND 0, RESPECTIVELY, BEFORE ANY MACRO IS CALLED. IF I CAN
+ SEE A WAY TO SOLVE THE PROBLEM I WILL, BUT IT IS HARDER THAN YOU
+ PROBABLY THINK.
+
+26) FS ^R NORMAL$ CONTAINS THE DEFINITION OF ALL "NORMAL" CHARACTERS.
+ IF A STRING IS PUT THERE, ALL SUCH CHARACTERS WILL BE AT ONCE
+ REDEFINED. MORE PRECISELY, ALL SELF-INSERYING CHARACTERS ARE
+ INITIALLY DEFINED TO EXECUTE WHATEVER IS IN FS ^R NORMAL$.
+
+27) FS ^R MORE$, IF NONZERO, SUPPRESSES THE --MORE-- AT THE BOTTOM
+ OF THE SCREEN FOR ^R-MODE BUFFER DISPLAY, BUT NOT FOR NON-^R-MODE
+ BUFFER DISPLAY OR FOR OTHER SORTS OF TYPEOUT.
+
+28) FOR COMMUNICATION WITH OTHER PROGRAMS, WHEN TECO RETURNS
+ DELIBERATELY TO ITS SUPERIOR ACCUMULATOR 2 WILL CONTAIN THE
+ ADDRESS OF THE "BUFFER BLOCK" WHICH DESCRIBES THE LOCATION
+ AND SIZE OF THE BUFFER. SEE NTECO ORDER.
+
+29) MUCH DOCUMENTATION HAS BEEN CREATED FOR THE INTERNAL FORMATS
+ OF SEVERAL TECO DATA STRUCTURES THAT THERE IS NOW SOME REASON
+ FOR TECO PROGRAMS OR OTHER PROGRAMS THAT COMMUNICATE WITH TECO
+ TO UNDERSTAND.
+
+30) IT IS NOW ALLOWED TO TYPE IN A NEGATIVE NUMBER AS IF IT WERE
+ POSITIVE (CAUSING OVERFLOW) WHEN THE INPUT RADIX USED IS A
+ POWER OF TWO. ALSO, THE SMALLEST NEGATIVE INTEGER NOW TYPES OUT
+ CORRECTLY.
+
+31) MORE INFORMATION AND ADVICE EXISTS FOR ..A, ..B, AND ..L.
+ ..B IS NO LONGER ZEROED WHEN TECO IS STARTED.
+
+32) MOST SIMPLE FORWARD SEARCHES ARE NOW SEVERAL TIMES FASTER.
+
+
+TECO 444
+RMS 1/5/74 "EJ", "F<", "F;", "F^B", "F=", "FS ^R INIT$".
+1) COMPLETE ENVIRONMENTS MAY BE LOADED AND DUMPED.
+ THE "^ EJ" COMMAND WRITES ALL IMPURE AREAS OF TECO
+ ON THE OUTPUT FILE (IT IS AN ERROR IF THERE IS NONE).
+ THE "EJ" COMMAND LOADS IN THE CONTENTS OF SUCH A FILE
+ WHICH SHOULD ALREADY BE OPEN FOR INPUT. LOADING CLOBBERS
+ ALL STACKS, SO TECO RESTARTS AFTER LOADING. THIS IMPLIES
+ THAT IF ANYTHING IS LOADED INTO Q..L (EXCEPT 0) IT WILL
+ BE MACROED IMMEDIATELY.
+
+2) CATCH AND THROW EXIST. USE "F<" FOR CATCH, AND CLOSE
+ IT WITH A ">". THE CATCH-TAG IS MANDATORY AND MUST
+ FOLLOW THE "F<"; FOR EXAMPLE, "F<!FOO!". TO THROW, DO
+ "F;<TAG>$". IT IS AN ERROR IF NOT WITHIN ANY CATCH WITH
+ THAT TAG. RIGHT NOW THE VALUE RETURNED BY A CATCH SHOULD
+ BE REGARDED AS RANDOM; IT ISN'T, BUT IT IS NOT YET CLEAR
+ WHETHER THE CURRENTLY CHOSEN VALUE IS THE MOST USEFUL.
+ EXPERT TECO-HACKERS PLEASE GIVE SUGGESTIONS.
+
+3) A MEMQ COMMAND FOR CHARACTERS EXISTS; IT IS "F^B".
+ DO <CHAR>F^B<STRING>$, WHERE <CHAR> IS A NUMERIC ARG WHICH
+ IS THE ASCII CODE FOR A CHARACTER, TO SEARCH <STRING> FOR
+ THAT CHARACTER. THE VALUE IS -1 IF THE CHARACTER DOESN'T
+ OCCUR; OTHERWISE, IT IS THE POSITION OF THE FIRST OCCURRENCE
+ (THAT IS, THE NUMBER OF PRECEDING CHARACTERS; 0, IF THE
+ DESIRED CHARACTER APPEARS AT THE BEGINNING OF <STRING>)
+
+4) "F=" NOW RETURNS A MORE USEFUL VALUE. ITS SIGN IS STILL
+ THE SAME, BUT IF IT IS NONZERO ITS ABSOLUTE VALUE IS NOW
+ 1 + THE POSITION OF THE FIRST DIFFERENCE BETWEEN THE STRINGS
+ BEING COMPARED (ABS VAL IS 1 IF THEY DIFFER IN THE FIRST
+ CHARACTER).
+
+5) AUTOMATIC STARTUP OF A MACRO PACKAGE:
+ IF TECO IS STARTED AT ITS NORMAL START ADDRESS +1,
+ IT LOOKS IN ACS 0-3 FOR THE DEV, FN1, FN2 AND SNAME
+ OF AN EJ-FORMAT DUMP FILE, WHICH IT LOADS.
+ IF THE DUMP FILE CONTAINS A NONZERO VALUE FOR Q..L,
+ IT WILL BE EXECUTED IMMEDIATELY.
+
+6) "<CHAR>FS ^R INIT$" WILL RETURN THE INITIAL ^R-MODE
+ DEFINITION OF THE CHARACTER WHOSE ASCII VALUE IS <CHAR>;
+ IN OTHER WORDS, THE INITIAL VALUE OF "<CHAR>FS ^R CMACRO$".
+ THE UPARROW FLAG SAYS THAT <CHAR> IS A 9-BIT CODE RATHER
+ THAN AN ASCII CODE, JUST AS FOR FS ^R CMACRO$.
+
+
+TECO 438
+RMS 12/31/74
+0) INCOMPATIBLE: FC AND ^FC, FS REREAD$,  FM.
+ SEE .INFO.;TECORD 438 FOR FULL DETAILS.
+
+1) THE ^R-MODE CHARACTER DEFINITION TABLE IS NOW 9 BITS WIDE.
+ THUS, ALPHA AND ^B NOW HAVE DIFFERENT DEFINITIONS, AND THE META
+ CHARACTERS HAVE AN ENTIRELY DISJOINT SET OF DEFINITIONS.
+ FS REREAD$ SHOULD NOW BE GIVEN VALUES IN THE 9-BIT CHARACTER SET.
+ THAT IS THE ONLY INCOMPATABILITY; "FI" CONVERTS ITS VALUE TO ASCII
+ AND FS ^RCMAC$ CONVERTS ITS ARG FROM ASCII. TO PREVENT THAT
+ CONVERSION, AND MAKE FULL USE OF THE NEW FEATURES, USE
+ "^ FI" AND "^ FS ^RCMAC$".
+2) ^R-MODE CHARACTER DEFINITIONS MAY BE REFERRED TO AS
+ Q-REGS. FOR EXAMPLE, "G^RX" INSERTS THE DEFINITION OF X.
+ PERIODS PRECEDING THE "^R" ARE USED TO SPECIFY THE VALUE
+ OF THE CONTROL AND META BITS.
+ NOTE THAT "Q.^RA" SHOULD BE USED FOR THE DEFINITION OF CONTROL-A,
+ SINCE "Q^R^A" IS REALLY ALPHA, ONE OF THE NEW GRAPHICS.
+3) M OF A QREG CONTAINING A NUMBER TREATS THAT NUMBER AS THE ADDRESS
+ OF A SUBROUTINE IN TECO. THIS IS SO THAT M^R<CHAR> WILL WORK
+ REGARDLESS OF WHETHER <CHAR> HAS A USER DEFINITION OR A BUILT-IN ONE.
+4) WHEN A ^R-MODE CHARACTER DEFINITION IS DISPATCHED TO,
+ Q..0 MAY BE EXPECTED TO HOLD THE CHARACTER BEING HANDLED.
+5) WHEN ^R MODE IS IN USE ON A PRINTING TTY, WINDOW-CHANGING
+ WILL CAUSE REDISPLAY OF THE BUFFER ONLY IF FS TTMODE$ IS NONZERO.
+ ALSO, ECHOING OF CHARACTERS READ IN BY ^R WILL OCCUR ONLY IF
+ FS ^RECHO$ IS <= 0. IF FS ^R ECHO$ IS <0, SUCH ECHOING WILL
+ TAKE PLACE EVEN ON DISPLAY TERMINALS.
+6) THE INTERNAL ^R-MODE RUBOUT ROUTINE IS AVAILABLE AS <N>FS^RRUBOUT$.
+ THE INSERT ROUTINE IS <CHAR>FS^RINSERT$.
+ BOTH OF THEM TAKE FULL RESPONSIBILITY FOR INFORMING ^R
+ OF THE CHANGES MADE, SO MACROS USING THEM SHOULD RETURN INFO
+ DESCRIBING ONLY THE OTHER CHANGES THEY MAKE TO THE BUFFER.
+
+7) "^B" NOW USES THE TPL RATHER THAN THE LPT.
+8) "^C" CAN BE "QUOTED" IN TYPEIN TO TECO'S COMMAND STRING
+ READER BY TYPING "^]^Q^C".
+9) "^ ^K" IS LIKE "^K" BUT DOESN'T CAUSE THE SCREEN TO BE CLEARED.
+10) A CRLF MAY NOW APPEAR BEFORE A "# (WHICH MEANS "ELSE" AFTER
+ A CONDITIONAL). PREVIOUSLY THE "# HAD TO FOLLOW THE ' IMMEDIATELY.
+11) IT IS AN ERROR TO LEAVE AN ITERATION UNTERMINATED
+ AT THE END OF THE MACRO THAT IT BEGAN IN.
+12) ":?" UNCONDITIONALLY LEAVES TRACE MODE.
+13) TRACE OUTPUT NEVER USES THE TOP LINE OF THE SCREEN,
+ TO AVOID BEING OVERWRITTEN BY ERROR MESSAGES.
+14) "F?" IS USED FOR CLOSING THE GAP, RETURNING CORE, CAUSING GARBAGE COLLECTIONS,
+ AND ALSO FORCES TECO'S OUTPUT BUFFER.
+15) OLD MEANINGS OF "FC" AND "^FC" NOW FLUSHED. "FC" AND "^FC" NOW DO WHAT
+ ":FC" AND "^:FC" USED TO (AND STILL) DO.
+16) "FI" NOW ALLOWS MODE-LINE REDISPLAY (QREG ..J) TO HAPPEN.
+ ALSO, "FR" COMMAND EXPLICITLY GIVES THAT A CHANCE TO HAPPEN.
+17) "FM" IS IMPROVED. IN CASE OF AN "NHP" ERROR, THE POINTER IS LEFT
+ ON THE DESIRED LINE, AT LEAST, AT THE END FOR "FM" AND AT THE BEGINNING
+ FOR "^FM". ALSO, "FM" WILL NEVER STOP BETWEEN A CR AND THE FOLLOWING LF.
+18) FS QPPTR$, FS QPUNWIND$ AND FS QPSLOT$ NOW ACCETP NEGATIVE ARGUMENTS,
+ WHICH ARE CONSIDERED TO BE OFFSETS FROM THE CURRENT QREG PDL POINTER.
+ THUS, "-FSQPUN$" POPS ONE SLOT OFF THE PDL, BACK WHERE IT WAS PUSHED FROM.
+19) -<N>FSECHOLINES$ SAYS, TURN OFF ECHOING BUT LEAVE <N>-1 ECHO LINES,
+ WHICH CAN BE USED WITH "^ FT" OR FS ECHOOUT$.
+20) FS SERROR$: NORMALLY 0. IF NOT 0, FAILING SEARCHES WITHIN ITERATIONS
+ ARE TREATED JUST LIKE FAILING SEARCHES OUTSIDE ITERATIONS.
+21) FS TTYOPT$ RETURNS THE TTYOPT WORD OF THE USER'S TTY,
+ AS OF THE LAST TIME TECO WAS $G'D.
+22) LINEFEEDS AFTER CR'S IN "^ FT" COMMANDS ARE NOW IGNORED. THUS, IT IS
+ NOT NECESSARY TO HAVE LOTS OF STRAY CR'S IN "^ FT" STRINGS ANY MORE.
+
+
+TECO 430:
+RMS 8/30/74 PROGRAMMING FEATURES; ^R MODE ON PRINTING TTYS.
+0)INCOMPATABLE: FS^RSUPPRESS$, FSFNAMSY$.
+1) THE COMMANDS THAT USE ALREADY-EXISTING QREG STRINGS
+WILL NOW ACCEPT BUFFERS AS WELL. SPECIFICALLY, "G", "M",
+"F^A", "F=", "FQ" CAN USE BUFFERS. ALSO, THE CONTENTS
+OF A BUFFER MAY BE SUBSTITUTED INTO THE COMMAND STRING
+WITH ^]. VARIOUS QREGS IN WHICH TECO EXPECTS TO FIND
+STRINGS (QREGS ..A, ..B, ..C, ..D, ..F, ..G, ..L,
+..M, ..N) MAY NOW CONTAIN BUFFERS ALSO.
+
+2) THE CONTENTS OF QREG ..J ARE ALWAYS DISPLAYED ON
+THE --MORE-- LINE (IN FRONT OF THE --MORE-- IF ANY).
+THE IDEA IS THAT A USER MACRO PACKAGE CAN PUT A STRING
+INTO Q..J DESCRIBING WHAT STATE IT IS IN - IN OTHER WORDS,
+WHAT IT WILL DO WITH THE USER'S TYPE-IN. FOR EXAMPLE,
+A SEARCH MACRO MIGHT WANT TO BIND Q..J TO "SEARCH".
+UNFORTUNATELY, PUTTING A BUFFER IN Q..J WINS ONLY
+MARGINALLY BECAUSE TECO CANNOT USUALLY DETECT WHEN
+THE BUFFER'S CONTENTS CHANGE, AND DOES NOT REALIZE THAT
+IT IS NECESSARY TO REDISPLAY THE STRING.
+
+3) THE "G" COMMAND TAKES OPTIONAL ARGUMENTS SPECIFYING
+THE RANGE OF THE BUFFER OR STRING TO BE INSERTED.
+"G" WITH NO ARGUMENTS IS THE SAME AS "0,9999999G".
+"0,1G" GETS ONLY THE FIRST CHARACTER OF THE QREG.
+"G" SETS FS INSLEN$ (AND THEREFORE FK AND ^F).
+
+4) TH FS ^R SUPPRESS$ FEATURE IS MORE GENERAL. WHEN IT
+IS NONZERO, NOT ONLY BUILT-IN COMMANDS, BUT USER-DEFINED
+COMMANDS AS WELL, ARE SUPPRESSED, UNLESS THEY BEGIN
+WITH THE CHARACTER "W" SINCE "W" IS A NO-OP, ITS ONLY
+EFFECT IS TO PREVENT THE COMMAND FROM BEING SUPPRESSED.
+
+5) ^R NOW WORKS (MARGINALLY) ON PRINTING TERMINALS.
+CHARACTERS READ IN BY ^R'S COMMAND DISPATCH ARE TYPED
+OUT 0 RUBOUT IS TYOED AS "^?". THE BUFFER IS DISPLAYED
+ONLY WHEN THE WINDOW IS CHANGED, OR THE SCREEN IS CLEARED,
+OR A USER MACRO RETURNS NO VALUES (FULL REDISPLAY NEEDED).
+THE ORDINARY -!- CURSOR (OR WHATEVER IS IN ..A) IS USED,
+AS IN NON-^R BUFFER DISPLAY.
+
+6) A NEW COMMAND FM EXISTS FOR MOVING THE CURSOR TO SPECIFIED
+HORIZONTAL AND VERTICAL POSITION. <M>,<N> FM MOVES FORWARD
+0 OR MORE CHARS, UNTIL REACHING HPOS <N>, <M> LINES DOWN
+FROM ITS STARTING POINT. IF IT HITS END OF BUFFER FIRST, A
+"NIB" ERROR HAPPENS. IF THAT LINE HAS NO SUCH HPOS ON IT,
+A "NHP" ERROR HAPPENS. :FM IS SIMILAR BUT ACCEPTS ANY HPOS
+GREATER THAN OR EQUAL TO THE ONE SPECIFIED. ^ FM IS SIMILAR
+BUT MOVES BACKWARD; ITS FIRST ARG SHOULD BE NEGATIVE OR 0.
+^:FM MOVES BACKWARD, STOPPING AT ANY HPOS GREATER THAN OR
+EQUAL TO THE SPEC'D (NOTE THAT IT STOPS AT THE FIRST SUCH
+PLACE FOUND WHILE MOVING BACKWARD!).
+
+7) F^A HAS PAREN-COUNTING FEATURES. THE SPECIAL CASE IN
+WHICH THE FIRST CHAR OF A DISPATCH ENTRY IS A SPACE NOW
+HAS THREE SUBCASES, DISTINGUISHED BY THE THIRD CHARACTER
+(REMEMBER THAT THE SECOND CHARACTER IS THE EXCESS-100 AMOUNT
+TO ADD TO QREG..1). IF THE THIRD CHAR IS A SPACE, ALL IS AS
+BEFORE. IF IT IS ")", THEN A FORWARD "F^A" SCAN WILL BE
+TERMINATED IF Q..1 IS NEGATIVE. IF IT IS "(", THEN A BACKWARD
+"F^A" SCAN WILL BE TERMINATED IF Q..1 IS POSITIVE.
+THIS MEANS THAT IF "[" IS GIVEN A DISPATCH ENTRY " A(  "
+AND "]" IS GIVEN AN ENTRY " ?)  ", THE SAME DISPATCH TABLE
+CAN BE USED TO COUNT BRACKETS IN EITHER DIRECTION, STOPPING
+AFTER A BALANCED STRING, IF Q..1 STARTS OUT AS -1 FOR FORWARD
+AND 1 FOR BACKWARD (NOTE THAT "?" IS ASCII 77 ANS "A" IS 101).
+
+8) FW NOW SETS FS INSLEN TO THE LENGTH OF THE LAST (FARTHEST
+FROM THE POINTER) WORD
+IN THE RANGE (FS INSLEN IS SET NEGATIVE BY -FW). :FW SETS
+FS INSLEN$ TO THE LENGTH OF THE LAST INTER-WORD GAP.
+
+9) FS EXIT IS A WRITE-ONLY FLAG THAT DOES A .BREAK 16, USING
+ITS ARGUMENT AS THE R.H.
+
+10) ^ FT<STRING>$ TYPES THE STRING IN THE ECHO AREA.
+:^ FT IS SIMILAR BUT F THERE IS INPUT AVAILABLE THE STRING
+IS IGNORED (NOT TYPED OUT).
+
+11) ^V HAS BEEN GENERALIZED. :^V WITH NO ARG NOW RETURNS THE
+VALUE ON THE TOP OF THE RING BUFFER OF POINT, WITHOUT POPPING.
+^V WITH ARG IS THE SAME AS FSPUSHPT$. :^V WITH ARG IS SIMILAR
+BUT PUSHES EVEN IF ITS ARG IS THE SAME AS THE VALUE ALREADY
+AT THE TOP.
+
+12) SEARCHES INSIDE ERRSETS ARE NOW CAPABLE OF GENERATING ERRORS.
+IN THE PAST ERRSETS, LIKE ITERATIONS, CAUSED FAILING SEARCHES
+NOT TO BE ERRORS(!?) NOW, A SEARCH THAT FAILS WILL BE AN ERROR
+IFF IT IS NOT INSIDE ANY ITERATION INSIDE THE INNERMOST
+CONTAINING ERRSET. THIS IS FOR THE SAKE OF USER-WRITTEN COMMAND
+STRING READERS.
+
+13) FS FNAMSYNTAX$ HAS BEEN IMPROVED. WHEN A FILESPEC IS READ, IF
+THAT FLAG IS 0, A LONE FILENAME IS TREATED AS THE FN2 (THE
+DEFAULT, AS BEFORE). IF IT IS >0, THE LONE NAME WILL BE TREATED
+AS THE FN1. IF IT IS <0 (THIS IS WHAT'S NEW), THE LONE NAME WILL
+BE TREATED AS THE FN1, AND ">" WILL BE USED AS THE FN2.
+
+14) THERE MAY NOW BE ^] CALLS IN O COMMANDS.
+
+
+TECO 422:
+0) INCOMPATIBLE:
+ Q..J IS GONE. A MORE WINNING FEATURE EXISTS. SEE 1).
+ FW DOES NOT INITIALLY CONSIDER ' AND = TO BE PARTS OF WORDS.
+   THIS IS NOW USER SETTABLE. SEE 4).
+ FS YDISABLE AND FS _DISABLE HAVE MORE AND DIFFERENT OPTIONS.
+   SEE 10) FOR DETAILS.
+ REDEFINING ^R-MODE CHARS BACK TO THEIR BUILT-IN DEFINITIONS
+   MUST BE DONE DIFFERENTLY. SEE 7).
+ FS INSLEN AND FK ARE NOW ONE. OLD MACROS WHICH USE THEM
+    SENSIBLY WILL NOT LOSE. SEE 6).
+
+1) RING BUFFER OF .  TYPE ^V TO UNDO POINTER-MOTION DONE BY LAST
+COMMAND STRING. THIS CAN BE DONE UP TO 8 TIMES.
+THE TECO COMMAND READER SAVES . IN QREG ..I BEFORE EXECUTING A
+COMMAND STRING. AT THE END OF EXECUTION, IT "PUSHES Q..I ONTO
+THE RING BUFFER OF ." (ACTUALLY NOTHING IS DONE IF ..I AND THE
+VALUE ALREADY ON THE TOP ARE THE SAME).
+THE ^V COMMAND AS THE FIRST THING TYPED
+ACTS IMMEDIATELY, POPPING THE TOP VALUE INTO . AND
+SETS Q..I FROM WHAT IS LEFT ON THE TOP, PREVENTING A PUSH THE
+NEXT TIME THROUGH THE TOP LEVEL (THIS PREVENTS ^V FROM MERELY
+ALTERNATING BETWEEN THE LAST 2 POSITIONS). ^V AS A COMMAND POPS
+THE RING BUFFER INTO ., AND RETURNS WHAT IS ON THE TOP (THE USER
+CAN PUT THE VALUE IN Q..I OR ANYTHING ELSE).
+THE FSPUSHPT COMMAND TAKES AN ARGUMENT AND PUSHES IT ON THE
+RING BUFFER PROVIDED IT IS DIFFERENT FROM THE VALUE ALREADY ON
+THE TOP OF THE RING BUFFER. IT AND THE ^V COMMAND MAKE ENABLE
+USER-WRITTEN TOP LEVEL LOOPS TO USE THIS FEATURE.
+
+2) MACROS CAN TELL HOW MANY ARGUMENTS THEY WERE CALLED WITH.
+^X AND ^Y FOR GETTING MACRO ARGUMENTS ARE UNCHANGED. A NEW
+COMMAND F^X, GIVEN WITHIN A MACRO, RETURNS THE ARGUMENTS THAT
+THE MACRO WAS CALLED WITH (AND RETURNS AS MANY ARGUMENTS AS THE
+MACRO WAS CALLED WITH). F^X SHOULD NOT BE GIVEN AN ARGUMENT; THAT
+MAY SOMEDAY MEAN SOMETHING. F^Y CAN BE USED TO TELL HOW MANY; F^Y
+WITH NO ARGS RETURNS 0; WITH 1 ARG, 1; WITH 1 ARG AND A COMMA, 2;
+WITH 2 ARGS, 3. THUS F^XF^Y IN A MACRO IS 0 IF THE MACRO WAS
+NOT GIVEN ANY ARGS.  F^XF^Y"N F^X= '"# FT
+'  IS A MACRO THAT TYPES AS MANY ARGS AS IT WAS GIVEN (AND
+ALWAYS TYPES ONE LINE).
+
+3) IT IS POSSIBLE TO HAVE SEVERAL BUFFERS. AT ANY TIME, ONE BUFFER
+IS CURRENT, AND MOST EDITING COMMANDS OPERATE ON IT.
+A BUFFER IS AN OBJECT THAT MAY BE PUT IN A QREG, JUST LIKE A
+NUMBER OR A STRING. EACH BUFFER HAS ITS OWN ASOCIATED VALUE OF
+THE POINTER AND THE VIRTUAL BUFFER BOUNDARIES.
+Q-REG COMMANDS SPECIFICALLY FOR NUMBERS (%) OR STRINGS (G, X, M)
+WILL NOT WORK ON BUFFERS, BUT QAUB WILL COPY THE BUFFER IN QA
+INTO QB EFFICIENTLY, AND
+THE [ AND ] COMMANDS WORK ON QREGS CONTAINING BUFFERS.
+WHATEVER BUFFER IS IN QREG ..O AT THE MOMENT
+IS THE ONE ALL BUFFER-MANIPULATING COMMANDS WILL USE. A NEW
+BUFFER CAN BE MADE (AND WILL BE LEFT IN Q..O) BY FS BCREATE.
+FOR EXAMPLE, ONE CAN TEMPORARILY SAVE THE BUFFER CONTENTS AND
+THE POINTER WITH   [..O FSBCREATE  <HACK AROUND>  ]..O.
+THIS LEAVES TECO WITH NO POINTERS TO THE TEMPORARY BUFFER.
+BUFFERS THAT ARE LEFT UNPOINTED TO WILL BE GARBAGE COLLECTED BUT
+IT IS MORE EFFICIENT BY FAR TO KILL THEM EXPLICITLY WITH FS BKILL.
+FSBKILL WITH AN ARGUMENT THAT IS A BUFFER KILLS THAT BUFFER
+(IT IS AN ERROR TO TRY TO KILL THE CURRENTLY SELECTED BUFFER
+(THAT IS, THE ONE WHICH IS IN Q..O). FSBKILL WITH NO ARGUMENT
+POPS THE QREG PDL INTO Q..O AND IF THE VALUE OF Q..O IS CHANGED
+THEREBY, THE PREVIOUSLY SELECTED BUFFER IS KILLED.
+A MORE EFFICIENT WAY TO SAVE AND RESTORE THE BUFFER IS THEREFORE
+[..O [..N :I..N FSBKILL  FSBCREATE  ...  ^\     OR
+[..O FN FSBKILL  FSBCREATE  ...  ^\    USING THE NEW
+FN COMMAN (SEE BELOW). THE ^\ AUTOMATICALLY POPS WHAT WAS PUSHED.
+FOR DEBUGGING, SETTING FS.KILMODE ZERO CAUSES FSBKILL NOT TO KILL.
+THIS MEANS THAT IF THE BUFFER THAT WOULD HAVE BEEN KILLED IS STILL
+IN SOME QREG, IT MAY BE EXAMINED LATER.
+
+4) THE SET OF DELIMITER CHARACTERS MAY BE ARBITRARILY CHOSEN.
+THIS SET IS USED BY FW, "B, "C, AND ^B IN SEARCH STRINGS.
+INITIALLY, ALL NON-SQUOZE CHARACTERS ARE DELIMITERS. THE SET IS
+DETERMINED FROM QREG ..D, WHICH SHOULD ALWAYS CONTAIN A STRING
+OF 640 CHARACTERS, WHICH FORM THE DELIMITER DISPATCH TABLE.
+THE CHARACTER WITH ASCII CODE <N> IS A DELIMITER IFF THE 5*<N>+1'ST
+CHARACTER IN THE DELIMITER DISPATCH IS A SPACE. IT IS FOR
+EFFICIENCY OF ACCESS THAT ONLY ONE FIFTH OF THE CHARACTERS IN
+Q..D ARE USED.
+
+5) THE Y AND A COMMANDS KNOW ABOUT THE VIRTUAL BUFFER BOUNDARIES.
+THEY ALWAYS INSERT JUST BEFORE THE VIRTUAL END OF THE BUFFER.
+ALSO, Y IS CHANGED IN THAT THE FS Y DISABLE FLAG IS CHANGED.
+SEE BELOW.
+
+6) ^F, FK, FS INSLEN
+THESE FEATURES ARE NOW ONE. FK ALWAYS RETURNS THE NEGATIVE OF
+FS INSLEN'S VALUE. THE COMMANDS THAT SET THAT VALUE ARE I, S
+AND \. :I (INSERT INTO QREG) NO LONGER SETS FS INSLEN; AFTER
+A :I THE LENGTH OF THE QREG (OBTAINABLE USING FQ) MUST EQUAL
+THE LENGTH OF THE INSERTED TEXT.
+BECAUSE OF THESE CHANGES, AFTER DOING AN INSERT IN THE BUFFER,
+ONE MAY REPLACE THE INSERTED STRING WITH ANOTHER STRING USING ^F.
+
+7) REDEFINING ^R-MODE CHARACTERS (WITH FS ^R CMACRO).
+IT IS NO LONGER THE CASE THAT REDEFINING A ^R-MODE CHARACTER
+TO 0 RESTORES ITS BUILT-IN DEFINITION. INSTEAD, THE BUILT-IN
+DEFINITION OF A CHARACTER WILL APPEAR AS A POSITIVE NUMBER AS
+THE VALUE OF FS^RCMAC FOR THAT CHARACTER. USER DEFINITIONS
+WILL BE NEGATIVE NUMBERS (BECAUSE STRINGS ARE REALLY NEGATIVE
+NUMBERS!). IF A BUILT-IN DEFINITION IS COPIED FROM ONE CHAR
+TO ANOTHER, THE LATTER CHAR IS REDEFINED TO BE LIKE THE FIRST.
+IN PARTICULAR, IF THE ORIGINAL DEFINITION OF "A" IS COPIED INTO
+A CHARACTER'S DEFINITION, THAT CHARACTER BECOMES SELF-INSERTING.
+PUTTING A NONDESCRIPT NUMBER IN THE ^RMODE DEFINITION OF A CHAR
+WILL CAUSE TECO TO BOMB WHEN THAT CHAR IS TYPED (BY DISPATCHING
+TO A RANDOM ADDRESS).
+
+8) FN <STRING>  IS THE SAME AS [..N :I..N <STRING>.
+THIS COMMAND EXISTS TO ELIMINATE THE TIMING ERROR THAT EXISTS IN
+THAT PAIR OF COMMANDS, WHICH IS THAT ONE MAY ^G OUT BETWEEN THEM.
+
+9)<M>,<N>A IS LIKE <N>A UNLESS THAT WOULD CAUSE A "NIB" ERROR,
+IN WHICH CASE <M> IS RETURNED.  13,1A-13"E ... ' IS A CONDITIONAL
+THAT ASKS WHETHER THE POINTER IS EITHER AT THE END OF THE BUFFER
+OR BEFORE A CARRIAGE RETURN (THE CHAR. WHOSE ASCII CODE IS 13).
+
+10) VARIOUS NEW AND CHANGED FS FLAGS:
+FS LISTEN	WITH NO ARG, RETURNS NONZERO IFF THERE IS TYPE-IN
+		AVAILABLE TO BE READ WITH "FI".
+		WITH AN ARG, ALSO TYPES THAT ARG IN THE ECHO AREA
+		IF THERE IS NO INPUT (TYPEOUT IS DONE BY CALLING
+		FS ECHOOUT).
+FS TRACE	(READ ONLY) 1 IFF TECO IS IN TRACE MODE
+FS GAP LENGTH	(READ ONLY) THE SIZE OF THE GAP.
+FS GAP LOCATION	(READ ONLY) THE LOCATION OF THE GAP IN THE BUFFER.
+FS REREAD	IF POSITIVE, IT IS THE ASCII VALUE OF A CHARACTER
+		TO BE RE-READ. AFTER 100FSREREADW, FI WILL RETURN
+		100 (AND SET FSREREAD TO -1).
+FS YDISABLE	CONTROLS LEGALITY OF "Y" COMMAND.
+		0 (THE DEFAULT) => Y IS LEGAL.
+		1 => Y IS ILLEGAL (CAUSES "DCD" ERROR).
+		-1 => Y IS TREATED AS ^ Y.
+FS _DISABLE	CONTROLS LEGALITY OF "_" COMMAND.
+		0 (THE DEFAULT) => _ IS LEGAL (AND SEARCHES).
+		1 => _ CAUSES "DCD" ERROR.
+		-1 => _ IS TREATED AS A MINUS SIGN
+		 (USEFUL ON MEMORICES).
+
+TECO 407
+RMS 6/15/74 programming features in TECO.
+0) incompatable:
+^V and ^W are gone - use fs output instead.
+fs base is gone - use q..e instead (it exists in old TECO's too).
+q..m is changed - use fs ^rmark for the ^R mode mark.
+
+1) fs quit and fs noquit :
+It is possible for macros to inhibit TECO's ^G-quit mechanism, or
+co-opt it. fs noquit is normally 0, meaning that ^G quits as it
+always has. If fs noquit is positive, ^G has no special effect
+except for setting fs quit to nonzero. The macro can test that
+flag; if fs noquit ever becomes <= 0, a nonzero value for fs quit
+will cause an immediate quit. If fs noquit is negative, ^G causes
+an ordinary errsetable error with error code "QIT". ^G always works
+by setting fs quit nonzero; when fs quit is seen to be nonzero the
+appropriate action is taken.
+^R mode binds fs noquit and sets it to 1.
+
+2) Unwinding:
+fs ^rexit actually works now. ^\ and fs ^rexit pop any iterations
+nested within the macro or ^R level being exited (as well as qregs
+pushed on the pdl within that level). :^\ pops iterations but not
+qregs.
+q..n is now special in that whenever it is about to be unbound by
+automatic unwinding or fs qpunwind, its contents are macroed.
+Popping it explicitly with ]..n does not macro it. Use this feature
+when doing something that must be undone on error. For example,
+[0 .u0 [..n :i..n q0j   saves the pointer so any error will restore
+it.
+
+3) ^R:
+^S search now can handle negative arguments. In -$ mode, case-shift
+processing is done on the character argument.
+Macros called from ^R may now do typeout of any sort and win.
+fs ^r mcnt is the counter used to decide when to call the secretary
+macro. It counts down from fs ^r mdly.
+fs ^r mark holds the mark, instead or q..m.
+Any ascii character may now be given a macro with fs ^r cmac.
+The fs noquit feature is especially useful in ^R mode macroes.
+
+4) Random flags:
+fs pagenum is now writeable.
+fs echoout (write-only) writes a character in the echo area.
+fs fnam syntax tells TECO's filename reader what to do if only
+	one name is given. 0 (the default) => treat name as fn2
+	(this is what TECO has always done). Nonzero => treat name
+	as fn1.
+fs ^p case if nonzero causes ^P sort to regard lower case characters
+	as equal to the corresponding upper case characters.
+fs output if nonzero causes writing in the open output file to be
+	inhibited (this replaces the ^V and ^W commands).
+fs ^r mcnt see 3).
+fs quit and fs noquit see 1).
+q..m no longer holds ^R's mark. It now holds the cursor to be used
+	for buffer display on the 340.
+q..n is used to supply a command string to perform automatic
+	unwinding in a user-defined way. See 2).
+
+5) Initialization:
+For multi-page .TECO. (INIT) files, all pages will be used. The final
+^L will be ignored, however. Stray altmodes will now be errors - they
+would previously have been ignored.
+If a user has no init file, COM:.TECO. (INIT) will be used.
+The flags fs ^mprint, fs ^hprint and fs sail will now be set up
+according to the TTYOPT bits %TOOVR, %TOMVB and %TOSA1.
+
+RMS 2/3/74 FEATURES IN TECO 401
+0) INCOMPATIBILITIES: FS QPSLOT$, FS QPAUTO$, FS CRMDLY$,
+USER BUFFER DISPLAY MACROS AND Q..H.
+
+1) AN IF-THEN-ELSE CONSTRUCT NOW EXISTS. IT INVOLVES
+PUTTING "# AFTER THE ' THAT ENDS THE THEN-CLAUSE OF A
+CONDITIONAL, FOLLOWED BY THE ELSE-CLAUSE, AND ANOTHER '.
+
+2) THE ^\ COMMAND EXITS FROM A MACRO, AUTOMATICALLY POPPING
+QREGISTERS PUSHED BY THE MACRO.
+
+3) THERE ARE MANY NEW FEATURES FOR ^R-MODE MACROS.
+"." AND ".." QREGS MAY BE MACROED BY THE "^]" COMMAND.
+RECURSIVE CALLS ON ^R WORK. "^ V" MAY BE USED TO DO AN ^R-MODE
+STYLE BUFFER DISPLAY. FS ^REXIT$ ALLOWS A MACRO TO EXIT FROM
+THE ^R IT WAS CALLED FROM. FS ^RCMAC$ ALLOWS THE USER TO
+REDEFINE THE MEANINGS THAT TYPED-IN CHCRACTERS HAVE.
+FS ^RMODE ALLOWS A MACRO TO TELL WHETHER IT IS CALLED FROM ^R
+MODE OR REGULAR TECO. VARIOUS OTHER FLAGS ALSO EXIST.
+"^R" AND "^ V" MAY BE GIVEN ARGS TO CAUSE SHORTCUTS TO BE TAKEN
+IN DISPLAYING THE BUFFER. IT IS POSSIBLE TO SUPPLY NEGATIVE ARGS
+TO ^R MODE COMMANDS BY PRECEDING AN EXPLICIT ARG WITH A "-".
+
+4) THE FA COMMAND NOW KNOWS ABOUT TABS.
+
+5) :FC AND ^:FC DO CASE CONVERSION WITHOUT INSERTING SLASHES OR
+TREATING SLASHES SPECIALLY.
+
+6) IS FS BOTHCASE$ IS SET NONZERO, SEARCHES IGNORE CASE; THAT IS,
+A SEARCH WILL FIND EITHER LOWER CASE OR UPPER CASE, WHICHEVER
+APPEARS FIRST.
+
+7) F^A IS A COMMAND FOR SCANNING QUICKLY THROUGH THE BUFFER,
+EXECUTING COMMANDS TAKEN OUT OF A CHARACTER DISPATCH TABLE.
+USE IT FOR VARIABLE-WIDTH FONT TEXT JUSTIFICATION, SKIPPING
+OVER THE SYNTACTICAL UNITS OF YOUR FAVORITE LANGUAGE (WRITE
+A MACRO THAT WILL BE LIKE "FL", BUT FOR WHATCHIES INSTEAD OF
+LISTS), ETC.
+
+8) THE USE OF QREG ..H BY BUFFER AND DIR DISPLAY MACROS
+HAS CHANGED. INSTEAD OF CHECKING FOR Q..H NOT 0, THEY
+SHOULD CHECK FOR Q..H OR FS ERRFLG$ NOT 0.
+THE BONUS IS THAT EXPLICITLY SETTING Q..H IS NOW MEANINGFUL.
+ALSO, THE BUFFER DISPLAY MACRO WILL BE FLUSHED IF TECO IS
+$G'D. THIS MAKES IT POSSIBLE TO RECOVER IF THE MACRO HAS A BUG.
+THE FLAG FS WINDOW$ HAS THE NUMBER (RELATIVE TO THE VIRTUAL
+BEGINNING OF THE BUFFER) OF THE FIRST CHARACTER IN THE CURRENT
+DISPLAY WINDOW. THAT IS, FSWINDOW$+BJ PUTS THE POINTER
+BEFORE THE FIRST CHARCTER DISPLAYED. STANDARD BUFFER DISPLAY
+WILL USE THE WINDOW SPECIFIED BY FS WINDOW$ PROVIDED IT MEETS
+THE CONSTRAINTS OF FS %TOP$ AND FS %BOTTOM$.
+
+9) FILE DATES MAY BE HACKED. FS IFCDATE$ GETS OR SETS INPUT
+FILE'S DATE; FS OFCDATE$, THE OUTPUT FILE'S. FS FD CONVERT$
+CONVERTS NUMERIC FILE DATES SUCH AS FS IFCDATE$ USES TO
+TEXT IN THE BUFFER AND VICE VERSA - LIKE "\" BUT USING
+FILE DATES INSTEAD OF INTEGERS.
+
+10) THE FS QPSL$ FLAG, WHEN GIVEN 2 ARGS, NOW UNDERSTANDS THEM
+IN THE OPPOSITE ORDER. <M>,<N>FS QP SLOT$ SETS SLOT <N>.
+THE FS QP AUTO$ FLAG HAS BEEN RENAMED FS *RSET$.
+THE FS CRMDLY FLAG IS NOW CALLED FS ^R MDLY$.
+
+11) ONLY THE FIRST PAGE OF THE .TECO. (INIT) FILE WILL NOW BE
+USED. THE PROBLEM OF THE SCREEN'S BEING CLEARED AT THE END OF
+INIT FILE EXECUTION SHOULD THUS BE FIXED.
+
+12) IF AN "FB" (BOUNDED SEARCH) IS GIVEN 2 ARGS, AND THE FIRST ARG
+IS GREATER THAN THE SECOND, THE SEARCH IS DONE IN REVERSE.
+
+13) THE FS @LPT$ FLAG, IF SET TO 0, MAKES @ USE THE TPL EVEN
+IF THE LPT IS FREE.
+
+TECO 397
+RMS 1/12/74 ^R MACROS, FLR, QREG EFFICIENCY, :JCL, ^@, F^@, U
+1) IT IS POSSIBLE TO USE TECO MACROS FROM ^R MODE. TYPE ^]
+FOLLOWED BY A SINGLE LETTER QREGISTER NAME TO DO SO.
+THE MACRO SHOULD CONTAIN ORDINARY TECO COMMANDS, NOT ^R MODE
+COMMANDS, AND MAY RETURN VALUES TELLING ^R MODE ABOUT
+WHAT IT DID, ALLOWING ^R MODE TO MAKE ASSUMPTIONS ABOUT WHAT
+NEEDS TO BE DISPLAYED. SEE .INFO.;TECORD 397 .
+
+2) "FLR" NOW MOVES RIGHT OVER A LIST, AS IT USED TO
+(BUT "FLL" STILL MOVES RIGHT). THIS IS BECAUSE "R" WITH 2 ARGS
+IS NOW THE SAME AS "L" WITH 2 ARGS.
+
+3) A GAP OF SEVERAL PAGES IS NOW KEPT BETWEEN THE Q REGISTERS
+AND THE BUFFER. THUS, CREATION OF STRING QREGS IS MUCH MORE
+EFFICIENT, ESPECIALLY WITH LARGE BUFFERS.
+
+4) ":TECO <FILE>$<COMMANDS> <CR>" EXECUTED BY DDT
+NOW TELLS TECO TO DO   "ET<FILE>$<COMMANDS>"  AFTER STARTING UP.
+":TECO <FILE> <CR>" WHERE <FILE> CONTAINS NO ALTMODE
+STILL DOES  "ET<FILE>$EIER$Y".
+
+5) MULTIPLE ARGUMENT HACKS: "U", "^@", "F^@".
+THE "U" COMMAND WITH 2 ARGS PUTS THE SECOND IN THE QREGISTER
+AND RETURNS THE FIRST. THUS, "B,ZUXUY" IS THE SAME AS "ZUX BUY".
+"^@" WITH 2 ARGS RETURNS THE 2ND MINUS THE 1ST. "1,2^@" RETURNS 1.
+"F^@" WITH 2 ARGS RETURNS THEM BOTH IN NUMERICAL ORDER.
+THUS, "2,1F^@" AND "1,2F^@" BOTH RETURN 1,2.
+WITH 1 ARG, "F^@" RETURNS 2 VALUES WHICH WOULD HAVE THE SAME
+EFFECT AS THAT 1 ARG IF GIVEN TO A COMMAND LIKE "T", "K", "L".
+"F^@F^@" IS ALWAYS THE SAME AS "F^@".
+
+6) ":FT" AND ":FV" ARE CHANGED TO FACILITATE DISPLAY HACKING.
+
+
+TECO 396
+RMS 1/6/74 ^F, ^R-MODE, ^U-E^U-EY-EL, FA, BUFFER DISPLAY PARAMS.
+MAJOR CHANGES:
+1) CONVENIENCES: ^F (CONTROL-F) IS NOW THE SAME AS "FKDI" -
+   THAT IS, REPLACE WHAT THE LAST SEARCH FOUND WITH A STRING ARG.
+   "SFOO$ ^FBAR$" SEARCHES FOR FOO AND REPLACES IT WITH BAR.
+   (ARG)^@ IS THE SAME AS EITHER ".,.+(ARG)" OR ".+(ARG),.",
+   WHICHEVER HAS THE 2 ARGS IN INCREASING ORDER. THUS, TO PUT
+   5 CHARS AFTER THE POINTER IN QREG A, DO "5^@XA".
+   TO GET THE OLD EFFECT OF ^F OR ^@, DO "FS DATASWITCHES $"
+   OR "FS UPTIME $".
+
+2) ^R-MODE CHANGES:
+ A) ^S, FOLLOWED BY ANY CHARACTER, SEARCHES FOR THAT CHARACTER,
+    LEAVING THE POINTER AFTER THE OCCURRENCE. IF THE SEARCH
+    FAILS, A BELL IS TYPED AND THE POINTER DOESN'T MOVE.
+ B) ^W, WHICH USED TO DO "0K", IS CHANGED:
+    ^T PUTS A "MARK" AT THE CURRENT POINTER POSITION;
+    ^X DOES THAT, AND PUTS THE POINTER WHERE THE MARK
+	HAD BEEN, THUS EXCHANGING THE POINTER AND THE MARK;
+    ^W DELETES EVERYTHING BETWEEN THE POINTER AND THE MARK,
+	PUTTING IT IN Q-REG ..K.
+    THUS, THE OLD EFFECT OF ^W MAY BE OBTAINED BY ^T ^A ^W.
+    ^T ^E ^W DOES ":K". THE MARK IS KEPT IN QREG ..M.
+    QUITTING WITH ^G, INSERTING OR DELETING DESTROYS THE MARK.
+    SO DOES USING THE MARK UP WITH ^W. ^W IS ILLEGAL IF THERE
+    IS NO MARK (IN WHICH CASE ..M HOLDS -1)
+ C) ^O IS SLIGHTLY CHANGED. WITH ARGUMENT <N>, IT INSERTS
+	<N> CRLF'S AFTER THE POINTER. (IT USED TO INSERT
+	<N>-1 BEFORE AND 1 AFTER)
+    IF YOU WANT TO INSERT A LOT OF STUFF IN THE MIDDLE
+    OF SOME TEXT, TRY DOING ^U ^U ^O BEFORE AND ^U ^U ^K AFTER.
+ D) IN COMMENT MODE, WHEN ENTERING A LINE WHICH ALREADY HAS
+    A SEMICOLON ON IT, INSTEAD OF INSERTING ANOTHER, TECO
+    WILL SIMPLY POSITION THE POINTER AFTER THE EXISTING ONE.
+
+3) DIRECTORY-LISTING CHANGES:
+ A) EL AND EY NOW CAUSE THE DIRECTORY TO BE DISPLAYED
+    IN THE STANDARD MANNER, ON ANY TYPE OF TERMINAL.
+    THUS EL IS THE SAME AS ^:V.
+ B) ^U AND E^U CAUSE THE DIR TO BE DISPLAYED IN THE SAME
+    WAY TECO DISPLAYS AT THE END OF A COMMAND STRING AFTER
+    MOST E-COMMANDS (USING THE USER'S DISPLAY MACRO IF ANY,
+    OTHERWISE DISPLAYING ONLY ON DISPLAY TTYS OR 340).
+ C) ^U TYPED IN WHEN THE COMMAND BUFFER IS EMPTY
+    IS EXECUTED IMMEDIATELY (AS ARE ^R, ^T).
+
+4) MORE WAYS TO CUSTOMIZE BUFFER DISPLAY:
+ A) FS %TOP $ AND FS %BOTTOM $ ARE USED TO SPECIFY
+    THE PERCENT OF THE DISPLAY AREA AT THE TOP AND
+    BOTTOM OF THE SCREEN THAT THE POINTER SHOULD NOT
+    APPEAR IN (THAT IS, TECO WILL CHOSE A NEW WINDOW
+    RATHER THAN USE AN OLD ONE THAT WOULD PUT THE CURSOR
+    THAT CLOSE TO THE TOP OR BOTTOM). INITIALLY BOTH ARE 10.
+ B) FS %CENTER $ SAYS WHERE TECO SHOULD PREFER TO PUT
+    THE CURSOR WHEN IT CHOSES A NEW WINDOW - IT IS
+    ALSO A PERCENTAGE OF DISPLAY AREA HEIGHT, INITITIALLY 40.
+ C) FS %END $ IS THE PERCENT OF THE DISPLAY AREA AT THE BOTTOM
+    OF THE SCREEN, IN WHICH TECO SHOULD NOT PUT THE CURSOR
+    WHEN IT CHOSES A NEW WINDOW - EVEN IF THAT MEANS THAT
+    NOT ALL OF THE SCREEN WILL BE FILLED BECAUSE THE POINTER
+    IS NEAR THE END OF THE BUFFER. IT STARTS OUT AS 30.
+    (THAT MEANS THAT "ZJ^L" WILL CAUSE THE BOTTOM 30% OF THE
+    SCREEN TO BE LEFT FOR YOU TO INSERT IN)
+ D) THE OLD FS MAXLIN $ FLAG HAS BEEN FLUSHED.
+
+RANDOM:
+5) = WITH 2 ARGS PRINTS THEM BOTH, WITH A COMMA BETWEEN.
+
+6) QREG ..L, IF NOT 0, IS MACROED EVERY TIME TECO IS $G'D.
+   THERE ARE SOME FLAGS THAT TECO REINITIALIZES EACH TIME
+   IT IS $G'D. IF YOU DON'T LIKE TECO'S DEFAULTS PUT SOMETHING
+   IN ..L THAT WILL OVERRIDE THEM.
+
+7) UNLESS THE NEW FLAG FS QP AUTO $ IS SET NONZERO, THE QREG
+   PDL WILL BE UNWOUND AUTOMATICALLY AFTER EACH COMMAND STRING.
+   (THIS FLAG RESEMBLES *RSET IN LISP)
+
+8) ^ FA FILLS ONLY, RATHER THAN JUSTIFYING. ALSO, THE STRING
+   SPACE-BACKSPACE-SPACE IS REGARDED AS AN ORDINARY CHARACTER,
+   AND WILL NOT DELIMIT A WORD. USE IT TO PUT A SPACE INTO A
+   WORD.
+
+9) IF A COMMAND GIVEN TO TECO BY ITS SUPERIOR STARTS WITH AN
+   ALTMODE, IT (EXCEPT FOR THE ALTMODE) IS EXECUTED AS TECO
+   COMMANDS RATHER THAN REGARDED AS A FILE TO EDIT.
+   THUS, ":TECO  :DISOWN  ETFOO > @" FOLLOWED BY A CR,
+   TYPED AT DDT, WILL START A DISOWNED TECO LISTING FOO >.
+
+TECO 393
+RMS 12/25/73 INCOMPATIBLE TECO CHANGES FOR CHRISTMAS:
+1) FL & FW: INSTEAD OF A SERIES OF FL AND FW
+COMMANDS WHOSE 3RD CHARACTERS MUST BE REMEMBERED, THERE ARE NOW
+THE COMMANDS  FL, FW, FD AND FU, WHICH ARE TO BE USED TO GIVE
+ARGUMENTS TO L, K, X, FX, FB, FC ...
+FOR EXACT DEFINITIONS SEE TECORD 393. EQUIVALENTS ARE:
+	OLD	NEW		OLD	NEW
+	FLL	-FLL		FLC<Q>	FLFX<Q>
+	FLR	FLL		FLD	FDL
+	FLK	FLK		FLU	FUL
+	FLX<Q>	FLX<Q>		FWL	-FWL, ETC.
+
+2) ^FC CONVERTS TO UPPER CASE. TAKES NUMERIC ARGS LIKE K, T, ETC.
+ IT INSERTS SLASHES IN FRONT OF UPPER CASE CHARACTERS.
+ IT IS A RIGHT-INVERSE OF FC.
+ THUS, 5FW^FC WILL CONVERT 5 WORDS TO THE RIGHT TO UPPER CASE.
+
+3) TECO TEXT JUSTIFICATION IS A REALITY! IT USES THE FA COMMAND.
+ FA IS NOT INTENDED TO BE USED BY ITSELF;
+ RATHER, IT IS INTENDED TO BE PUT IN A MACRO ALONG WITH
+ REPLACEMENT LOOPS TO DELETE EXCESS SPACES, PUT EXTRA SPACES
+ AFTER PERIODS IF YOU WANT THEM, ETC. IT IS DESIGNED TO
+ OFFER AS MANY OPTIONS AS POSSIBLE WHILE STILL DOING MOST OF
+ THE TIME-CONSUMING WORK. DETAILS IN TECORD 393.
+
+4) ^P: TECO SORT IS NOW STABLE. :^P SORTS IN REVERSE ORDER.
+ ALSO, USING VIRTUAL BUFFER BOUNDARIES IT IS POSSIBLE TO SORT
+ A PORTION OF THE BUFFER OTHER THAN ALL OF IT.
+
+5) FR IS GONE - SUPERSEDED BY "S$", "N$", ETC.
+
+6) ^Y AS THE FIRST CHARACTER TYPED WHEN A COMMAND IS EXPECTED
+ WILL INSERT IN THE BUFFER, NOT THE LAST COMMAND STRING, BUT
+ THE LAST COMMAND STRING MORE THAN 7 CHARS LONG (NOT COUNTING THE $$)
+
+7) VIRTUAL BUFFER BOUNDARIES:
+ THE FS BOUND $ COMMAND MAY BE USED TO SET UP VIRTUAL
+ BUFFER BOUNDARIES AROUND ANY PORTION OF THE BUFFER.
+ THE TEXT BEFORE AND AFTER THAT PORTION APPEARS TO HAVE VANISHED.
+ THE POINTER CAN'T MOVE INTO IT, IT CAN'T BE DELETED OR DISPLAYED -
+ BUT IT IS STILL THERE AND WILL BE WRITTEN OUT BY P OR PW.
+ THE B COMMAND WILL RETURN THE NUMBER OF THE 1ST CHAR
+ WITHIN THE BOUNDARIES; Z, THAT OF THE 1ST CHAR BEYOND THEM.
+ THE REAL NUMBER OF CHARACTERS IN THE BUFFER IS  FS Z $.
+ THIS WILL BECOME MORE USEFUL IN CONJUNCTION WITH OTHER
+ FEATURES TO APPEAR IN THE NEXT VERSION.
+
+8) AN ARITHMETIC OPERATOR BY ITSELF NOW COUNTS AS AN ARGUMENT.
+ THUS, -A IS THE SAME AS -1A, RATHER THAN A.
+ ANY SERIES OF COMMANDS ENDING IN A COMMAND THAT RETURNS NO VALUE
+ MAY APPEAR WITHIN PARENTHESES AT ANY POINT (EXCEPT WITHIN A NUMBER)
+ WITHOUT INTERFERING WITH THE COMPUTATION OF NUMERIC ARGS.
+ THUS, 1+(Q0J)2=, 1+2(Q0J)=, 1(Q0J)+2= ALL PRINT 3.
+ .(Q0J) SHOULD BE USEFUL.  .,(SFOO$ .)K DELETES UP TO "FOO".
+
+RANDOM STUFF:
+1) THE L COMMAND MAY TAKE 2 ARGS. <M>,<N>L IS THE SAME AS
+ <M>+<N>-.J . THIS IS TO FACILITATE THE FL AND FW CHANGES.
+2) FS IMAGEOUT $ OUTPUTS ITS ARG IN IMAGE MODE TO THE TTY.
+ SO 7FSIMAG$ TYPES A BELL.
+3) FS UPTIME $ RETURNS THE SYSTEM UP TIME IN 60'THS.
+4) FS RANDOM $ GETS OR SETS THE RANDOM NUMBER GENERATOR'S
+ SEED. (THE GENERATOR IS USED BY MEANS OF THE ^Z COMMAND)
+5) SETTING FS ECHOLINES $ TO -1 TURNS OFF ECHOING.
+ SETTING IT TO 0 IS ACTUALLY REASONABLE ON A DATAPOINT, SURPRISINGLY.
+6) 0ER (OR <N>ER FOR ANY <N>) DOES ERDSK:
+7) THE Q-REGISTER PDL IS NOW 128 ENTRIES LONG.
+8) :FI IS TO FI AS TYIPEEK IS TO TYI
+9) IF STARTED ON TTY 3 OR TTY 4, TECO WILL AUTOMATICALLY
+ TRY TO GRAB THE 340.
+
+TECO 387
+RMS 12/13/73 S$, FE, PROMPTING, F+, (INIT), FLV, Q..J, FSSAIL$, FSECHO$
+1) SEARCH COMMANDS WITH NULL STRING ARGUMENTS WILL
+SEARCH FOR THE SAME STRING THE PREVIOUS SEARCH
+SEARCHED FOR. (THIS IS NOT TRUE FOR ^-SEARCHES WHICH
+WILL SEARCH FOR THE NULL STRING AS THEY USED TO)
+THIS OBSOLETES FR WHICH WILL PROBABLY BE RECYCLED SOON.
+
+2) TECO PROVIDES NUMERIC ERROR CODES, AND DECODING FACILITIES.
+THE VALUE OF AN ERRSET THAT CATCHES AN ERROR WILL NOW BE
+AN ERROR CODE (ALL ERROR CODES ARE NEGATIVE). SO WILL THE
+VALUE OF Q..H AFTER AN ERRONEOUS COMMAND STRING.
+FS ERROR HOLDS THE ERROR CODE OF THE MOST RECENT ERROR
+THAT OCCURRED, WHETHER CAUGHT BY AN ERRSET OR NOT.
+THE FE COMMAND, WITH AN ARGUMENT, INSERTS THE ERROR
+MESSAGE FOR THAT ERROR CODE IN THEH BUFFER.
+
+3) PROMPTING NOW HAPPENS REGARDLESS OF WHETHER OR
+HOW THE BUFFER WILL BE DISPLAYED, AND THE DEFAULT PROMPT
+CHARACTER IS NOW "*" AGAIN. (FSPROMPT$ STILL WORKS
+AS IT USED TO)
+
+4) F+ CLEARS THE SCREEN, LIKE ^L.
+IN .INIT. FILES IS IS NICER THAN ^L BECAUSE IT DOESN'T
+DELIMIT A PAGE.
+
+5) TECO INIT FILES MAY BE PUT ON (INIT);
+
+6) FLV  RETURNS 2 NUMERIC ARGS SPECIFYING THE RAANGE
+OF BUFFER CONTAINING THE LIST THAT FLR WOULD HAVE MOVED OVER.
+(THIS IS WHAT I PROPOSE FOR FL TO DO)
+FWV WORKS ALSO.
+
+7) QREG ..I IS SET TO . AT THE START OF EACH
+COMMAND STRING. IF A COMMAND STRING CHANGES ., AT THE START
+OF THE NEXT ONE Q..J WILL BE GIVEN THE VALUE . HAD BEFORE
+THE FIRST. THUS, IF A SEARCH, ALONE IN ITS COMMAND STRING,
+MOVES THE POINTER TO AN UNEXPECTED PLACE, "Q..JJ" IN THE NEXT
+COMMAND STRING WILL MOVE THE POINTER TO WHERE IT WAS BEFORE
+THE SEARCH.
+
+8) FS SAIL $ SHOULD BE SET TO DISPLAY THE STANFORD
+CHARACTER SET, ON THOSE TTYS THAT CAN HANDLE IT.
+
+9) FS ECHOLINES $ READS OR SETS THE NUMBER OF COMMAND
+LINES AT THE BOTTOM OF THE SCREEN.
+
+10) FS @ LINEL $ READS OR SETS THE NUMBER OF CHARACTERS/LINE
+USED IN THE SYMBOL TABLES OF @ LISTINGS.
+
+TECO 377
+RMS 11/9/73 F=, FS PROMPT, FS MAXLIN, PREFIX ARGS TO ER, ETC.
+1) ER, EW, ETC. NO LONGER USE NUMERIC ARGS. EI, EA, EK, ES, EU STILL DO.
+
+2) F= COMPARES TWO STRINGS AND SAYS WHICH IS GREATER 
+IN DICTIONARY ORDER.
+
+3) FS PROMPT HOLLDS THE ASCII VALUE OF THE COMMAND STRING
+PROMPT CHARACTER. INITIALLY 35 FOR "#". 0 MEANS DON'T PROMPT.
+
+4) CONTROL CHARACTERS OTHER THAN THE SPECIAL ONES ^B AND ^Q
+ARE NOW IGNORED IN FILENAMES.
+
+5) ASSEMBLY LISTINGS NOW COME OUT IN DECIMAL
+REGARDLESS OF THE CURRENT OUTPUT RADIX.
+
+6) ^ V  AND  ^:V  WILL NOW OUTPUT THE BUFFER OR DIR
+TO ANY TYPE OF TERMINAL, EVEN PRINTING TERMINALS NOT IN :^N MODE.
+
+7) FS MAXLIN ALLOWS YOU TO FORCE TECO TO KEEP THE CURSOR
+IN THE UPPER PART OF THE SCREEN. MOST LIKELY TO BE USEFUL
+WHEN ADDING TEXT AT THE END OF A PAGE.
+
+SEE .INFO.;TECORD > FOR DETAILS.
+
+TECO 368 -- RMS 9/20/73
+THE ^R REAL-TIME EDIT MODE HAS BEEN COMPLETELY REWRITTEN
+TO DISPLAY BETTER. THE ^S AND ^T COMMANDS IN THAT MODE ARE GONE,
+AND ^A, ^E, ^O, ^U, ^V ARE NEW. SEE .INFO.;TECORD 368 .
+
+SEVERAL MORE .. Q-REGS NOW HAVE SPECIAL MEANINGS.
+..C HOLDS AN OPTIONAL COPYRIGHT MESSAGE FOR @-LISTINGS.
+..E HOLDS TECO'S OUTPUT RADIX, USED BY = AND \. (INITIALLY 8+2)
+..F HOLDS THE SECRETARY MACRO FOR ^R MODE.
+ALSO, THE USER-DEFINED BUFFER DISPLAY MACRO FEATURE HAS BEEN
+IMPROVED, AND NOW USES THE QREGISTERS ..B, ..G AND ..H
+TO PROVIDE USER-DEFINED FILE DIRECTORY DISPLAY AND TO GIVE
+THE USER'S MACRO CONTROL AFTER ALL COMMAND STRINGS, WITH
+INFO ON WHETHER THE PREVIOUS COMMAND STRING HAD AN ERROR,
+TYPED SOMETHING OUT, ETC. ^:V DISPLAYS A DIRECTORY NORMALLY.
+
+THE FX COMMAND IS A COMBINATION OF THE K AND X COMMANDS.
+
+^ Y  WILL NOW THROW AWAY FORMFEEDS AT THE END OF THE INPUT
+FILE, NORMALLY; BUT IF THE NEW FLAG  FS ^L INSERT  IS SET NONZERO
+BOTH Y AND ^ Y WILL PUT IN THE BUFFER ALL FORMFEEDS
+READ FROM THE FILE, AND P WILL NEVER OUTPUT ANYTHING THAT ISN'T
+IN THE BUFFER (TENEX-TECO STYLE).
+
+THE Q-REGISTER PDL IS NOW FAR MORE GENERAL. THE POINTER
+MAY BE SET ARBITRARILY, ANY SLOT MAY BE EXAMINED OR ALTERED,
+AND THE PDL MAY BE UNWOUND, POPPING EACH SLOT INTO THE
+QREGISTER THAT IT WAS PUSHED FROM, ALL BY MEANS OF THE NEW
+FS "FLAGS" QP PTR, QP SLOT AND QP UNWIND. THIS SHOULD FACILITATE
+DEBUGGING OF MACROS. THE PDL IS NO LONGER FLUSHED AUTOMATICALLY
+BETWEEN COMMAND STRINGS. WHEN AN ERROR IS CAUGHT BY A :< - >
+THE QREG PDL IS UNWOUND TO THE LEVEL IT HAD AT HE :<.
+
+TECO'S INPUT RADICES MAY BE SET BY THE USER.
+ 8FSIBASE FSI.BASE WILL MAKE TECO NUMERIC INPUT COMPATIBLE
+ WITH DDT AND LISP.
+
+:; IS LIKE ;, BUT USES THE OPPOSITE CONDITION:
+ EXIT FROM THE ITERATION IF THE ARGUMENT IS NEGATIVE.
+
+:C, :R AND :J ARE TO C, R AND J AS :S IS TO S.
+
+FS @ PAGE  CONAINS THE NUMBER OF LINES PER PAGE
+		IN @-LISTINGS.
+
+Local Modes:
+Mode:Text
+End:

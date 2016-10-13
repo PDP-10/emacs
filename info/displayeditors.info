@@ -1,0 +1,1683 @@
+-*-Text-*-
+
+File: DISPLAYEDITORS,  Node: Top,  Up: (DIR),  Next: Introduction
+
+	This file describes some of the display editors available on
+Tops-20.  We will attempt to provide entries for as many editors as
+possible.  If an editor is of potential interest to users of Tops-20
+or Tenex, it should be described here.  If your favorite editor is
+NOT included, prepare a writeup for it based (loosely) on the SAMPLE
+node and either include it in this file directly or mail it (or a
+pointer to it) to ADMIN.JQJ@SCORE.
+
+	Editors that are not currently available on Tops-20 but could
+potentially be (e.g. because they are written in C, Common Bliss,
+Midas (a PDP-10 assembler), Pascal, Franz Lisp, etc. may also be
+included on this list.
+
+	The goal of this presentation is the sharing of information
+about what display editors are available.  There is much debate over
+the proper criteria for evaluating editors.  Hence, we should try to
+use this file not as a vehicle for rhetoric about the virtues of one
+editor over another, but as a source for the more concrete kinds of
+information about what various editors can (and cannot) do.  Try to
+restrict your comments to factual rather than judgemental issues.
+
+	The bulk of this file consists of a listing of individual
+display editors.  Please add your own favorite editor to the list,
+following the guidelines in the SAMPLE editor entry.  If you don't
+like the format of the SAMPLE, send mail to ADMIN.JQJ@SCORE.  If you
+disagree about an existing entry, append your comments (but please
+try not to be too long winded).
+
+	You may want to assume that the reader is already familiar
+with some flavor of Emacs (the editor originally implemented in Teco
+by RMS at MIT).  Emacs has rapidly become the most popular display
+editor on the Arpanet.  To some extent, this file should be seen as
+an effort to compare Emacs with other available editors.
+
+* Menu:
+
+* Introduction::	Introduction to display editors
+* Sample::		Describes format of display editor documentation
+
+* Emacs::		RMS's TECO-based editor from MIT
+* Hmacs::		Simplified, Emacs-like editor with cursor pad 
+* TVEDIT::		Kanerva display editor from IMSSS
+* Ted::			III inhouse editor
+* VIDED::		Simula-based video editor
+* FINE::		(Fine Is Not Emacs), CMU DEC-10/20 editor
+* ZED::			A high-level orthogonal command language editor.
+
+Other editors that are not yet documented:
+
+* SED::			Chris Hall's own editor
+* DEC-TV::		DEC's display teco
+* EDT::			VT-100 editor for VAX, PDP-11, -10, and -20
+* Z::			Yale display editor
+* Unix EMACS::		James Gosling's pseudo-Emacs for VAX Unix and VMS
+* Multics EMACS::	Bernie Greenberg's tour de force
+* Zwei::		The LISP-machine editor
+
+File: DISPLAYEDITORS,  Node: Introduction,  Up: Top,  Previous: Top,  Next: Sample
+
+	How can anyone possibly write a decent introduction to
+display editors?  This node makes a very weak attempt at setting the
+stage, but is clearly inadequate to the task.  Part of the problem
+stems from the wide variety of programs called display editors:  from 
+NLS to the IBM CMS editor (EDGAR) to EMACS.
+
+	My claim that one can write a poor Tops-20 display editor in
+2 days, a usable editor in 2 months, a good one in 2 years, and who
+knows how long for a great one (it isn't completely clear that there
+are any, though afficionados will point to their favorite editor as
+an example of one).  The editing task is not yet well understood.  We
+have some handle on ways to write an efficient editor in terms of use
+of system resources, but very little information on what constitutes
+a good human interface, or on the tradeoffs between features and
+efficiency.  We aren't even really sure, given the variety of
+editors, what a "display editor" actually is.
+
+	One place to start is with a definition of "text editor"
+borrowed from Roberts (1979, p. 5): "a program which allows a person
+to create and modify documents."  Documents in turn consist of
+mainline text organized into a hierarchical structure of characters,
+words and lines.  Depending on the particular editor and type of text
+being edited, the structure may be usefully considered to extend to
+sentences, paragraphs, subroutines, s-exprs, pages, sections, or
+whatever.  In addition to mainline text, the document may contain
+other data, for example formatting information, footnotes, indices,
+pointers to other locations in this or other documents (files), etc.
+
+	A DISPLAY editor differs from other text editors in that the
+mainline text in the current region (perhaps the text surrounding the
+"current location" or "point") is constantly displayed on the CRT
+screen.  Commands exist to move the current location; editing
+commands which modify the text being displayed have as a side effect
+the updating of the display to reflect the changes.  Typically, the
+editor is full duplex (though this is not strictly speaking
+necessary), with "immediate" commands that do not echo but instead
+provide such functions as relative cursor motion or "next window".
+Hence, more so than with non-display editors, "what you see is what
+you get."
+
+	In fact, if "what you get" is defined as the appearance of
+the document in hardcopy (an appropriate definition when editing
+manuscripts), then the "what you see" criterion is at best an
+aproximation, limited by the crt hardware.  Very few editors (Bravo,
+the Xerox Alto editor being a well known exception) attempt to display
+proportionally spaced text or multiple fonts, (or even underscoring!)
+even if these are in the repertoire of the hardcopy output device.
+More typically, document preparation is seen as a 2-step process of
+preparing a draft using an editor, then running it through a
+postprocessor such as Runoff, Pub, Tex, or Scribe.
+
+	For program text the problem is somewhat less acute, yet even
+there the editor must make some representational decisions:  How
+should we display non-printing characters?  How should we display
+lines longer than 80 characters on an 80 character wide screen?  If
+the terminal lacks lower case, how should it be indicated?  Most
+existing display editors seem to have reasonable answers to these
+problems, but the fact that they ARE problems should be kept in mind.
+Perhaps more important, it is sometimes appropriate to display the
+higher-order structure of a document rather than the characters and
+lines; the representation of this structure is much less obvious.
+Most display editors provide only very limited facilities for
+displaying any higher structure (E, the SU-AI editor, and EMACS page
+mode display a "page directory".  NLS has elaborate facilities for
+displaying the structure of a document); most existing editors prefer
+to think of the text as simply sequential characters or as a sequence
+of lines.
+
+	This suggests that another approach to the problem of
+describing the external behavior of text editors is to ask what
+supra-character structures in the mainline text are easily dealt with
+by the particular editor.  Thus, a line-oriented editor treats lines
+as its major unit, and has many commands for dealing with this unit.
+Does a given editor have commands for moving to the next unit,
+finding all units satisfying some criterion (e.g. content), deleting
+or replacing the unit, copying or moving the unit to another
+location, spliting and merging adjacent units, etc.?  The unit might
+be a character (Teco), line (E, Wylbur, SOS, Edit, Edgar), region
+(Emacs), s-expr (editors built into lisp systems), Pascal or PL/I
+statements (Mentor, PL/CS), or whatever, providing a characterization
+for the editor.  Presumably, the more powerful the editor the more
+flexible it is in dealing with units in the text; power here means
+both a greater variety of units, and more functions applicable to a
+particular unit.
+
+	The description problem is made more acute by the existence
+of "programmable" editors such as Emacs.  If the editor is no more
+than a set of user-definable extensions to an editor implementation
+language, then characterizing the editor as "line" or "page" or
+whatever oriented really misses the point:  the user can redefine her
+editor to be something quite different.  For such editors, we may
+either focus on the "standard environment" -- the primitives
+available in the editor as a typical user first sees it, or we may
+focus on the kinds of extensions that are easy for the naive user to
+make.
+
+	A rather different approach to characterizing display editors
+is to discuss their user interface.  Possible (different) goals for
+an editor include ease of learning for novices and effectiveness for
+the expert in getting the job done.  Subgoals for ease of learning
+include learning of enough "core" functions to get a typical editing
+task done easily, avoiding falling into traps or "special
+circumstances" induced by the existence of non-core functions, ease
+of correcting pure typing mistakes, and so on.  
+
+	Among the features of an editor that presumably contribute to
+ease of learning are a simple rule-based command structure, editing
+commands that are succinct but which fit into the operating system
+environment, a small set of commands that provide adequate power for
+most purposes, help facilities, and good offline documentation.
+
+	To some extent it is impossible to separate the issue of
+learning an editor from that of learning to use the computer system
+in which it is embedded; a naive user does not make a sharp
+distinction between "command language" and "editor", and so may be
+confused if the two follow different conventions, especially if the
+conventions are similar (Both, for example, probably permit
+correction of typing errors by a "delete character" function.  It is
+awkward if this is different in the editor from in the global
+environment).  On the other hand, if the operating system provides a
+highly inconsistent set of commands, then a more regularized set
+inside the editor might be preferable.
+
+	The psychological literature provides a variety of insights
+into what constitutes a good user interface.  For example,
+experiments with command languages indicate that rule based regular
+syntaxes are generally easier to use than syntaxes more closely
+approximating natural language.  We may expect to see substantial
+further work on the psychology of text editing.
+
+	Meanwhile, it finally seems to be the case that experimental
+tools exist for measuring some of the user-interface parts of the
+text editing.  Roberts (1979) develops one easy to apply methodology,
+and analyzes four editors (Tenex Teco, NLS, Stanford Wylbur, and the
+Wang word processor); limiting one's domain to display editors might
+dictate a somewhat different methodology, but at least a start has
+been made if anyone is interested in pursuing the issues.  One fairly
+strong conclusion she arrived at was that Teco was MUCH more
+difficult to learn than her other 3 sample editors, which were all of
+about equal difficulty; we might expect that most "reasonable"
+editors will have similar learning curves to the better group in her
+study.
+
+	A very different set of issues has to do with efficiency in
+use of system resources.  It seems clear that any display editor has
+costs just because it is a display editor.
+
+	Maintaining the current text on the screen implies
+substantially increased terminal output over non-display editing.
+The issue of bandwidth is especially important if the editor is used
+in a distributed environment:  if the user is communicating over a
+300 baud serial telephone link, then any display updating is very
+slow; if the user is communicating via satellite over a public
+packet-switched network, then character at a time full duplex
+transmission implies both very great expense and very long delays
+just for echoing.  In an enviroment where the user is local, on the
+other hand, we might want to provide soft character sets, graphics,
+color, or other "advanced" features that imply substantially
+increased bandwidth requirements between the user's workstation and
+the host computer.
+
+	At a more prosaic level, if the editor has many immediate
+commands (e.g. Emacs) then the editor fork must wake up frequently to
+service the commands; by comparison, typein to DEC Edit does not
+normally imply process rescheduling until the end of an insertion.
+On the other hand, terminal output can be minimized by smart
+redisplay and updating strategies, and process wakeups can be
+minimized by appropriate use of the system input routines and line
+editor if any (DEC TV, for example, wakes up only at the end of a
+block of inserted text).
+
+	Some preliminary empirical data indicate that at LOTS (a DEC
+2060 with 1.5m word) DEC Edit (a line-oriented editor) outperforms
+Emacs (a display editor) by roughly 3 to 1 in cpu utilization for
+typical editing sessions in each of the editors.  However, the
+results aren't in yet.  Stanford is currently experimenting with
+various approaches to evaluation of the efficiency of text editors,
+and should have better results eventually.  Further empirical data
+comparing the impact of display editors on timesharing systems is
+clearly desirable.
+
+	Presumably, the Emacs user gets much more work done in a
+session than the Edit user, but perhaps not 3 times as much.  At
+some point, then, there is a tradeoff -- the administrator interested
+in maximizing throughput needs to decide which editors to encourage.
+Unfortunately, the tradeoff is not at all clear, since it is
+difficult to measure user effectiveness, as opposed to system
+efficiency, and since effectiveness clearly depends heavily on the
+types of editing tasks being undertaken.
+
+						jqj 4-2-80
+*Note references: REFERENCES
+
+
+Some things I haven't talked about in the intro yet:
+
+Notes on implementation of various existing display editors:
+    A.	file buffer management
+    B.	screen management
+    C.	use of keyboard and input devices
+    D.	use of operating system features -- portability and flexibility
+	vs (maybe) greater efficiency and compatibility
+    E.	command implementation -- interpreted vs. compiled languages
+    F.	more on extensibility
+    G.	more on learnability -- examples:  orthogonal command sets,
+	menus, styles of documentation, the editing environment (make
+	a point that editor is easier to learn to use if other users
+	also know it well, implying desirability of a single-editor
+	environment, or of a layered environment in which novices use
+	a "basic" but upward compatible version of the hackers' editor.
+    H.	the system administrator's viewpoint.  Tayloring the choice
+	of editor based on: (1) the user community [secretaries vs.
+	hackers vs. both; frequent vs. occasional users], (2) cpu
+	efficiency, (3) interaction with other computer systems [a
+	common network-wide editor?], (4) etc.
+
+
+
+
+
+
+
+
+File: DISPLAYEDITORS, Node: References, Up: Introduction
+
+References (more to follow.  See [SCORE]<ADMIN.JQJ>EDITORS.BIB):
+
+
+Card,  S.  Studies  in  the  Psychology  of  Computer  Text  Systems.  Doctoral
+     dissertation, Carnegie-Mellon University, 1978.  
+
+Card, S. K., Moran, T. P. & Newell, A. Computer text editing:  An  information-
+     processing  analysis  of  a routine cognitive skill. Cognitive Psychology,
+     1980, 12(1), 32-74.
+
+Card, S. K., Moran, T. P. & Newell, A. The Keystroke Model for User Performance
+     Time with Interactive Systems.  Communications  of  the  ACM,  July  1980,
+     23(7), NoPages. Also available as Xerox PARC SSL-79-1.
+
+Embly,  D.W.  & Nagy, G. Empirical and Formal Methods for the Study of Computer
+     Editors. In Coombs, M.J., & Alty, J.L. (Eds.), Computing  Skills  and  the
+     User Interface. (I don't know the publisher), 1981.  
+
+Gould,  J.  NoTitle.  In  Gregg  and  Steinberg  (Eds.), Cognitive Processes in
+     Writing. NoPublisher, 1980.  
+
+Gould, J. NoTitle (Tech. Rep. RC 8446). IBM, 1981.  Data comparing  performance
+     of  subjects  using  a  text  editor  against their performance dictating.
+     Dictating seems to be faster.
+
+Kanerva, P., & Siegman, J. Specification of a Computer-based  text  system  for
+     Stanford,  Part I:  Requirements. Stanford Committee on Office Systems and
+     Technology. 
+
+Roberts,  T.  Evaluation  of  Computer  Text  Editors.  Doctoral  dissertation,
+     Stanford  University,  1979.  Also available as Xerox PARC memorandum SSL-
+     79-9, November 1979.
+
+Sneeringer, W. J. User-interface design  for  text  editing:    A  case  study.
+     Software--Practice and Experience, 1978, 8, 543-557.
+
+Van  Dam, A., & Rice, D. E. On-Line Text Editing:  A Survey. Computing Surveys,
+     September 1971, 3(3), NoPages.
+
+
+File: DISPLAYEDITORS,  Node: Sample,  Up: Top,  Previous: Introduction,  Next: Emacs
+
+SAMPLE	Sample Editor to show format and content of display editor
+documentation.  Use this space for a brief (1 line) advertisement for
+the editor.
+
+General info:
+ > NAME:	What most people call this editor.
+ > MAINTAINER:	Who initially wrote the editor?  Who currently
+		maintains it, and kind of support to expect.
+ > USERS:	Those users or sites which actively use the editor and 
+		can probably supply more information about it.
+ > AVAILABILITY:
+		Where the editor can be obtained?  How much does
+		it cost?
+ > MORE INFO:	Where to go next for more information than is
+		contained in this node.  For example, source of
+		users' manual, or name of a contact.
+
+Terminal support:
+ > TERMINALS SUPPORTED:
+		What display terminals does the editor know
+		about currently?  How easily can other terminals be
+		added to the list?  What minimum set of dpy features
+		is required for successful operation?
+ > USE OF DPY FEATURES:
+		To what extent does the editor make maximum use
+		of the features available on a given display?  E.g.
+		character/line insert/delete, hardware windowing,
+		standout, graphics, soft character sets, color.
+		To what extent does the editor optimize display updating?
+		E.g. does it optimize typeahead?  How often does the
+		screen need to be completely redrawn?
+ > HARDCOPY SUPPORT:
+		Can it be used on a hardcopy terminal or glass
+		tty?  How easily?
+ > USE OF KEYBOARD:
+		Does the editor make use of or require an alternate
+		keypad, edit key, lightpen, or mouse?
+ > SCREEN MANAGEMENT:
+		Describe the global screen management strategy,
+		location of windows, context displays, etc.
+
+User interface:
+ > USE BY NOVICES:
+		What features make it easy/difficult for novices
+		to learn to use the editor?  Does the editor make
+		use of "menus" and if so can they be bypassed?
+ > DOCUMENTATION:
+		Internal, external online, and offline
+		documentation availability, quantity, and prices.
+
+System issues:
+ > IMPLEMENTATION:
+		What language is the editor written in?  Are
+		sources available?
+ > SYSTEM REQUIREMENTS:
+		What operating system, languages, runtime
+		systems, or special directories must be present on the
+		system to use the editor?  How much memory and temporary
+		file space does each copy of the editor require?
+ > EFFICIENCY:	Comments on the implementation and its use of system
+		resources.  Stanford is currently working on a project
+		to develop tools for measuring editor efficiency, so
+		don't worry if you have nothing useful to contribute
+		here, but if you do make comments, try to make them
+		specific and factual, rather than of the form "uses
+		1/2 as much cpu time as EDIT"
+
+Features and limitations:
+ > ADDRESSING:
+		How may one refer to (go to) a location in the text?
+		By physical unit of composition (page, line, column)?
+  		By logical unit of composition (chapter, section,
+		paragraph, sentence, etc.)?    By content (string
+		search)?  By sequence; through how much text can you
+		scroll forward or backward?  Are line numbers supported?
+ > TEXT STRUCTURING:
+		What units of characters within a file does the editor
+		recognize, and have commands (move to next, insert,
+		delete, copy, transpose, split into two, merge adjacent)
+		to manipulate?  E.g. words, lines, pages, sentences,
+		paragraphs, s-exprs, sections, columns, subroutines,
+		arbitrarily defined regions.
+ > SEARCHING:
+		Do facilities exist for searching forward in a file
+		on the basis of an exactly specified string?
+		Backwards?  Can one search for a string specifed without
+		respect to case [i.e. "a"="A"]?  a delimited string [e.g.
+		"begin." but not "beginning"]?  unspecified position
+		[e.g. "AxB", for x any char.]?  unspecified length [e.g.
+		"AxyB", for xy an arbitrary string]? arbitrary regular
+		expressions?
+ > ERROR RECOVERY:
+		If text is deleted or modified by accident, is it possible
+		to get the old text back?  E.g. can one undo a single
+		command conveniently?  Can one undelete deleted text?
+		Does the editor have any facility for autosave
+		or journalling?  What is the effect of a system crash?
+ > PROGRAMMABILITY:
+		Can the editor be customized easily by the individual
+		user?  By the site?
+		Does the editor support keyboard macros or some
+		equivalent means of repeating sequences of commands?
+		Does the editor support a macro or stored-command
+		facility with flow-control constructs?  Integer
+		variables?  Other data structures?  Subroutines?
+		How much of the behavior of the editor can be
+		modified to suit the whims of the indifidual user?		
+ > MULTIPLE FILES:
+		Can one conveniently work with multiple files
+		simultaneously?
+		Can one include pointers in one file referring
+		automatically to another file?
+		How easily can one copy text from another file into
+		the "current" one?
+ > TEXT FORMATTING:
+		When entering text, can the editor automatically
+		break long lines ("word wrap")?
+		What features of a text formatter are included in
+		the editor?  E.g.:
+		    automatic pagination?
+		    justification of text?  hypnenation?
+		    proportional spacing?  multiple fonts?
+		    vertical half-spacing?
+		    automatic insertion of footnotes at the bottom of
+			pages?
+		    automatic indexing?
+		    hierarchical section numbering?
+		    multi-column formatting?
+ > PROGRAM FORMATTING:
+		What programming languages (if any) does the editor
+		have specialized commands to support?  E.g.:
+		    insert comment?
+		    insert "whoedit line"?
+		    prettyprint (grind, reformat, etc.) region?
+		    check syntax?
+ > OTHER FEATURES:
+		Some typical things you might want to do with an editor.
+		This list is NOT exhaustive, but rather intended to give
+		the reader some taste of the flavor of editing possible.
+		Does the editor have facilities for:
+		    generating repetitive material (form letters, etc.)?
+		    builtin help facilities?
+		    editing structured text (cf. NLS)?  e.g. view
+			outline of document
+		    multiple windows (cf. Emacs)? e.g. view discontiguous
+			sections of document simultaneously
+ > LIMITATIONS:	Restrictions in the implementation.  For example, can
+		you edit arbitrarily large files?  Can you recover
+		gracefully from a system crash in the middle of an
+		editing session?
+General info:
+ > EXAMPLE:	What characters must be typed to perform the following
+		editing task:  "Edit this file, and replace the
+		description of 'EXAMPLE' in the present section with
+		an actual example of the use of the editor."?
+ > COMMENTS:	misc. overview.  Add your comments to existing reports
+		here.
+ > COMPLAINTS:	Why this form does not capture the relevant features
+		of the editor being reviewed.		
+ > REPORTED BY:	user(s) contributing to this comment.
+ > DATE:	date on which the majority of the report was written.
+
+
+File: DISPLAYEDITORS,  Node: Emacs,  Up: Top,  Previous: Sample, Next: Hmacs
+
+General info:
+ > NAME:	ITS (Teco) Emacs
+ > MAINTAINER:	Written and maintained by Richard M. Stallman, at
+		MIT-AI. (RMS@MIT-AI).
+
+"EMACS is given out on a basis of communal sharing."  RMS sees Emacs
+as an editor under constant development both by himself and other
+users.  He offers to act as a clearinghouse for bug reports, and to
+attempt to fix most bugs.  Distribution consists of making the latest
+version available on the Arpanet, and sending complete sets of
+current files ("with no known bugs and all the latest features") on
+user-supplied tape when asked.
+
+ > USERS:
+	Most Tops-20 sites on the Arpanet.  Especially, MIT-XX
+(contact mmcm@mit-xx), SCORE, (contact admin.mrc@score or
+admin.jqj@score), SRI (contact mclure@sri-kl), etc.
+ > AVAILABILITY:
+	Send net mail to rms@mit-ai, or send him a tape via
+USMail.  It's free.
+	Richard M Stallman
+	MIT Artificial Intelligence Lab
+	545 Technology Square
+	Cambridge, MA 02139
+	(617) 253-6765
+
+
+ > MORE INFO:
+	Log in on a system that supports Emacs and run the program
+TEACH-EMACS (or ETEACH on some systems).  Or read the EMACS manual
+(available from MIT).
+
+Terminal support:
+ > TERMINALS SUPPORTED:
+	Currently: Datamedia Elite 2500, Hazeltine 1500, Digital
+VT52, Datamedia Elite 1520, MIT Imlac, Digital VT05, Tektronix 4025,
+Digitial VT61, Teleray 4041, Perkin-Elmer Fox, HP 2645, I400, Tek
+4023, Ann Arbor, Concept 100, Soroc IQ 120, Digital VT100, Infotron
+100, Teleray 1061, Heathkit H-19, Volker-Craig 404, CN-CP, Televideo
+912, Perkin-Elmer OWL, Bantam, Datamedia 3045, Datamedia 3052,
+Hazeltine Modular One.  Probably others by the time you read this.
+	Adding a new terminal is only moderately difficult.  It
+requires writing some Midas code for Teco, and rebuilding the system.
+Emacs effectively requires cleos and cleol; line i/d is almost as
+essential (although VT52s are supported; char i/d is quite useful,
+but not essential.
+ > USE OF DPY FEATURES:
+	Emacs makes good use of char/line i/d, but for most terminal
+types does not use many other advanced features, e.g. highlighting.
+It DOES utilize the SAIL character set, if your terminal happens to
+display it.  Emacs does a very good job of optimizing typeahead,
+since it waits until you're finished typing before deciding how to
+redraw the screen.  It does a much worse job of peephole
+optimization:  inserting two characters in a row often results in
+  <enter insert mode><space><backspace><leave insert mode>ch1
+  <enter insert mode><space><backspace><leave insert mode>ch2
+instead of
+  <enter insert mode>ch1 ch2<leave insert mode>
+On a Heath-19 terminal, this means 14 characters transmitted where
+only 6 were needed. 
+	There is not necessarily a 1-1 mapping between the
+display-control characters typed and display functions performed.
+ > HARDCOPY SUPPORT:
+	Use from hardcopy terminals is nominally supported, but has
+lots of bugs.
+ > USE OF KEYBOARD:
+	Macro packages are available to take advantage of the
+alternate keypad for various terminals, though the keys they transmit
+sometimes conflict with standard key definitions.  An Edit or Meta
+key is very desirable.  Does not include facilities for use of a
+mouse or other non-keyboard input device.  However, uses ALL ascii
+control chars as commands; hence terminals that reserve some control
+chars (e.g. ^S, ^Q) present problems.
+ > SCREEN MANAGEMENT:
+	Emacs reserves, by default, a "mode line" and a 3 line echo
+area at the bottom of the screen.  The mode line generally contains
+the name of the file being edited, the mode in which editing is being
+done (e.g. "text" mode or "pascal" mode), and the position, in
+percentage, of the current region in the file as a whole.  Various
+commands echo in the echo area, e.g. searches display the search
+string and file operations display the file name as they are being
+typed.
+	The rest of the screen may be divided into one or two
+windows, (top and bottom only.  Each window occupies the full width
+of the screen) of user-settable size, permitting the display of two
+files or of two regions in one file.
+
+User interface:
+ > USE BY NOVICES:
+	Some disagreement exists over how easy Emacs is for novices.
+An excellent introductory tutorial called TEACH-EMACS exists.  Emacs
+is heavily internally documented, and once the user knows enough to
+find the internal docs.  s/he is in good shape.  The editing commands
+(delete previous word, delete line, redisplay) differ from those of the
+rest of T-20/TEXTI%, which confuses some users.  Some other users are
+overpowered by the variety of available commands.  It has been claimed
+that Emacs is very easy for a novice to first use, but also makes it
+easy for the novice to fall into traps (e.g. special modes) provided
+by the advanced features.
+	Since the default command environment evolved over a fairly
+long period, it is not particularly simple or rule oriented.
+Instead, an attempt is made to optimize user typing by making the
+most frequently used commands easiest to type.
+ > DOCUMENTATION:
+	Very extensive internal documentation, including
+documentation of every command, plus the INFO subsystem, exists.
+Documentation for Emacs subsystems varies in extent and quality.
+	Hardcopy documentation includes an extensive manual available
+from MIT, plus various tutorials.  The hardcopy documentation to some
+extent reflects the fact that Emacs is always in a state of flux.
+
+System issues:
+ > IMPLEMENTATION:
+	Emacs is an interpreted macro in Teco.  The Teco editor is
+available to the user if he wishes to modify his version of Emacs
+or perform specialized functions.  Teco, in turn, is written in
+Midas, an assembly language.
+ > SYSTEM REQUIREMENTS:
+	Requires at least 100 pages of shared memory, plus lots of
+impure core, but no temporary file space.  Requires the existence
+of <EMACS> and <INFO> directories (about 2700 pages, bare minimum
+500 pages, may be on a non-PS structure).  Runs on Tops-20, Tenex,
+and ITS.
+ > EFFICIENCY:
+	Emacs currently wakes up on every character typed, which some
+people claim is quite costly.  Some functions, e.g. PL/I mode,
+which involve multiple levels of interpretation, are VERY slow.  It
+also makes fairly heavy demands for virtual memory.
+
+Features and limitations:
+	N.B. Since Emacs is highly extensible, most of the "features"
+that it currently lacks would be fairly easy to add if anyone wanted
+to put in the effort.
+
+  > ADDRESSING:
+	Go to any absolute character position, content addressing,
+relative addressing by line, page, word, paragraph, sentence.  The
+TAGS macro package permits go to a particular function or label, the
+PAGE package permits page-absolute addressing.  No convenient command
+currently exists to go to a particular line on a particular page.
+One can scroll indefinitely in either direction.  Line numbers are
+not supported in any form.
+  > TEXT STRUCTURING:
+	Emacs has substantial facilities for dealing with words,
+sentences, lines (but very inconvenient line-absolute addressing,
+since this is not thought of as a line editor), paragraphs, s-exprs,
+and user-specified regions.  Slightly less power currently exists for
+dealing with pages and subroutines.  Facilities for dealing with
+columns are primitive to nonexistent.
+  > SEARCHING:
+	Forward and backward search, case-independent and
+case-specific, exist.  Wild cards are possible, but are not available
+in the normal (default environment) string-search commands.  No
+arbitrary regular-expression search exists.
+  > ERROR RECOVERY:
+	Deleted text is placed in a "kill buffer" from which it can
+be undeleted.  Limited facilities exist for undoing other drastic
+commands.
+	An Autosave facility exists for regularly checkpointing the
+current file.  A journalling facility also exists in recent versions,
+but may still have a few bugs.
+ > PROGRAMMABILITY:
+	Emacs is interpreted in Teco, a general-purpose programming
+language which is itself available to the Emacs user, and hence is
+extremely extensible -- perhaps the most programmable editor
+available on the DEC-10 or DEC-20.  One can write teco commands for
+immediate execution, or save macros in files for later execution:
+many user-written macro packages exist.  Emacs is perhaps better
+thought of as an environment for experimentation with editor
+implementation than as an editor itself.
+	A keyboard macro facility also exists which permits the
+storing of strings of commands for later (in the same session only,
+alas) commands.
+	It is very convenient for an individual user to customize
+his/her emacs environment, by creating a file EMACS.INIT on his
+directory.
+ > MULTIPLE FILES:
+	Emacs supports multiple buffers and multiple windows.  Hence
+working with several files simultaneously is very easy.  Copying from
+one file to another is done by killing a region in a copy of the
+source file, then restoring it into the destination file.
+ > TEXT FORMATTING:
+	An "auto fill mode" provides word wrap.
+	Some facilities exist for justification, though nothing
+fancy.  Emacs is normally used to prepare input for a text formatter
+such as Pub, Tex, or Scribe, rather than a text formatter itself.
+ > PROGRAM FORMATTING:
+	Hooks exist for elaborate program formatting facilities.
+Emacs currently does an exceptional job with lisp code (almost as
+well as an editor embedded in a lisp system), including commenting,
+GRINDFing, and commands for dealing with atoms, s-exprs, functions,
+etc.  It is almost as good with assembler code, including commands
+for commenting, moving to particular subfields of an instruction,
+automatic indenting, etc.  Some facilities exist for structured
+languages, notably Pascal and PL/I, but they are not yet well worked
+out.
+ > OTHER FEATURES:
+	Emacs has most of the features you could imagine in an
+editor, including elaborate built in help.  No facilities except
+indentation commands currently exist for structured text.
+ > LIMITATIONS:
+	It is quite difficult to edit files of more than 400 disk
+pages, since Emacs assumes that the whole file is mapped into the
+(single section) address space.  It is not possible for the user to
+reprogram the handling of screen redisplay.
+
+General info:
+ > EXAMPLE:
+	Start Emacs:			    emacs info:editors.info^M
+	Search for the place to delete:	    ^S> example^F^F
+	Delete 3 lines:			    ^[3^K
+	Type the text to be inserted.
+	Save the file and exit:		    ^U^X^Z
+ > COMMENTS:
+	Emacs is clearly the editor by which all others on the 20 are
+judged.  For many purposes it is ideal.  Most people's objections are
+either based on efficiency issues (Emacs is claimed to put fairly
+heavy demand on a system), on maintenance (Emacs is constantly under
+development, with frequent, sometimes buggy or incompatible, new
+releases), or on difficulty for new users.
+					jqj 3-23-80
+ > REPORTED BY:
+	admin.jqj@score
+ > DATE REPORTED:
+	3-23-80
+
+File: DISPLAYEDITORS,  Node: Hmacs,  Up: Top,  Previous: Emacs, Next: TVEDIT
+
+	HMACS - simplified set of ITS TECO macros designed for a keyboard
+with cursor pad.
+
+ > NAME:	Hmacs
+ > MAINTAINER:	Charles Hedrick ( HEDRICK@RUTGERS )
+ > USERS:	One.  This is an experimental editor developed at Rutgers.
+ > AVAILABILITY:
+		To try it out, log in at RUTGERS and run PS:<HEDRICK>HMACS.
+ > MORE INFO:	Talk to HEDRICK, or see [RUTGERS]PS:<HEDRICK>HMACS.DOC
+		[ *note DOC: (MRC:<JQJ.EDITORDOC>HMACS.DOC)*.]
+Terminal support:
+ > TERMINALS SUPPORTED:
+ > USE OF DPY FEATURES:
+	HMACS is written in ITS teco, so it supports the same set of
+terminals, in the same ways, as EMACS (q.v.).  However it makes very
+heavy use of the terminal keypads, so it is effectively useless on
+terminals whose keypads it is not set up for.  By its nature, it is
+difficult to set it up for more than about 4 types of terminals.  The
+version at Rutgers is set up for DM2500 (Stanford and vanilla), GTC
+(Infoton) 400, and various flavors of VT52.
+ > HARDCOPY SUPPORT:
+	Effectively useless on hardcopy terminals.
+ > USE OF KEYBOARD:
+	Unlike Emacs, Hmacs makes heavy use of the cursor motion pad
+present on most newer terminals.  (It is nearly useless without one.) It
+uses a "logical pad" of 15 keys, though it only needs 9 physical keys.
+ > SCREEN MANAGEMENT:
+	Similar to Emacs, but much less elaborate.  Only one window is
+supported.  
+
+User interface:
+ > USE BY NOVICES:
+	Hmacs is intended for novices. The use of the cursor pad is seen
+as being more intuitive than the mnemonic letters of Emacs.  The editor
+is designed to be simple, and difficult to get trapped in odd modes.
+
+ > DOCUMENTATION:
+	External documentation currently is limited to
+[RUTGERS]PS:<HEDRICK>HMACS.DOC.  The help command leads to this file,
+which is similar to TEACH-EMACS in intent, but is complete.
+
+System issues:
+ > IMPLEMENTATION:
+	Implemented in ITS teco.  Source is available as
+[RUTGERS]PS:<HEDRICK>TECO.INIT.  (run ITS TECO and it asks you for a
+file to save itself on.)
+ > SYSTEM REQUIREMENTS:
+	Similar to Emacs.  Details not yet known.
+ > EFFICIENCY:
+	Unknown.  Since none of the heavily interpreted Emacs macro
+packages exist, it should be faster than Emacs for most tasks.  In
+particular, the TVEDIT-style macros are substantially more efficient
+(and perhaps a bit easier to use) than the ITS kbd macro facility of
+Emacs.  Its one user (Hedrick) uses it because it gets substantially
+better response on a loaded system than either EMACS or TVEDIT.
+
+Features and limitations:
+ > GENERAL:
+   control keys - mostly similar to TECO ^R mode and control char's in
+EMACS: the most common editing commands.  However these commands are
+intended to be used from the cursor pad.
+   cursor pad - move by char, line, word, and window; search; set mark;
+exchange point/mark; begin and end of file
+   meta key or escape prefix - less commonly used commands, including
+filling text, exit commands, set edit bounds, comment mode, PUSH (edit
+another file read-only), help, execute or edit a Q-register, macros
+(exactly the same implemenation as in TVEDIT, though not saved in any
+file). number: argument for next command
+ > ADDRESSING:
+	Relative character and line addressing via auxiliary keypad. Go
+to specified page.  Relative word addressing (go to 5th succeeding word,
+etc.).  Windowing forward and backwards.  Character and string search.
+ > TEXT STRUCTURING:
+	Commands for dealing with words and lines.  No sentence- or
+paragraph- oriented commands.
+ > SEARCHING:
+	1-char search, or generalized Teco searches, complete with wild
+cards.
+ > ERROR RECOVERY:
+	Unkill previously killed text.  No autosave or journalling yet.
+
+ > PROGRAMMABILITY:
+	A simple keyboard-macro facility exists modelled after TVEDIT.
+The facility is somewhat more powerful than the Emacs kbd macro facility
+which it resembles.
+	Primitive access exists to ITS teco, so the user has a full
+programming language at his/her disposal.  However, this feature is seen
+as being "mostly for debugging" rather than for general use.  The Emacs
+programming facilities (named MM commands, loadable libraries, etc.) do
+not by default exist, so must be built by hand.
+ > MULTIPLE FILES:
+	A PUSH command allows one to peruse (in read-only mode) another
+file.
+
+ > TEXT FORMATTING:
+	Semi-automatic text justification.  This command is intended for
+justifying "odd formats" (e.g. it was used on this text).  It requires
+somewhat more human intevention than the usual justify command, but is
+substantially more flexible in the formats it permits.
+ > PROGRAM FORMATTING:
+	"comment mode"
+ > OTHER FEATURES:
+ > LIMITATIONS:
+	As with Emacs.
+
+General info:
+ > EXAMPLE:
+ > COMMENTS:
+	HMACS was intended as a draft of a student-oriented editor.
+However Rutgers finally decided to use TVEDIT and EMACS.  Thus it lives
+on only as a private editor for Hedrick, embodying his preferences in
+commands and giving noticably better performance than Rutgers' standard
+editors.  No further development is contemplated, but it is currently
+maintained as new versions of ITS TECO come out.
+
+HMACS is a cross between TVEDIT and EMACS.  At the moment it is almost
+their intersection.  It will never be their union (heaven forfend).
+Maybe some sort of dot product?
+						Hedrick@Rutgers 
+
+ > REPORTED BY:	jqj@score, hedrick@rutgers
+ > DATE:	10-30-81
+
+
+File: DISPLAYEDITORS,  Node: TVEDIT,  Up: Top,  Previous: Hmacs, Next: Ted
+
+	TVEDIT - display editor for DM2500 and other terminals with
+insert/delete
+
+ > NAME:	TVEDIT
+ > MAINTAINER:	Pentti Kanerva (Kanerva@SUMEX), staff at Sumex and Rutgers.
+ > USERS:	About half of the display editing at Rutgers, somewhat more
+		than half at Sumex.  Almost all editing on Context,
+		the Stanford word-processing DEC-20.  A few users elsewhere.
+ > AVAILABILITY:
+		From Rutgers or Sumex, for Tops-20 or Tenex.  From Rutgers
+		or NIH (Bethesda) for Tops-10.
+ > MORE INFO:	[RUTGERS]DOC:TVEDIT.MANUAL
+Terminal support:
+ > TERMINALS SUPPORTED:  
+	Each site has a somewhat different set.  At Rutgers, code exists
+for the following: TEC, Datamedia 2500,  GTC (Infoton) 400, Imlac,
+Visual 200, Heath 19, NIH-modified Delta Data 5200, Ambassador, HP2621,
+although not all are actually assigned terminal codes.  New terminals
+may be added with a few hours of work.
+ > USE OF DPY FEATURES:
+	TVEDIT uses a package (DPY.FAI, maintained by ADMIN.JQJ@SU-SCORE)
+for terminal-independent control of the terminal.  This package
+requires a terminal with insert and delete line and character.  The
+package optimizes character sequences for cursor motion, mode
+changing, etc.  Thus it is probably more efficient in characters sent
+than EMACS.  However it does not have EMACS' real-time orientation.
+So once a command is given that outputs something, future commands
+will wait until that output is finished.
+ > HARDCOPY SUPPORT:
+	Effectively useless on hardcopy terminals, although there is a
+hardcopy mode.
+ > USE OF KEYBOARD:
+	TVEDIT was originally intended for a DM2500 with meta key and
+keypad.  It is fairly important to have a keypad of some kind, but the
+lack of meta key does not seem serious.  Builtin commands are all typed
+with meta key or escape prefix (or on keypad).  Control characters are
+all available for user-defined macros.  Printing characters replace the
+character in the current cursor position.
+ > SCREEN MANAGEMENT:
+	A single window into the file is maintained. There is a "mode
+line" at the top, and a border down both sides of the screen.  The
+characters on the border are used to indicate when a line extends beyond
+the right or left end of the screen.  TVEDIT displays only as much of a
+line as will fit on one line of the screen.  Updating the borders is a
+substantial cause of transmission overhead, since inserting one
+character requires deletion of a character at the end of the line in
+order to maintain the border.
+
+User interface:
+ > USE BY NOVICES:
+	Computer science students seem to be able to use it after 15
+min. of lecture (which describes only the use of the keypad and the exit
+command).  We have had no problems with use by novices.
+
+ > DOCUMENTATION:
+	[RUTGERS]DOC:TVEDIT.MANUAL.  There is also a reference card,
+available from Sumex.  There is no interactive help on the commands. The
+following help facilities exist:
+   help is available for the questions asked at startup (if you choose
+	to start in dialog mode, rather than typing a file name and
+	switches on the command line)
+   one response available in dialog startup mode will cause you to
+	peruse the manual.  In principle it is possible to learn the
+	editor by doing this.  (The first window of the manual gives the
+	commands needed to move through the file.)
+There is also a teaching program similar to TEACH-EMACS, available
+from Liebschutz@Rutgers.
+
+System issues:
+ > IMPLEMENTATION:
+	Implemented in SAIL, except that the display package is in
+FAIL.  Sources are available on [RUTGERS]S:<TVEDIT>.
+ > SYSTEM REQUIREMENTS:
+	The major requirement is for a terminal with appropriate
+features.  As for the program, TVEDIT.EXE and the sharable SAIL high
+segment are needed. It is somewhat smaller than EMACS  (though far too
+large for what it does.)  Only a few pages of the file are kept in
+memory, so it is substantially smaller than EMACS for large files.
+ > EFFICIENCY:
+	CPU shares for users using it are typically smaller than for
+EMACS users by a modest amount.
+
+Features and limitations:
+ > GENERAL:
+	The editor works in "overwrite mode".  I.e. straight text
+replaces what was there before.  There is an "insert mode" for inserting
+characters in context, however this mode is cancelled by any other
+command. Commands are given by meta-commands or by using the escape key
+as a prefix to letters or special characters.  The commands are
+generally the first letter of the command name.  Many of the commands
+(e.g. delete) can apply to any of characters, words, lines, or the
+current region (the area between the current position and a "mark").
+This is indicated by a suffix.  So to delete a word, you would type
+<esc> D <del>, where "D" indicates delete, and "<del>" indicates word
+mode.  Most commands can take a numeric prefix to specify a count, and
+using two altmodes causes an infinite count.
+ > ADDRESSING:
+Absolute page number/line number by $G command
+Relative character, word, and line addressessing via commands or keypad.
+Windowing forward and backwords.  (However this is less useful than in
+	EMACS because a second window command does not interrupt display
+	caused by the first.  However ^O may be used to do this
+	explicitly.)
+Character and string search.
+ > TEXT STRUCTURING:
+	Commands for dealing with words, lines, and a "region" (the area
+between the current position and a "mark").  No sentence- or paragraph-
+oriented commands.  No language-specific features except for comments.
+ > SEARCHING:
+	1-char search, or string searches.  Multiple targets may be
+specified, but no wildcards are available.
+ > ERROR RECOVERY:
+Unkill previously killed text.  
+Undo previous command.
+The current state of the file is saved in pages beyond the end of file
+	(in Tops-20 and Tenex).  This allows most of the edit to be
+	recovered after a crash, though there may be some loss (up to
+	about a page) and some duplication of a small region of the
+	text.
+
+ > PROGRAMMABILITY:
+	There is a macro facility, which allows the user to define his
+own commands.  Any control character may be used for a macro. Macros are
+saved automatically in the file TVSTRINGS.PMAP on the user's directory.
+Macros are usually used to do specific complex operations, not to make
+general extensions to the editor.
+ > MULTIPLE FILES:
+	A PUSH command allows one to peruse (in read-only mode) another
+file.
+
+ > TEXT FORMATTING:
+	Join and Break commands exist for hand-justifying text.  There
+is no automatic text formatting.
+ > PROGRAM FORMATTING:
+	"comment mode"
+ > OTHER FEATURES:
+ > LIMITATIONS:
+	TVEDIT tends to turn mutiple spaces into tabs, in somewhat
+unpredictable ways.  
+	The major limitation with respect to EMACS is that it is not
+possible to make meaningful extensions to the editor except in the SAIL
+source.  As a consequence, there is no equivalent to the large number of
+libraries and other functions available in EMACS.  However the user
+engineering of what does exist has been very careful indeed, and some
+(an ever decreasing number) users believe that this makes up for the
+lack of facilities.
+
+General info:
+ > EXAMPLE:
+ > COMMENTS:
+
+ > REPORTED BY:	hedrick@rutgers
+ > DATE:	10-30-81
+
+File: DISPLAYEDITORS,  Node: TED,  Up: Top,  Previous: Hmacs,  Next: Vided
+
+TED a screen oriented text editor
+
+General info:
+ > NAME:	TED or ED
+ > MAINTAINER:	Written at Information International, by
+		(serially) Ken Clements, Glen Williams, Dave Dyer
+		Curently maintained for personal use only by
+		Dave Dyer (DDYER@ISIB)
+		
+ > USERS:	In regular use at Information International, and By
+		a small circle of III alumni.
+ > AVAILABILITY:
+		Should be regarded as unavailable.
+ > MORE INFO:	*note DOC: (MRC:<JQJ.EDITORDOC>TED.COMMANDS)*.
+
+Terminal support:
+ > TERMINALS SUPPORTED:
+		DELTA-5000 (obsolete)  DM3025 VISUAL-200
+		HP2640 and compatable terminals, including 2649 and 2621a
+
+		Adding similar terminals requires a few hours effort and
+		a reassembly of the editor.
+
+ > USE OF DPY FEATURES:
+		Character insert, Character delete, line insert, line delete
+		position cursor, clear to end of line.
+		Blink or reverse video is used if available.
+
+		TED works hard to minimize character traffic.  It is
+		fine at 4800 baud or greater, bearable at 2400, barely
+		usable at 1200, not recommended below that.
+
+ > HARDCOPY SUPPORT:
+		No.  Completely useless on a hardcopy terminal.
+
+ > USE OF KEYBOARD:
+		No extra keys are needed.  A meta key is used (a little)
+		if available.  It's nice if there are encoded arrow keys.
+
+User interface:
+ > USE BY NOVICES:
+		TED's command structure was influenced by TECO.
+		TED's commands are simple and visually oriented.  The
+		main lossage for beginners is confusion among major
+		submodes: Command, Insert, Overstrike, Search.
+
+ > DOCUMENTATION:
+		Not much, or much needed, as there are not a great number
+		of whizbang "features" cluttering it up.  For a brief
+		 command description, see [SCORE]MRC:<JQJ.EDITORDOC>TED.COMMANDS
+
+System issues:
+ > IMPLEMENTATION:
+		Source language: Macro
+
+ > SYSTEM REQUIREMENTS:
+		TOPS-10, TOPS-20, TENEX
+
+		The TOPS-20 version has some rough edges to be worked out.
+		The TOPS-20 and TENEX versions do NOT use PA1050
+
+		Pure segment is 5K, Impure 1K+text
+
+		No special directories or support required, but TED
+		needs to know the system's terminal type numbers.
+
+ > EFFICIENCY:	TED was intended to be very efficient, and is sucessful
+		for most tasks.  Naturally, It requires wakeup on every
+		character, which is the primary cost to the system.
+
+		TED performs well even on heavily loaded systems, long after
+		EMACS would have you climbing the walls.
+
+		Internally, text is line blocked and a linefeed
+		table is maintained.  LINENUMBERS IN TEXT ARE
+		COMPLETELY UNSUPPORTED.
+
+Features and limitations:
+ > ADDRESSING:
+		TED edits only on the current page.
+
+		TED considers a PAGE as the text between form feeds,
+		but will stop reading a large page early if it has
+		too many lines.  The limit is adjustable.
+
+		Pages can only be turned forward.  To go back to a
+		previous page, you hav to cycle around to the beginning
+		again.
+
+		Locally, one can move by characters or by lines.
+
+		Globally, one can jump to any position by specifying
+		linenumber, or linenumber and lineposition.  Locations
+		can be stored in Q registers, a la TECO.
+
+		One can also scroll up or down by 1/2 pages, which is
+		nice for perusing.
+ 
+ > SCREEN MANAGEMENT:
+		TED reserves the top line for a prompt, random information
+		displays, search string display, and error messages.
+
+		The rest of the screen is your window.  You can reduce
+		the window size to as little as 3 lines, which is nice
+		if you are searching around and tire of waiting for the
+		screen to be repainted.
+
+		FULL repainting is done on request, and otherwise only when
+		absolutely necessary.  If "old" and "new" displays have
+		any commoon lines, the screen scrolls smoothly to the
+		new configuration.
+
+		An unusual feature, and a real winner: Full repainting
+		is done from CENTER-OUT rather than TOP-DOWN.  This is
+		especially nice after a search, since you see the line
+		you really want immediately, and the rest of the screen
+		is painted while you focus and decide if this is the
+		right place.
+
+		Another unusual feature, the cursor can be either
+		free to move around on the window, or can be "nailed"
+		to the centerline.  In the "nailed" mode, the line
+		you are working is always in the center of the screen,
+		which is especially nice if you are jumping around
+		a lot.
+
+ > TEXT STRUCTURING:
+		There is a special MACLISP hack to skip SEXPRs either
+		forward or backward.
+
+		Q registers can hold arbitrary blocks of text.  There
+		are two special "markers" that can be used to delimit
+		text to deleted or stored in Q registers.
+
+ > SEARCHING:	Search (forward only) either through
+		the whole file or on the current page.
+
+		Searches can be either case dependant of case independant.
+
+		No other special matching capabilities exist.
+
+ > ERROR RECOVERY:
+		No.  The only really dangrous command is K, which kills lines.
+		The D (delete character) command will not delete more
+		than one line of characters under any circumstances.
+
+		Backup files (like teco) are made on tops-10,
+		and tenex/twenex make a new version.  The PC
+		command automatically cycles through the file and
+		reopens the output for input.  This is the primary
+		mechanism for dealing with paranoia.
+
+ > PROGRAMMABILITY:
+		No special provisions for customization.  Several
+		commands set global "lifestyle" modes, but there
+		is no provision for a user profile.
+
+		TOPS-10 version understands CCL, and has a PG command
+		(like EG for TECO)
+
+		There is a simple macro facility (q registers can be
+		executed) but there are no flow controls except
+		termination due to error, like  afailed search.
+ > MULTIPLE FILES:
+		One file, One editing buffer.
+		Merging pieces of files requires stuffing one file
+		into a Q register.
+
+ > TEXT FORMATTING:
+		No special text formatting.  Lines up to 4 or 5 display
+		lines long are handled as well as one could expect.
+
+ > PROGRAM FORMATTING:
+		There is a parenthesis counting move command.
+		There is a special mode for MACRO in which
+		everything except comments are automatically
+		uppercased.
+
+ > OTHER FEATURES:
+		TED supports its own encryption scheme, which is
+		good enough to dissuade anyone from trying to break.
+
+		TED converts control characters to escape sequences,
+		so can edit full ascii files.
+
+General info:
+ > EXAMPLE:	TED TED.INFO<cr>
+		Nexample:$Q<Scomments:$0Lq>QKInew description$PX
+
+		( read that as "fine EXAMPLE: place left marker,
+		  fine COMMENTS:  go back to beginning of line,
+		  place right marker, delete text between markers,
+		  insert new description, exit )
+
+ > COMMENTS:	TED's best features are its smallness and efficiency.
+
+		Among its other noteworthy "good Ideas" are the
+		screen repaint and cursor management, the encryption.
+
+ > REPORTED BY:	Dave Dyer
+ > DATE:	April 8, 1980
+
+File: DISPLAYEDITORS,  Node: Vided,  Up: Top,  Previous: TED,	Next: FINE
+
+General info:
+ > NAME:	Vided.
+ > MAINTAINER:	A research lab. of the Swedish Military developed
+		and supports it. (They also made the excellent
+		TOPS-10 and -20 implementation of SIMULA, in which
+		most of the source code is written.)
+ > USERS:	No idea. I have used Vided at the University of Oslo.
+ > AVAILABILITY:
+		From the developers (from same people as SIMULA.)
+		(I only know the system as a user, and I have
+		no documentation at Stanford, so everything is from memory.)
+ > MORE INFO:	There is an on-line user manual, and help files.
+
+Terminal support:
+ > TERMINALS SUPPORTED:
+		Many terminals supported. (I have used it on VT100
+		and Tandberg's TDV2000.)
+		I believe it to be very easy to include new terminals, since
+		the system is written in high-level language SIMULA.
+		Very primitive displays can be supported - not even
+		direct-cursor adressing is required.
+ > USE OF DPY FEATURES:
+		Makes good use of available display features
+		(Scrolling, insert/delete etc.).
+		No exotics, like standout or graphics.
+		No type-ahead optimization.
+ > HARDCOPY SUPPORT:
+		None.
+ > USE OF KEYBOARD:
+		Uses standard keyboard. Uses "arrow" keys, and PF keys
+		if available.
+ > SCREEN MANAGEMENT:
+		Whole screen used for text. Hitting a special "command" key
+		echoes an "&" to signify readiness for a command.
+		Command characters (including insertions - at least on 
+		most terminals) overwrite text characters until
+		command is executed.
+
+User interface:
+ > USE BY NOVICES:
+		Relatively easily learned. Generally single-letter
+		mnemonic commands.
+ > DOCUMENTATION:
+		Online manual (ca. 60 pages), and help files.
+		I think the help file can be printed while in the editor.
+
+System issues:
+ > IMPLEMENTATION:
+		Source is the high-level general-purpose language SIMULA-67.
+		Some parts are I believe written in assembler for speed.
+		Sources available with distribution tape.
+ > SYSTEM REQUIREMENTS:
+		Written for and used on TOPS-10.
+		Probably runs on TOPS-20, since they have modified SIMULA
+		for use on TOPS-20.
+		Presumably requires the SIMULA runtime routines.
+		Mainly intended for one forward-pass processing:
+		you can move around in a window which is kept in core; only
+		certain commands allow you to move backwards beyond the
+		window, and they cause a "save" of the complete file.
+ > EFFICIENCY:  
+		Does not wakeup on every character, so useable on
+		heavily-loaded systems.
+Features and limitations:
+ > ADDRESSING:
+		Absolute page adressing. Relative line movement commands.
+		Searching. Arbitrary scrolling by giving number of lines.
+		I believe line numbers are partly supported.
+ > TEXT STRUCTURING:
+		Unsophisticated.
+ > SEARCHING:
+		Forward searching within screen, and general.
+		Generally, "a"="A".
+		Some possibility for complicated search patterns.
+ > ERROR RECOVERY:
+		Save command. Autosave facility (by default).
+		No undelete, or undo.
+		On a crash, one just restarts the editor on the latest
+		backup copy (which generally has the name of the original
+		file). (The unedited copy is renamed to "FILNAM.QZZ".)
+ > PROGRAMMABILITY:
+		Slight customization, using "SWITCH.INI" file.
+		No macros, or programmability.
+		However, note that editor is written in high-level language.
+		One can give a count to indicate that the same command be 
+		repeated for a number of consecutive lines.
+ > MULTIPLE FILES:
+		Some ability to switch between files. It seemed
+		somewhat limited, though I have not used the facility.
+ > TEXT FORMATTING:
+		Editor automatically breaks long lines, at least on (file)
+		input, and insertion.
+		Includes pagination, text-justification, and -filling.
+		There is a post-processor for vertical half-line spacing
+		on DIABLO-like terminals (special postprocessor commands
+		are recognized by editor).
+		There is also a stand-alone indexing program.
+		There is a utility for multicolumn formatting (which has been
+		used for the HELP file).
+ > PROGRAM FORMATTING:
+		None.
+ > OTHER FEATURES:
+ > LIMITATIONS:
+General info:
+ > EXAMPLE:
+		.R VIDED-Filnam.ext
+		(Answer questions on terminal type and starting page no.)
+		&n> EXAMPLE:<RET>	Search
+		(I can't remember where the cursor lands after a seach.
+		(If at the beginning of the search text, one would have to
+		(move the cursor (e.g. using "arrow" keys) past the ":".)
+		&4K			Delete 4 lines
+		(Type example. Note that the previous delete, since given
+		(in the middle of a line, leaves 3 1/2 blank lines.
+		(If more lines are needed, an &nL -command will insert n
+		(blank lines.)
+		&E			Exit from editor
+		(Note that "&" is the echo of a special key which
+		(differs from terminal to terminal. In all cases, CNRL/F
+		(may be used.)
+ > COMMENTS:
+ > REPORTED BY: Per Bothner.
+ > DATE:	1980-Oct-1.
+
+File: DISPLAYEDITORS,  Node: FINE,  Up: Top,  Previous: VIDED,	Next: ZED
+
+FINE:  A display editor for the DEC-10/20.
+(Fine Is Not Emacs)
+
+General info:
+ > NAME:	FINE
+ > MAINTAINER:	Written and maintained by Mike Kazar @CMU-10A.
+ > USERS:	CMU.  Also available at SUAI, and elsewhere.
+ > AVAILABILITY:
+		unknown
+ > MORE INFO:	
+
+Terminal support:
+ > TERMINALS SUPPORTED:
+		Unknown.  At least Concept 100, DM2500, etc.  Adding
+		a new terminal apparently requires modification of the
+		terminal driver, which is written in Bliss.
+ > USE OF DPY FEATURES:
+		Uses Character/Line Insert/Delete heavily.  Makes very
+		strong effort to optimize display updating.
+ > HARDCOPY SUPPORT:
+		nonexistent
+ > USE OF KEYBOARD:
+		Presumes an ASCII standard keyboard, possibly with META
+		key.  Most commands are control characters.
+ > SCREEN MANAGEMENT:
+		The context display is similar to that of Emacs, with a
+		small echo area at the bottom of the display.  The screen
+		itself can be divided vertically into any number of windows
+		(each full width).
+
+User interface:
+ > USE BY NOVICES:
+		Unknown.  Some attempt has been made to implement a
+		universal escape character (^G) which gets you out of
+		most confusing situations.
+
+ > DOCUMENTATION:
+		External documentation includes the manual, FINE:  A
+		DISPLAY EDITOR FOR THE DEC-10/20, (23 pp.) available
+		from CMU.  Also available online at CMU (and, in a
+		possibly outdated version, at SCORE).
+		[ *note DOC: (MRC:<JQJ.EDITORDOC>FINE.DOC)*.]
+
+System issues:
+ > IMPLEMENTATION:
+		The editor is written in Bliss.
+ > SYSTEM REQUIREMENTS:
+		Runs under both Tops-10 and Tops-20.
+
+ > EFFICIENCY:	unknown.  Makes fairly heavy use of temporary files.
+
+Features and limitations:
+	FINE is very similar to standard Emacs ^R mode.  Most of the
+control- and meta- commands are implemented in very similar form.
+
+ > ADDRESSING:
+		As with standard Emacs, relative addressing by word,
+		line, page, character, etc.  Or via search.  Line numbers
+		are not supported.
+ > TEXT STRUCTURING:
+		Structuring is generally by character, line, word,
+		paragraph, page, or region.
+ > SEARCHING:
+		Forward and reverse search, without wildcards.  Apparently,
+		always case independent.
+ > ERROR RECOVERY:
+		Deleted text (one block only) is saved in a kill buffer,
+		from which it may be restored.
+		Autosave is by default (user modifiable) every 100 keystrokes.
+ > PROGRAMMABILITY:
+		Limited macro facility.
+
+ > MULTIPLE FILES:
+		Multiple files may be edited and viewed simultaneously.
+ > TEXT FORMATTING:
+		Editor supports word wrap, region indentation and
+		justification, and case inversion.
+ > PROGRAM FORMATTING:
+		Special modes exist for editing BLISS and PASCAL.
+		Support exists for comment placement and automatic
+		indentation.
+
+ > OTHER FEATURES:
+		DIRED mode, for editing directory listings.
+
+ > LIMITATIONS:	unknown
+
+General info:
+ > EXAMPLE:	very similar to emacs.
+ > COMMENTS:	From the point of view of user interface, FINE is
+		very similar to uncustomized basic Emacs, with a few
+		commands cleaned up or made more regular.  It is superior
+		in its multi-window support, but is not really very
+		easily programmable.
+
+ > REPORTED BY:	ADMIN.JQJ@SCORE 1/14/81
+
+File: DISPLAYEDITORS,  Node: ZED,  Up: Top,  Previous: FINE,  Next: SED
+
+
+ZED:  A display editor with orthogonal command structure
+
+General info:
+ > NAME:	ZED.  Also known as DOC at MIT.
+ > MAINTAINER:	Written and maintained by Vaughan Pratt, MIT
+ > USERS:	Theory of Computation group, MIT; University of Washington,
+		Seattle.
+ > AVAILABILITY:Runs under Tops-20, is available at Score.
+		
+ > MORE INFO:	Vaughan Pratt (CSD.PRATT@SU-SCORE)
+
+Terminal support:
+ > TERMINALS SUPPORTED:
+	As for EMACS, namely Datamedia Elite 2500, Hazeltine 1500,
+Digital VT52, Datamedia Elite 1520, MIT Imlac, Digital VT05,
+Tektronix 4025, Digitial VT61, Teleray 4041, Perkin-Elmer Fox, HP
+2645, I400, Tek 4023, Ann Arbor, Concept 100, Soroc IQ 120, Digital
+VT100, Infotron 100, Teleray 1061, Heathkit H-19, Volker-Craig 404,
+CN-CP, Televideo 912, Perkin-Elmer OWL, Bantam, Datamedia 3045,
+Datamedia 3052, Hazeltine Modular One, and others.
+ > USE OF DPY FEATURES:
+	Same as for Emacs: ZED makes good use of char/line i/d, but
+for most terminal types does not use many other advanced features,
+e.g. highlighting.  It DOES utilize the SAIL character set, if your
+terminal happens to display it.  ZED does a very good job of
+optimizing typeahead, since it waits until you're finished typing
+before deciding how to redraw the screen.
+ > HARDCOPY SUPPORT:
+	ZED offers hardcopy support that aims to strike a balance
+between time to print out and resemblance to the actual text.  It is
+well-suited to terminals that obscure the text that is to the right of the
+printing element, as on TI Silent 700's.  It displays the text that is to the
+left of the print head on one line, and the remainder on the line above.  As
+the printhead is spaced to the right, either on account of text inserted or
+mere "cursor-right" movement, the text that is being inserted or "copied"
+appears from under the printhead, creating the illusion that it was there all
+along but that you just couldn't see it.
+ > USE OF KEYBOARD:
+	Unlike EMACS, ZED is closely tied to standard keyboards.  The use
+of the control key to indicate commands was considered and rejected on
+account of the awkwardness of dealing with numbers in a control-key
+oriented editor.  Instead the escape is used as a sort of "control-lock"
+key.  The state of "control-lock" is displayed on the ZED's status line, as
+either "Insert Mode" or "Alter Mode".  The bulk of the command language may
+be typed without using either control or shift keys.
+ > SCREEN MANAGEMENT:
+	ZED has a text window, a status line, and a command echo area
+in which the commands are echoed in their expanded form (as in Erase 3 Lines
+when the user typed E3L).  A multiwindow facility is planned for the near
+future. 
+ > USE BY NOVICES:
+	ZED was originally designed for use by a secretary Pratt was about
+to hire in 1974 and didn't want to have to teach TECO to.  Thus ZED is
+intended as the antithesis of a "hacker's" editor, and is aimed at
+nonprogrammers.  Pratt did not originally intend to become a ZED user
+himself, but found it more usable by hackers than intended.  Its use
+primarily by the Theory of Computation Group at MIT, and its adoption
+initially by the theorists at the University of Washington, Seattle,
+suggest that it is preferred by users generally less involved in
+programming.
+ > DOCUMENTATION:
+	The documentation consists of a manual and a teach file.  The
+manual is available from Vaughan Pratt, the teach file is
+[SCORE]<CSD.PRATT>TEACH.
+
+System issues:
+ > IMPLEMENTATION:
+	The editor is written in RMS's TECO.
+ > SYSTEM REQUIREMENTS:
+	Runs under both ITS and Tops-20.
+
+ > EFFICIENCY:
+	Somewhat more efficient than EMACS, due to fewer TECO commands
+used to realize a given command.
+
+Features and limitations:
+
+ > ADDRESSING:
+(i)	Physical: ZED offers a range of so-called "golfball" commands which are
+purely geometric, in that move the cursor l...
+
+....more to follow.....
+
+For now, we simply include the printout from the "?" help command:
+
+-------------------------------------------------------------------------------
+|   GOLFBALL    |  VERBS        ADJECTIVES      NOUNS       |   IMPERATIVES   |
+|---------------|-------------------------------------------|-----------------|
+|BACKSPACE SPACE|  Erase        2,3,4,...       Character   |  Insert	      |
+|LINEFEED RETURN|  Dump         Back or -       Word        |  Make: from$to$ |
+|   \       /   |  Justifill    Right-end-of    Line        |  Visit: file$   |
+|   <       >   |  Kase-Lower   wHole           Paragraph   |  Undo	      |
+|   {       }   |-----------------------------| File        |  eXit to: place$|
+|---------------|          INSERT MODE        | Text: xyz$  |  Get-dumped-text|
+|leave zed: ^Z  |enter: I   Erase Char: DELETE| Object      |  Quote (insert) |
+|continue:  zed |leave: $   Erase Word: ^W    | =           |		      |
+-------------------------------------------------------------------------------
+All-capitals commands refer to keys so labelled.  For other alphabetic
+commands type only the capitalized letter.  Commands from the middle region
+may be combined in the form VERB-ADJECTIVES-NOUN:  the VERB is optional, any
+number of "ADJECTIVES" may be given, and the NOUN is mandatory.  "GOLFBALL"
+commands are simple cursor motions.  For a manual, Visit <CSD.PRATT>ZED.MAN$
+For a self-teach file, Visit <CSD.PRATT>TEACH$
+
+
+REPORTED BY>	Vaughan Pratt
+DATE REPORTED>	1/15/81
+
+
+File: DISPLAYEDITORS,  Node: SED,  Up: Top,  Previous: ZED, Next: DEC-TV
+
+No info is currently available here.  See
+[SCORE]MRC:<JQJ.EDITORDOC>SED.DOC for a manual.
+
+
+File: DISPLAYEDITORS,  Node: DEC-TV,  Up: Top,  Previous: SED, Next: EDT
+
+This is a rather limited version of standard TECO with one extra feature:
+an attempt is made to constantly display the area around the point in a
+window occupying most of the screen, while prompting for TECO commands in a
+window at the bottom of the screen.
+
+No further info is currently available here.  See the DEC manual for
+details.
+
+
+File: DISPLAYEDITORS,  Node: EDT,  Up: Top,  Previous: DEC-TV,	Next: E
+
+EDT is an editor developed for the VAX, etc.  It is written in common
+Bliss, and so should be portable to the -20 with little difficulty.
+It was originally designed for use with the DEC VT-100 terminal, but
+has been extended to support other display terminals.
+
+No further info is currently available here.
+
+
+File: DISPLAYEDITORS,  Node: E,  Up: Top,  Previous: EDT,  Next: Z
+
+E is the powerful display editor developed at the Stanford Artificial
+Intelligence lab.  It makes heavy use of th SUAI system line editor,
+but has been ported to other more standard Tops-10 systems.  It is
+documented in the E reference manual, available at SU-AI.
+
+No further info is currently available here.
+
+File: DISPLAYEDITORS,  Node: Z,  Up: Top,  Previous: E
+
+Z is the display editor in use at Yale university.  It features
+display editing, plus very nice editor-program interaction; the user
+may compile a Fortran, Pascal, or C program under control of the
+editor, writing error messages to a file, then simultaneously edit
+the original program text and the error messages, using the latter to
+index into the former.
+
+Until a reasonable entry is developed for this file, we include the
+HELP file from Yale:
+
+
+Usage: Z [file1 file2 ...]
+==============================================================================
+Yale screen editor.  Since you spend 99% of your time in the editor, why not
+the best?
+
+          "The best and last of the Yale editors."  -New York Times.
+          "A tour-de-farce."  -Vincent Canby.
+          "A fun, featureful, frolicsome program.  No reason not to
+              come and enjoy it."  -Rex Reed.
+          "A true mass of seething bits."  -Mark R. Brown.
+          "Raw sex."  -Great Designer.
+
+
+Default keyboad assignment of Z editor functions.  (See TOOLS:Z.DOC for details)
+
+If you are in TOOLS.EXE then use function name to goto the appropriate place in
+Z.DOC.  (e.g. <arg>SETF<goto> will take you to the documentation for the
+<setf> function).
+
+
+Key    Function  Description
+
+^space <cancel>  Cancel current edit operation
+         <meta>  Modify next command
+
+escape or
+^]        <arg>  Enter argument
+^X^]      TARG   Enter Text Argument
+
+^X        SHFT   Shift to alternate keyboard
+^X^E      EXEC   Execute an editor function
+^X?       HUH    Query keyboard assignment
+^X^U      REPT   Repeat last command
+^B        SETF   Set the current file
+^C        HALT   Stop the editor, immediately
+^Z        EXIT   Exit the editor
+          MUFX   Exit the editor via MUF  (If MUF: in SWITCH.INI)
+          SM     Enter Session Manager    (If SM: in SWITCH.INI)
+^X^_      MVSM   Move to previous SM input line    (If SM: in SWITCH.INI)
+^X^B      SETF   Set current file
+
+^^        SWIT   Change an editor switch
+^XI       INIT   Read switches from DSK:SWITCH.INI
+
+tab       <tab>  Software tab
+return     <cr>  Software carraige return
+home      HOME   Move cursor to left hand corner
+^X^I      BTAB   Software backtab
+^N        NOCK   Read the next character literally
+
+^T        +LIN   Move forwards by lines
+^W        -LIN   Move backwards by lines
+^L        +PAG   Move forwards by pages
+^Q        -PAG   Move backwards by pages
+^P        GOTO   Goto a specific location
+^X^X      CURS   Rewrite current line
+^]        SETC   Rewrite screen
+
+^R        +SCH   Forward search
+^E        -SCH   Backward search
+^O        GLOB   Global search and replace
+^X^O      GLBQ   Global search and replace with query
+
+rub       CDEL   Character delete
+^X^S      WDEL   Word delete
+^V        PBAL   Parenthesis balance
+^A        SINS   Stream insert
+^S        SDEL   Stream delete
+^D        LINS   Line insert
+^F        LDEL   Line delete
+^K        LPIC   Line pick
+^G        PUT    insert contents of <put> buffer
+
+^X^R      SPEL   Move to next misspelled word
+^XF       FILL   Fill text
+^XJ       JUST   Justify text
+^XL       FLUL   Flush text left
+^X^C      CENT   Center text
+^XR       FLUR   Flush text right
+^Xc       LOWR   Convert to lower case
+^XC       UPPR   Convert to upper case
+
+^X^]      RFSH   Refresh current file from disk
+^XU       UDEL   Undelete previous version of file
+^U        COMP   Background compile
+^XP       PUSH   Push a TOPS20 EXEC
+^X^V      INFO   Display information
+^XD       DIR    Edit current directory
+          SAVE   Create a savable coreimage
+

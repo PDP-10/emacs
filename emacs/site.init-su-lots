@@ -1,0 +1,27 @@
+!* -*-TECO-*-!
+!* [LOTSC]SS:<EMACS165>SITE.INIT.41, 27-Sep-85 17:01:47, Edit by B.BRUNO!
+!* Change ETEACH set-up.  Disables C-W !
+
+1m.cSave File Append CRLF* -1 => saving file appends CRLF if needed, 0 => never append, 1 => ask user
+
+0fo..qVisit File Hook"E
+  @:I*|
+       Z"N1fsword&1"N
+       @FTThe file appears to have EDIT line numbers.  Remove them?
+       1M(M.M& Yes or No)"N M(M.MStrip SOS Line Numbers)'''
+      |m.vVisit File Hook
+  '
+
+FS XJName:F6 [J
+  (f=jETEACH)"e
+  m(m.m Load library)bruno         !* Contains the function Warning no C-W!
+  m.m Warning no Control-WU.W     !* Rebind C-W to something innocuous!
+  '
+
+!* implement BEMACS !
+FS XJName:F6 [J
+  (f=jBEMACS)"e 	    	    !* use restricted command set for BEMACS!
+    :ej EMACS;OLD-NOVICE :EJ	    !* load the NOVICE library!
+    m(m.m & Setup Novice Library)  !* and start it!
+    '
+

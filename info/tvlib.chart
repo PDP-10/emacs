@@ -1,0 +1,190 @@
+EMACS ^R-Command Chart (with TVLIB loaded):
+
+Non-Control Non-Meta Characters:
+
+Tab       ^R Indent According to Mode
+Linefeed  ^R Indent New Line
+Return    ^R CRLF
+Altmode   ^R Prefix Meta
+Rubout    deletes characters backwards.
+
+Control Characters:
+
+^;    ..   ^R Indent for Comment
+^@    ..   ^R Set/Pop Mark
+^A    ..   ^R Backward Sentence
+^B    ..   moves back one character (or several).
+^D    ..   ^R Backward Kill Word
+^E    ..   ^R Forward Sentence
+^F    ..   moves forward one character (or several).
+^G    ..   quits execution of any command.
+^I    ..   (tab) ^R Indent According to Mode
+^J    ..   (linefeed) ^R Indent New Line
+^K    ..   ^R Kill Line
+^L    ..   ^R Next Screen
+^N    ..   ^R Down Comment Line
+^O    ..   inserts one CRLF (or several) after point.
+^P    ..   ^R Up Real Line
+^Q    ..   ^R Insert Controlified
+^R    ..   ^R Reverse Search
+^S    ..   ^R Incremental Search
+^T    ..   ^R Display Load Average
+^U    ..   ^R Universal Argument
+^V    ..   ^R Next Screen
+^W    ..   ^R Backward Kill Word
+^X    ..   is a prefix character.  See below.
+^Y    ..   ^R Un-kill
+^Z    ..   ^R Prefix Control-Meta
+^\    ..   ^R Half Window Up
+^]    ..   ^R Half Window Down
+^^    ..   ^R Prefix Control
+Meta Characters:
+
+mTab       ^R End of Real Line
+mLinefeed  ^R Down Real Line
+mReturn    moves to the beginning of the next line.
+mAltmode   ^R Prefix Control-Meta
+mSpace     moves forward one character (or several).
+m#    ..   ^R Change Font Word
+m%    ..   ^R Query Replace
+m'    ..   ^R Upcase Digit
+m(    ..   ^R Backward Word
+m)    ..   ^R Forward Word
+m,    ..   ^R Kill Region
+m-    ..   is part of the next command's argument.
+m.    ..   ^R Copy Region
+m/    ..   ^R Describe
+m;    ..   ^R Indent for Comment
+m<    ..   moves back one character (or several).
+m=    ..   ^R Where Am I
+m>    ..   moves forward one character (or several).
+m?    ..   ^R Describe
+m@    ..   ^R Mark Word
+mA    ..   ^R Repeat Skip/Zap
+mB    ..   ^R Reverse Skip
+mC    ..   ^R Uppercase Initial
+mD    ..   ^R Kill Word
+mE    ..   ^R Forward Sentence
+mF    ..   ^R Forward Word
+mG    ..   ^R Nth Page
+mH    ..   ^R Home
+mJ    ..   ^R Indent New Comment Line
+mK    ..   deletes one character (or several) forward.
+mL    ..   ^R Lowercase Word
+mM    ..   ^R Mark Paragraph
+mN    ..   ^R Refresh Line
+mO    ..   ^R Other Window
+mP    ..   ^R Nth Page
+mQ    ..   ^R Fill Paragraph
+mR    ..   ^R Move to Screen Edge
+mS    ..   ^R Skip to Character
+mT    ..   ^R Exchange Words
+mU    ..   ^R Uppercase Word
+mV    ..   ^R Previous Screen
+mW    ..   ^R Next Window
+mX    ..   ^R Execute Completed MM Command
+mY    ..   ^R Un-kill Pop
+mZ    ..   ^R Zap to Character
+m[    ..   ^R Backward Paragraph
+m\    ..   ^R Delete Horizontal Space
+m]    ..   ^R Forward Paragraph
+m^    ..   ^R Up Real Line
+m_    ..   ^R Indent Rigidly
+m{    ..   ^R Goto Beginning
+m}    ..   ^R Goto End
+mRubout    moves back one character (or several).
+Control-Meta Characters:
+
+cm(    ..   ^R Beginning of Real Line
+cm)    ..   ^R End of Real Line
+cm;    ..   ^R Kill Comment
+cm<    ..   ^R Beginning of Real Line
+cm=    ..   ^R Indicate Page/line
+cm>    ..   ^R End of Real Line
+cm?    ..   ^R Documentation
+cm@    ..   ^R Set/Pop Mark
+cmA    ..   ^R Backward Kill Sentence
+cmB    ..   ^R Backward Sexp
+cmC    ..   exits from ^R mode.
+cmD    ..   ^R Kill Sentence
+cmE    ..   ^R End of DEFUN
+cmF    ..   ^R Return to Superior
+cmG    ..   ^R Format Code
+cmH    ..   ^R Mark Defun
+cmI    ..   ^R Indent for LISP
+cmJ    ..   ^R Down Real Line
+cmK    ..   ^R Kill Line
+cmL    ..   ^R Beginning of Real Line
+cmM    ..   ^R Mark Sentence
+cmN    ..   ^R New Window
+cmO    ..   ^R Split Line
+cmP    ..   ^R Backward List
+cmQ    ..   ^R Fill Region
+cmR    ..   ^R Reposition Window
+cmS    ..   ^R Center Line
+cmT    ..   ^R Exchange Sexps
+cmU    ..   ^R Backward Up List
+cmV    ..   ^R Scroll Other Window
+cmW    ..   ^R Scroll Other Window
+cmX    ..   ^R Execute Minibuffer
+cmY    ..   ^R Append Next Kill
+cmZ    ..   exits from ^R mode.
+cm[    ..   ^R Beginning of DEFUN
+cm\    ..   ^R Bottom of Screen
+cm]    ..   ^R End of DEFUN
+cm^    ..   ^R Top of Screen
+cmRubout    ^R Backward Kill Sexp
+
+Control-X is an escape prefix command with these subcommands:
+
+^X ^B     List Buffers
+^X ^D     ^R Directory Display
+^X ^F     ^R Find File
+^X Tab    Overwrite Mode
+^X ^L     ^R Lowercase Region
+^X ^N     ^R Set Goal Column
+^X ^O     ^R Delete Blank Lines
+^X ^P     ^R Mark Page
+^X ^Q     ^R Do Not Write File
+^X ^R     ^R Read File
+^X ^S     ^R Save File
+^X ^U     ^R Uppercase Region
+^X ^V     ^R Visit File
+^X ^W     Write File
+^X ^X     ^R Exchange Point and Mark
+^X ^Z     ^R TV Return to Superior
+^X Altmode ^R Re-execute Minibuffer
+^X #      ^R Change Font Region
+^X (      ^R Define Keyboard Macro
+^X .      ^R Set Fill Prefix
+^X 1      ^R One Window
+^X 2      ^R Two Windows
+^X 3      ^R View Two Windows
+^X 4      ^R Modified Two Windows
+^X :      ^R Set Column
+^X ;      ^R Set Comment Column
+^X =      ^R Where Am I
+^X A      ^R Append to Buffer
+^X B      Select Buffer
+^X D      ^R Dired
+^X F      ^R Set Fill Column
+^X G      ^R Get Q-reg
+^X H      ^R Mark Whole Buffer
+^X I      Overwrite Mode
+^X K      Kill Buffer
+^X L      ^R Count Lines Page
+^X M      Mail
+^X N      ^R Set Bounds Region
+^X O      ^R Other Window
+^X P      ^R Set Bounds Page
+^X R      ^R RMAIL
+^X W      ^R Set Bounds Full
+^X X      ^R Put Q-reg
+^X [      ^R Previous Page
+^X ]      ^R Next Page
+^X ^      ^R Grow Window
+^X _      ^R Underline Region
+^X {      ^R Mark Beginning
+^X }      ^R Mark End
+^X ~      ^R Not Modified
+^X Rubout ^R Backward Kill Sentence

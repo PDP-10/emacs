@@ -1,0 +1,113 @@
+                       CHALLENGE: EMACS IN 2 PAGES
+
+SOME NECESSARY NOTATION.
+Any ordinary character goes into the buffer (no insert command needed).
+In commands, use carriage return, shown as <cr>, after a string unless the
+chart shows $, meaning to use ESCAPE.  ESCAPE is called Altmode in EMACS.
+C-       A control character.  C-F means "control F".  C-_ means "control
+           underscore" (use C-? on a VT100 to get C-_)
+M-       A two-character command sequence where the first character is
+           Altmode.  M-F means "ESCAPE then F"
+M-X string    A command designated "by hand".  M-X Revert File means:
+           Altmode then "x" then type "revert file" then <cr>
+point    EMACS term for cursor position in current buffer
+
+GETTING OUT.
+C-X C-S  Write the current buffer into a new version of the current file
+           name
+C-X C-W  Write the current buffer into a file with a different name
+C-X C-Z  Finish by exiting to the exec
+M-X Push Push to a lower exec fork (the same one each time)
+
+BUFFER OPERATIONS.
+C-X C-F  Get a file into a buffer for editing
+C-X B    Select a different buffer (prompts; default is the last one)
+C-X C-B  Display the list of available buffers
+C-X K    Kill
+a buffer (prompts for which one; default is current one)
+M-<      Move to the top of the current buffer
+M->      Move to the end of the current buffer
+
+HELP AND HELPER FUNCTIONS.
+C-G      Abort anything at any time (it beeps, sometimes you need 2)
+M-? x    What does this key do? (try M-? C-K as an example)
+C-_ L    What happened?  Show the last 60 keys pressed
+C-_ A string  Show every command containing string (try C-_ A Paragr)
+C-_ D string  Describe a command (try C-_ D Query Rep)
+M-X Undo Revert to buffer before last kill, unkill, fill, sort, etc.
+C-Y      Yank back the last thing killed (kill and delete are different)
+M-n      Provide a numeric argument of n for the command that follows
+C-Q      Inserts a control character in the buffer (e.g. C-Q C-L)
+C-X D    Directory editing subsystem (use ? to see its documentation)
+
+CHARACTER OPERATIONS.
+C-B      Move left (Back)
+C-F      Move right (Forward)
+C-P      Move up (Previous)
+C-N      Move down (Next)
+RUBOUT   Delete left
+C-D      Delete right
+C-T      Transpose previous 2 characters (ht -> th)
+
+WORD OPERATIONS.
+M-B      Move left (Back)
+M-F      Move right (Forward)
+M-RUBOUT Kill left (C-Y yanks it back at point)
+M-D      Kill right (C-Y yanks it back at point)
+M-T      Transpose 2 words around point (if only -> only if)
+M-C      Capitalize word                                    2
+
+M-U      Uppercase word
+
+LINE OPERATIONS.
+C-A      Move to the beginning
+C-E      Move to the end
+C-O      Open up a line for typing
+C-X C-O  Close up any blank lines around point
+M-0 C-K  Kill from beginning to point (C-Y yanks it back at point)
+C-K      Kill from point to end (C-Y yanks it back at point)
+
+SENTENCE OPERATIONS.
+M-A      Move to the beginning
+M-E      Move to the end
+C-X RUBOUT    Kill from beginning to point (C-Y yanks it back at point)
+M-K      Kill from point to end (C-Y yanks it back at point)
+
+PARAGRAPH OPERATIONS.
+M-[      Move to beginning
+M-]      Move to end
+M-Q      Fill the current paragraph
+M-n C-X F     Set the fill column to n (e.g. M-60 C-X F)
+
+SCREEN OPERATIONS.
+C-V      Show next screen
+M-V      Show previous screen
+C-L      Redisplay screen
+M-0 C-L  Move the line where point is to line 0 (top) of the screen
+
+PAGE OPERATIONS.
+C-X [    Move to beginning (last ^L)
+C-X ]    Move to end (next ^L)
+
+SEARCH AND REPLACE.
+(note: EMACS has other search commands, all of which I prefer to
+incremental search, but we are just describing defaults here)
+C-S      "Incremental" search searches while you enter string (C-S str$)
+C-R      "Incremental" backward search (C-R str$)
+M-X Replace String  Replace one string with another (M-X Repl$one
+           string$another)
+M-X Query Replace  Replace one string with another, wants SPACE meaning
+           "do it" or RUBOUT to skip (M-X Qu$one string$another)
+
+REGION OPERATIONS.  Region is area of buffer between point and mark (or
+mark and point).  Some commands set the mark, so check it before using.
+C-@      Set the mark (for use with REGION commands)
+C-X C-X  Interchange point and mark (i.e. go to the other end of the
+           current region)
+C-W      Kill region (C-Y yanks it back at point)
+
+WINDOW OPERATIONS.
+C-X 2    Split the screen in two windows (same buffer shown in each)
+C-X 1    Resume single window (using buffer from top window)
+C-X O    Move cursor to other window (all the usual commands apply)
+C-Z V    Display the next screen in the other window

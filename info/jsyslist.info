@@ -1,0 +1,476 @@
+
+
+                      List of JSYS's from INFO:
+
+
+
+ACCES: (552)  Specifies access to a directory
+ADBRK: (570)  Controls address breaks
+AIC: (131)  Activates software interrupt channels
+ALLOC: (520)  Allocates a device
+ASND: (70)  Assigns a device
+ATACH: (116)  Attachs a terminal to a job
+ATI: (137)  Assigns a terminal code to an interrupt channel
+BIN: (50)  Performs byte input
+BKJFN: (42)  Backs up pointer by one byte
+BOOT: (562)  Performs functions required for loading front-end software
+BOUT: (51)  Performs byte output
+CACCT: (4)  Changes account designator
+CFIBF: (100)  Clears the input buffer
+CFOBF: (101)  Clears the output buffer
+CFORK: (152)  Creates an inferior process
+CHFDB: (64)  Changes a File Descriptor Block
+CHKAC: (521)  Checks access to a file
+CIS: (141)  Clears the interrupt system
+CLOSF: (22)  Closes a file
+CLZFF: (34)  Closes the process' files
+COMND: (544)  Parses a command
+CRDIR: (240)  Creates, changes, or deletes a directory
+CRJOB: (2)  Creates a job
+CRLNM: (502)  Defines or deletes a logical name
+DEBRK: (136)  Dismisses current software interrupt
+DELDF: (67)  Expunges deleted files
+DELF: (26)  Deletes files
+DELNF: (317)  Retains specified number of generations of a file
+DEQ: (514)  Removes request from resource queue
+DEVST: (121)  Translates a device designator to a string
+DFIN: (234)  Inputs double-precision floating point number
+DFOUT: (235)  Outputs double-precision floating point number
+DIAG: (530)  Reserves or releases hardware channels
+DIBE: (212)  Dismisses until input buffer is empty
+DIC: (133)  Deactivates software interrupt channels
+DIR: (130)  Disables software interrupt system
+DIRST: (41)  Translates a directory number to a string
+DISMS: (167)  Dismisses the process
+DOBE: (104)  Dismisses until output buffer is empty
+DSKAS: (244)  Assigns disk addresses
+DSKOP: (242)  Specifies disk transfers in hardware terms
+DTACH: (115)  Detaches a terminal from a job
+DTI: (140)  Deassigns a terminal code
+DUMPI: (65)  Reads data in unbuffered data mode
+DUMPO: (66)  Writes data in unbuffered data mode
+DVCHR: (117)  Retrieves device characteristics
+EFACT: (5)  Makes an entry in the FACT file
+EIR: (126)  Enables  software interrupt system
+ENQ: (513)  Places request in resource queue
+ENQC: (515)  Obtains status of resource queue
+EPCAP: (151)  Enables process capabilities
+ERSTR: (11)  Converts error number to string
+ESOUT: (313)  Outputs an error string
+FFFFP: (31)  Finds first free page in file
+FFORK: (154)  Freezes processes
+FFUFP: (211)  Finds first used page in file
+FLIN: (232)  Inputs floating-point number
+FLOUT: (233)  Outputs floating-point number
+GACCT: (546)  Gets current account designator
+GACTF: (37)  Gets account designator of file
+GCVEC: (300)  Gets entry vector of compatibility package
+GDSKC: (214)  Gets disk count
+GDSTS: (145)  Gets device's status
+GDVEC: (542)  Gets entry vector of RMS
+GET: (200)  Gets a save file
+GETAB: (10)  Gets a word from a monitor table
+GETER: (12)  Returns the last error in a process
+GETJI: (507)  Gets specified job information
+GETNM: (177)  Returns the program name currently being used
+GEVEC: (205)  Gets entry vector
+GFRKH: (164)  Gets process handle
+GFRKS: (166)  Gets process structure
+GFUST: (550)  Returns author and last writer name strings
+GJINF: (13)  Gets current job information
+GNJFN: (17)  Gets the next JFN
+GPJFN: (206)  Gets the primary JFNs
+GTAD: (227)  Gets current date and time
+GTDAL: (305)  Gets disk allocation of a directory
+GTDIR: (241)  Gets information of directory entry
+GTFDB: (63)  Gets a File Descriptor Block
+GTJFN: (20)  Gets a JFN Short Form
+Long: (20)  Gets a JFN Long Form
+GTRPI: (172)  Get trap information
+GTRPW: (171)  Gets trap words
+GTSTS: (24)  Gets a file's status
+GTTYP: (303)  Gets the terminal type number
+HALTF: (170)  Halts the current process
+HFORK: (162)  Halts a process
+HPTIM: (501)  Returns values of high precision clocks
+HSYS: (307)  Halts the system
+IDCNV: (223)  Inputs date and time conversion
+IDTIM: (221)  Inputs date and time
+IDTNC: (231)  Inputs date/time without converting
+IIC: (132)  Initiates software interrupts on specified channels
+INLNM: (503)  Lists job's logical names
+JFNS: (30)  Translates a JFN to a string
+KFORK: (153)  Kills a process
+LGOUT: (3)  Kills a job
+LNMST: (504)  Converts a logical name to a string
+LOGIN: (1)  Logs in a job
+LPINI: (547)  Loads VFU or translation RAM
+MRECV: (511)  Receives an IPCF message
+MSEND: (510)  Sends an IPCF message
+MSFRK: (312)  Starts a process in monitor mode
+MSTR: (555)  Performs structure-dependent functions
+MTALN: (774)  Associates magnetic tape drive with logical unit number
+MTOPR: (77)  Performs device-dependent functions
+MUTIL: (512)  Performs IPCF control functions
+NIN: (225)  Inputs an integer number
+NODE: (567)  Performs network utility functions
+NOUT: (224)  Outputs an integer number
+ODCNV: (222)  Outputs date and time conversion
+ODTIM: (220)  Outputs date and time
+ODTNC: (230)  Outputs date/time without converting
+OPENF: (21)  Opens a file
+PBIN: (73)  Inputs the next byte
+PBOUT: (74)  Outputs the next byte
+PEEK: (311)  Obtains monitor data
+PLOCK: (561)  Locks physical pages
+PMAP: (56)  Maps pages
+PMCTL: (560)  Controls physical memory
+PPNST: (557)  Translates project-programmer number to string
+PRARG: (545)  Reads/sets process argument block
+PSOUT: (76)  Outputs a string
+RCDIR: (553)  Translates string to directory number
+RCM: (134)  Reads the channel word mask
+RCUSR: (554)  Translates string to user number
+RDTTY: (523)  Reads data from primary input designator
+RELD: (71)  Releases a device
+RESET: (147)  Resets/initializes the current process
+RFACS: (161)  Reads process' ACs
+RFBSZ: (45)  Reads files's byte size
+RFCOC: (112)  Reads file's control character output
+RFMOD: (107)  Reads a file's mode
+RFORK: (155)  Resumes a process
+RFPOS: (111)  Reads terminal's position
+RFPTR: (43)  Reads file's pointer position
+RFRKH: (165)  Releases a process handle
+RFSTS: (156)  Reads a process' status
+RFTAD: (533)  Reads file's time and dates
+RIN: (54)  Performs random input
+RIR: (144)  Reads software interrupt table addresses
+RIRCM: (143)  Reads inferior reserved channel mask
+RLJFN: (23)  Releases JFNs
+RMAP: (61)  Obtains a handle on a page
+RNAMF: (35)  Renames a file
+ROUT: (55)  Performs random output
+RPACS: (57)  Reads a page's accessibility
+RPCAP: (150)  Reads process capabilities
+RSCAN: (500)  Accepts a new string or uses the last string as input
+RTFRK: (322)  Returns the handle of a process suspended because of a monitor call intercept
+RTIW: (173)  Reads terminal interrupt word
+RUNTM: (15)  Returns runtime of process or job
+RWM: (135)  Reads waiting channel interrupt word mask
+RWSET: (176)  Releases the working set
+SACTF: (62)  Sets account designator of file
+SAVE: (202)  Saves a file as nonsharable
+SCTTY: (324)  Changes controlling terminal
+SCVEC: (301)  Sets entry vector of compatibility package
+SDSTS: (146)  Sets device's status
+SDVEC: (543)  Sets entry vector of RMS
+SETER: (336)  Sets the last error in a process
+SETJB: (541)  Sets job parameters
+SETNM: (210)  Sets program name
+SETSN: (506)  Sets system name for a process
+SEVEC: (204)  Sets entry vector
+SFACS: (160)  Sets process' ACs
+SFBSZ: (46)  Sets file's byte size
+SFCOC: (113)  Sets file's control character output
+SFMOD: (110)  Sets a file's mode
+SFORK: (157)  Starts a process
+SFPOS: (526)  Sets terminal's position
+SFPTR: (27)  Sets file's pointer position
+SFRKV: (201)  Starts process using its entry vector
+SFTAD: (534)  Sets file's time and dates
+SFUST: (551)  Sets author and last writer name strings
+SIBE: (102)  Skips if input buffer is empty
+SIN: (52)  Performs string input
+SINR: (531)  Performs record input
+SIR: (125)  Sets software interrupt table addresses
+SIRCM: (142)  Sets inferior reserved channel mask
+SIZEF: (36)  Gets the size of a file
+SJPRI: (245)  Sets job's priority
+SKPIR: (127)  Tests the state of the software interrupt system
+SMON: (6)  Sets monitor flags
+SNOOP: (516)  Performs system analysis
+SOBE: (103)  Skips if output buffer is empty
+SOBF: (175)  Skips if output buffer is full
+SOUT: (53)  Performs string output
+SOUTR: (532)  Performs record output
+SPACS: (60)  Sets a page's accessibility
+SPJFN: (207)  Sets the primary JFNs
+SPLFK: (314)  Splices a process structure
+SPOOL: (517)  Defines and initializes input spooling
+SPRIW: (243)  Sets the priority word
+SSAVE: (203)  Saves a file as sharable
+STAD: (226)  Sets system date and time
+STCMP: (540)  Compares two strings
+STDEV: (120)  Translates string to device designator
+STI: (114)  Simulates terminal input
+STIW: (174)  Sets terminal interrupt word
+STO: (246)  Simulates terminal output
+STPAR: (217)  Sets terminal parameters
+STPPN: (556)  Translates string to project-programmer number
+STSTS: (25)  Sets a file's status
+STTYP: (302)  Sets the terminal type number
+SWJFN: (47)  Swaps two JFNs
+SYERR: (527)  Writes data to the system error file
+SYSGT: (16)  Returns information for a system table
+TBADD: (536)  Adds entry to command table
+TBDEL: (535)  Deletes entry from command table
+TBLUK: (537)  Looks up entry in command table
+TEXTI: (524)  Reads input from a terminal or a file
+TFORK: (321)  Sets and removes monitor call intercepts
+THIBR: (770)  Blocks the current job
+TIME: (14)  Returns time system has been up
+TIMER: (522)  Sets time limit for a job
+TLINK: (216)  Controls terminal linking
+TMON: (7)  Tests monitor flags
+TTMSG: (775)  Sends a message to a terminal
+TWAKE: (771)  Wakes a specified job
+UFPGS: (525)  Updates file's pages
+USAGE: (564)  Writes entries into the accounting data file
+USRIO: (310)  Places program in user I/O mode
+UTEST: (563)  Test monitor routines
+UTFRK: (323)  Resumes a process suspended because of a monitor call intercept
+VACCT: (566)  Validates an account
+WAIT: (306)  Dismisses process until interrupt occurs
+WFORK: (163)  Waits for processes to terminate
+
+
+
+
+
+                      List of JSYS's from INFO:
+                           (Numeric order)
+
+
+
+
+001 LOGIN  Logs in a job
+002 CRJOB  Creates a job
+003 LGOUT  Kills a job
+004 CACCT  Changes account designator
+005 EFACT  Makes an entry in the FACT file
+006 SMON  Sets monitor flags
+007 TMON  Tests monitor flags
+010 GETAB  Gets a word from a monitor table
+011 ERSTR  Converts error number to string
+012 GETER  Returns the last error in a process
+013 GJINF  Gets current job information
+014 TIME  Returns time system has been up
+015 RUNTM  Returns runtime of process or job
+016 SYSGT  Returns information for a system table
+017 GNJFN  Gets the next JFN
+020 GTJFN  Gets a JFN Short Form
+020 Long  Gets a JFN Long Form
+021 OPENF  Opens a file
+022 CLOSF  Closes a file
+023 RLJFN  Releases JFNs
+024 GTSTS  Gets a file's status
+025 STSTS  Sets a file's status
+026 DELF  Deletes files
+027 SFPTR  Sets file's pointer position
+030 JFNS  Translates a JFN to a string
+031 FFFFP  Finds first free page in file
+034 CLZFF  Closes the process' files
+035 RNAMF  Renames a file
+036 SIZEF  Gets the size of a file
+037 GACTF  Gets account designator of file
+041 DIRST  Translates a directory number to a string
+042 BKJFN  Backs up pointer by one byte
+043 RFPTR  Reads file's pointer position
+045 RFBSZ  Reads files's byte size
+046 SFBSZ  Sets file's byte size
+047 SWJFN  Swaps two JFNs
+050 BIN  Performs byte input
+051 BOUT  Performs byte output
+052 SIN  Performs string input
+053 SOUT  Performs string output
+054 RIN  Performs random input
+055 ROUT  Performs random output
+056 PMAP  Maps pages
+057 RPACS  Reads a page's accessibility
+060 SPACS  Sets a page's accessibility
+061 RMAP  Obtains a handle on a page
+062 SACTF  Sets account designator of file
+063 GTFDB  Gets a File Descriptor Block
+064 CHFDB  Changes a File Descriptor Block
+065 DUMPI  Reads data in unbuffered data mode
+066 DUMPO  Writes data in unbuffered data mode
+067 DELDF  Expunges deleted files
+070 ASND  Assigns a device
+071 RELD  Releases a device
+073 PBIN  Inputs the next byte
+074 PBOUT  Outputs the next byte
+076 PSOUT  Outputs a string
+077 MTOPR  Performs device-dependent functions
+100 CFIBF  Clears the input buffer
+101 CFOBF  Clears the output buffer
+102 SIBE  Skips if input buffer is empty
+103 SOBE  Skips if output buffer is empty
+104 DOBE  Dismisses until output buffer is empty
+107 RFMOD  Reads a file's mode
+110 SFMOD  Sets a file's mode
+111 RFPOS  Reads terminal's position
+112 RFCOC  Reads file's control character output
+113 SFCOC  Sets file's control character output
+114 STI  Simulates terminal input
+115 DTACH  Detaches a terminal from a job
+116 ATACH  Attachs a terminal to a job
+117 DVCHR  Retrieves device characteristics
+120 STDEV  Translates string to device designator
+121 DEVST  Translates a device designator to a string
+125 SIR  Sets software interrupt table addresses
+126 EIR  Enables  software interrupt system
+127 SKPIR  Tests the state of the software interrupt system
+130 DIR  Disables software interrupt system
+131 AIC  Activates software interrupt channels
+132 IIC  Initiates software interrupts on specified channels
+133 DIC  Deactivates software interrupt channels
+134 RCM  Reads the channel word mask
+135 RWM  Reads waiting channel interrupt word mask
+136 DEBRK  Dismisses current software interrupt
+137 ATI  Assigns a terminal code to an interrupt channel
+140 DTI  Deassigns a terminal code
+141 CIS  Clears the interrupt system
+142 SIRCM  Sets inferior reserved channel mask
+143 RIRCM  Reads inferior reserved channel mask
+144 RIR  Reads software interrupt table addresses
+145 GDSTS  Gets device's status
+146 SDSTS  Sets device's status
+147 RESET  Resets/initializes the current process
+150 RPCAP  Reads process capabilities
+151 EPCAP  Enables process capabilities
+152 CFORK  Creates an inferior process
+153 KFORK  Kills a process
+154 FFORK  Freezes processes
+155 RFORK  Resumes a process
+156 RFSTS  Reads a process' status
+157 SFORK  Starts a process
+160 SFACS  Sets process' ACs
+161 RFACS  Reads process' ACs
+162 HFORK  Halts a process
+163 WFORK  Waits for processes to terminate
+164 GFRKH  Gets process handle
+165 RFRKH  Releases a process handle
+166 GFRKS  Gets process structure
+167 DISMS  Dismisses the process
+170 HALTF  Halts the current process
+171 GTRPW  Gets trap words
+172 GTRPI  Get trap information
+173 RTIW  Reads terminal interrupt word
+174 STIW  Sets terminal interrupt word
+175 SOBF  Skips if output buffer is full
+176 RWSET  Releases the working set
+177 GETNM  Returns the program name currently being used
+200 GET  Gets a save file
+201 SFRKV  Starts process using its entry vector
+202 SAVE  Saves a file as nonsharable
+203 SSAVE  Saves a file as sharable
+204 SEVEC  Sets entry vector
+205 GEVEC  Gets entry vector
+206 GPJFN  Gets the primary JFNs
+207 SPJFN  Sets the primary JFNs
+210 SETNM  Sets program name
+211 FFUFP  Finds first used page in file
+212 DIBE  Dismisses until input buffer is empty
+214 GDSKC  Gets disk count
+216 TLINK  Controls terminal linking
+217 STPAR  Sets terminal parameters
+220 ODTIM  Outputs date and time
+221 IDTIM  Inputs date and time
+222 ODCNV  Outputs date and time conversion
+223 IDCNV  Inputs date and time conversion
+224 NOUT  Outputs an integer number
+225 NIN  Inputs an integer number
+226 STAD  Sets system date and time
+227 GTAD  Gets current date and time
+230 ODTNC  Outputs date/time without converting
+231 IDTNC  Inputs date/time without converting
+232 FLIN  Inputs floating-point number
+233 FLOUT  Outputs floating-point number
+234 DFIN  Inputs double-precision floating point number
+235 DFOUT  Outputs double-precision floating point number
+240 CRDIR  Creates, changes, or deletes a directory
+241 GTDIR  Gets information of directory entry
+242 DSKOP  Specifies disk transfers in hardware terms
+243 SPRIW  Sets the priority word
+244 DSKAS  Assigns disk addresses
+245 SJPRI  Sets job's priority
+246 STO  Simulates terminal output
+300 GCVEC  Gets entry vector of compatibility package
+301 SCVEC  Sets entry vector of compatibility package
+302 STTYP  Sets the terminal type number
+303 GTTYP  Gets the terminal type number
+305 GTDAL  Gets disk allocation of a directory
+306 WAIT  Dismisses process until interrupt occurs
+307 HSYS  Halts the system
+310 USRIO  Places program in user I/O mode
+311 PEEK  Obtains monitor data
+312 MSFRK  Starts a process in monitor mode
+313 ESOUT  Outputs an error string
+314 SPLFK  Splices a process structure
+317 DELNF  Retains specified number of generations of a file
+321 TFORK  Sets and removes monitor call intercepts
+322 RTFRK  Returns the handle of a process suspended because of a monitor call intercept
+323 UTFRK  Resumes a process suspended because of a monitor call intercept
+324 SCTTY  Changes controlling terminal
+336 SETER  Sets the last error in a process
+500 RSCAN  Accepts a new string or uses the last string as input
+501 HPTIM  Returns values of high precision clocks
+502 CRLNM  Defines or deletes a logical name
+503 INLNM  Lists job's logical names
+504 LNMST  Converts a logical name to a string
+506 SETSN  Sets system name for a process
+507 GETJI  Gets specified job information
+510 MSEND  Sends an IPCF message
+511 MRECV  Receives an IPCF message
+512 MUTIL  Performs IPCF control functions
+513 ENQ  Places request in resource queue
+514 DEQ  Removes request from resource queue
+515 ENQC  Obtains status of resource queue
+516 SNOOP  Performs system analysis
+517 SPOOL  Defines and initializes input spooling
+520 ALLOC  Allocates a device
+521 CHKAC  Checks access to a file
+522 TIMER  Sets time limit for a job
+523 RDTTY  Reads data from primary input designator
+524 TEXTI  Reads input from a terminal or a file
+525 UFPGS  Updates file's pages
+526 SFPOS  Sets terminal's position
+527 SYERR  Writes data to the system error file
+530 DIAG  Reserves or releases hardware channels
+531 SINR  Performs record input
+532 SOUTR  Performs record output
+533 RFTAD  Reads file's time and dates
+534 SFTAD  Sets file's time and dates
+535 TBDEL  Deletes entry from command table
+536 TBADD  Adds entry to command table
+537 TBLUK  Looks up entry in command table
+540 STCMP  Compares two strings
+541 SETJB  Sets job parameters
+542 GDVEC  Gets entry vector of RMS
+543 SDVEC  Sets entry vector of RMS
+544 COMND  Parses a command
+545 PRARG  Reads/sets process argument block
+546 GACCT  Gets current account designator
+547 LPINI  Loads VFU or translation RAM
+550 GFUST  Returns author and last writer name strings
+551 SFUST  Sets author and last writer name strings
+552 ACCES  Specifies access to a directory
+553 RCDIR  Translates string to directory number
+554 RCUSR  Translates string to user number
+555 MSTR  Performs structure-dependent functions
+556 STPPN  Translates string to project-programmer number
+557 PPNST  Translates project-programmer number to string
+560 PMCTL  Controls physical memory
+561 PLOCK  Locks physical pages
+562 BOOT  Performs functions required for loading front-end software
+563 UTEST  Test monitor routines
+564 USAGE  Writes entries into the accounting data file
+566 VACCT  Validates an account
+567 NODE  Performs network utility functions
+570 ADBRK  Controls address breaks
+770 THIBR  Blocks the current job
+771 TWAKE  Wakes a specified job
+774 MTALN  Associates magnetic tape drive with logical unit number
+775 TTMSG  Sends a message to a terminal
+

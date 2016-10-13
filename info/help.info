@@ -1,0 +1,153 @@
+
+Node: Top		Next: Intro		Up: (DIR)Information Programs
+
+This file tells how to get Help through the online documentation at
+LOTS and how to write new help files or modify old ones.
+
+If you are a relatively inexperienced user, you would want to read
+the nodes about getting help below (use the N command).
+
+People who want to write new help files or modify old ones should
+read about writing help files and the HELPMAINT program.
+
+* Menu:
+
+Getting Help
+* Intro::
+* Subcommands::
+* Extended Documentation::
+
+
+Giving Help
+* Writing HELP files::
+* HELPMAINT program::
+
+
+Node: Intro		Up: Top			Next: Subcommands
+
+	Whenever you are typing something at LOTS, we like to say that
+you are "talking to" some program that is "reading" the characters and
+commands that you type.  When you log in, you are talking to the EXEC,
+or to the "at sign", which is the Exec's "prompt".  Later, you will
+find yourself talking to other system programs, such as EDIT (which
+modifies a file containing your own program or text).
+	When talking to a system program, you may sometimes become
+confused as to what to say (type) next.  When this happens, try typing
+a ? to the program.  The following is a list of some kinds of help that
+you can get by typing ? to the EXEC.
+
+	@?		! gives a list of all acceptable commands
+	@HELP ?		! lists most frequently requested help files
+Typing ? at any point during any Exec command causes the Exec to tell
+you what it expects you type next.
+
+	In some contexts where ? is not helpful, the word Help
+may be useful.  In Edit, typing H to the * gives you help.
+
+
+
+Node: Subcommands	Up: Top	Next: Extended Documentation	Previous: Intro
+
+Using the HELP program:
+
+	@HELP
+			introduces you to Help, and
+	@HELP *
+			lists all available help files.
+Normally, however, the HELP program is invoked by typing
+
+	@HELP <topic-name>
+
+	The Help program responds by printing one screenful of
+information about the topic you have named.  It then asks you:
+
+Choose a Subtopic (? for help):
+
+At that point, you should type "?" to see a list of the available subtopics.
+
+	If any subtopic appeals to you, you should type its name:
+the Help program will then display information on the subtopic.
+There are several other commands that you may also give to the
+"Choose a subtopic?"  prompt, however.  Among them are:
+
+FILE			Tells you the name of the file that HELP
+		is currently typing on your screen; this is useful if
+		you need to PRINT this file for later reference, or
+		need to have it updated;
+
+QUIT			Returns you to the Exec; leaves HELP;
+
+HELP			Prints a message similar to this text,
+		explaining your options.
+If a topic is very long, HELP will pause at strategic intervals to ask you
+
+More?
+
+, to which you should respond Y or N.
+
+Node: Extended Documentation		Up: Top		Previous: Subcommands
+
+There is also extended information, too long to place in a help file,
+available on many topics.  Most such on-line documentation is stored
+in the directory DOC:, and is cross-referenced in the relevant help
+files.  To see a list of all the files in DOC:, type:
+
+	@DIR DOC: 
+
+There is also, within EMACS, a tree-structured documentation 
+perusal system, *Note INFO:(INFO) .
+
+
+Node: Writing HELP files	Up: Top		Next: HELPMAINT program
+
+We have several general suggestions on how to write a help file.  First,
+the file should begin with a one-sentence summary of what the file is
+about, oriented toward the browser, and may point to a longer
+documentation file (e.g.  a tutorial) or to hard-copy documentation.
+You may also want to use this page as a directory to the file.
+
+The first screenful of the helpfile should communicate the most
+important or useful facts about the topic, in as much detail as a
+screenful allows.  Further details should be relegated to the
+subtopics.
+
+In general, the file should be broken up into pages, each of
+which is less than one screen-full of information, and which
+forms a natural unit.  Modular writing is as useful as modular
+programming!  Each page is separated by a formfeed (CTRL-L).  The
+first page of a subtopic should be labelled with a topic name
+enclosed in angle brackets. 
+
+For examples, *Note Helpfiles:(HLP:HELPFILES)* .
+
+After you have written the help file, use the HELPMAINT program to tell
+the system the topic of your help file and where the file lives (see
+the HELPMAINT subtopic in this file).  Consultants and LOTS Volunteers
+automatically have access to the HELP and DOCUMENTATION directories and
+the HELPMAINT program.  Contact a staff member if you have a file of
+your own you think should be included in the system help files.
+
+
+Node: HELPMAINT Program		Up: Top		Previous: Writing HELP files
+
+After you have written the help file, use HELPMAINT to edit the
+keyword table of help topics used by the HELP program.  The keyword
+table is in a binary format and lives in the file HLP:HELP.BIN.  The
+table is a simple mapping of keyword(s) (help topics) to the
+appropriate help file.
+
+When you start up the HELPMAINT program, it automatically maps in the
+keyword table.  You then use the ADD and REMOVE commands to edit the
+table.  Use the DISPLAY command to look at all or parts of the table.
+When you are done, use the WRITE command to generate HLP:HELP.BIN and
+HLP:HELP.CMD, a textual representation of the keyword table.  To
+regenerate the keyword table from HLP:HELP.CMD, use the REBUILD command.
+The EXIT command returns you to the EXEC without making any changes.
+
+When adding a new keyword, be as general as possible with the file
+specification.  This aids the table's transportability greatly.
+    do this ->  HELPMAINT> ADD (KEYWORD) foo (POINTING TO) hlp:foo.hlp
+    not this -> HELPMAINT> ADD (KEYWORD) foo (POINTING TO) sx:<help>foo.hlp.3
+
+The /INVISIBLE switch in the ADD command causes a keyword to not be typed
+out when a user types "HELP ?" to the EXEC.

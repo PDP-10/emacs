@@ -1,0 +1,48 @@
+!* -*-TECO-*- *!
+!* [toed.xkl.com]DXX:<INFO>INFO.INIT.2, 17-Apr-96 12:38:45, Edit by ALDERSON!
+!* Change the name of this file from INFO:EMACS.INIT to INFO:INFO.INIT to!
+!* simplify the entire EMACS build process!
+!* Change Tops-20 program name for external INFO to EINFO.EXE!
+!* SS:<INFO165>EMACS.INIT.79, 16-Jul-85 14:01:05, Edit by B.BRUNO!
+!* Make the echo area height 1 line high, and the mode line in reverse video!
+!* <SHSU>INFO.INIT.2,  8-Jul-82 16:29:44, Edit by SHSU!
+!* added iteration around *Initialization* to fix Twenex CONT bug.!
+
+!* This is the EMACS init for INFO.  It sets up the EMACS/INFO environment!
+!* necessary for dumping a new INFO EJ file.!
+
+ :i*INFO m.vEditor Name	    !* Editor Name and ..J must match!
+ :i..jINFO			    !* when the initial ^R is entered!
+				    !* so that our *Initialization* gets!
+				    !* called.!
+ :i**INFO*m(m.m Select Buffer)
+
+ 1 m.v Echo Area Height	    !* Make the echo area only 1 line!
+ 1 fs Inv Mod			    !* and the mode line in reverse video!
+
+!* Create startup macro to be run when we're 'd.!
+
+ @:i*|	m(m.mLoad Library)INFO    !* load the INFO library!
+	fj :0k hfx1 0fsmodif	    !* Q1 gets JCL, sans CR.  It is the arg to!
+				    !* MM INFO Enter!
+	:m..l
+     | m.vMM & Startup INFO
+
+!* When ^K'd, we do a ^R, thus executing this string and entering INFO.!
+
+ @:i*|< fq1"l :i1'
+	qINFO *Initialization* U*Initialization*
+	0fsmode mac
+	m(m.mInfo Enter)1
+	160000. fs exit >
+     | m.v*Initialization*
+ q*Initialization* m.vINFO *Initialization*
+
+ fs osteco"e
+   m(m.aPURIFYDump Environment)EMACS;TSINFO >'
+ "#
+   m(m.aPURIFYDump Environment)EMACS:EINFO.EXE'
+
+ FTINFO Dumped
+
+ 160000. fs exit

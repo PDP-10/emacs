@@ -1,0 +1,243 @@
+         EMACS/VMACS Reference Card
+
+    For use with EMACS loaded with TVLIB
+
+Key:
+[x] = edit-x (or escape-x as two keystrokes).
+	Referred to as "meta-x" by EMACS.
+^x  = control-x
+ $  = escape.  [$x] is referred to as
+	"control-meta-x" by EMACS.  Same as
+	single keystroke [^X] for most
+	letters x, but can't be typed that
+	way for special chars such as ^ or =.
+"point" = position of the cursor.
+
+Almost all commands for which it makes sense
+can take a numeric repeat argument, typed
+(entirely) with the edit key held down.  A
+repeat argument may also be given to a
+non-command, e.g. [4]x will insert 4 x's.
+^U is a special repeat arg meaning "4 times".
+^U^U is thus 4x4 or 16 times.
+
+Cursor movement
+
+[space] -- forward character
+[del] -- backward character
+[^] -- up line
+[lf] -- down line
+[cr] -- move to start of new line
+[$^] -- top of screen
+[$\] -- bottom of screen
+[(]  -- backward word
+[)]  -- forward word
+[^L]  or [$(] -- start of line
+[tab] or [$)] -- end of line
+
+[[]  (edit-[) -- backward paragraph
+[]]  (edit-]) -- forward paragraph
+[{]  -- go to start of file
+[}]  -- go to end of file
+[P]  -- go to next pagemark
+[nP] -- go to page n
+[-nP] -- go backward n pages
+[G]  -- same as [P]
+
+
+Scrolling
+
+[W]  -- window forward
+[-W] -- window backward
+[nW] -- window forward by n lines
+[-nW] - window backward by n lines
+^L -- window forward	   \  on
+^\ -- half window backward  | left
+^] -- half window forward  / keypad
+
+Killing
+
+[K]  -- kill character
+^K or [^K] or [$K] -- kill to end of line
+[n^K] -- kill n lines
+[D]  -- delete to end of word
+[-D] or ^W -- delete back to start of word
+[Z] char -- Zap (kill) to char
+
+
+Searching
+
+[S] char -- Skip to char
+[B] char -- Backward skip to char
+[A] -- (Again) repeat last [S], [B], or [Z]
+^S string -- search for string
+^R string -- reverse search for string
+^S^S or ^R^R -- search (or reverse search)
+	for last thing you searched for
+
+  (^S and ^R are incremental search; type $
+   or any edit command to end search; <del>
+   to back up search; ^S or ^R to search for
+   next occurrence of string.)
+
+
+Unkilling
+
+^Y -- (Yank) recover last thing killed and
+	insert it in buffer at point.
+[n]^Y -- unkill nth previous text killed.
+[Y]   -- Following a ^Y, replaces restored
+	text with previously killed text.
+	Following a justify/fill command,
+	inserts the original unfilled text.
+[^Y]  -- (Append next kill) Make next command
+	(a kill command) append text to
+	previous thing killed, so that they
+	all come out in one ^Y.
+
+File visiting/switching
+
+[^F] or [$F] -- Finish: exit EMACS.  If in
+	Auto Save mode, file is saved.
+^X^V -- edit a file in current buffer
+^X^R -- edit file readonly in buffer
+^X^F -- (Find file) edit a file in its own
+	buffer
+[-]^X^F -- like ^X^F but readonly
+^X^S -- save current buffer in its file
+^X^W -- Write current buffer to a file
+
+  (^X^V, ^R, ^F, ^W all prompt for filename)
+
+^X B -- switch to a different buffer (prompts
+	for name)
+^X^B -- list all buffers currently active
+[H]  -- (Home) switch to previous buffer
+^X K  -- Kill buffer
+
+
+Two window mode
+
+^X 2  -- go into 2-window mode, putting cursor
+	in second window.  Creates buffer W2
+	first time.
+^X 1  -- go back to one-window mode.
+^X 3  -- go into 2-window mode but stay in
+	first window.
+^X 4  -- Modified 2-window: lets you specify
+	what you want in window 2.  Type "F"
+	after this command to fetch a file
+	into window 2 (a la ^X^F), or "B" to
+	pull in an existing buffer (^X B).
+[O]  -- switch to Other window.
+[^W] -- Scroll other window.
+[n] ^X ^ -- (i.e. ^X uparrow) increase current
+	window by n lines (or decrease if
+	negative).
+
+
+Region manipulation
+
+[null] -- set a new mark at cursor (point)
+^X^X -- exchange point and mark
+^U^@ -- pop mark into cursor (go to last mark
+	and remove it)
+[M]  -- Mark current paragraph
+[$M] -- mark sentence
+^X^P -- mark current page
+^X { -- mark start of file
+^X } -- mark end of file
+^X H -- mark wHole buffer
+[,]  -- Kill region
+[.]  -- Copy region as if killed (^Y will
+	produce the copies)
+
+Fancier text manipulation
+
+[Q]  -- Fill paragraph
+[1Q] -- Fill and justify paragraph
+[^Q] -- Fill region
+[1^Q] -- Fill and justify region
+[^S] -- center line
+[^R] -- Right flush line
+[n ^X F] -- set "Fill column" (right margin)
+	to n
+[n_]  -- shift region to the right n chars
+	(or to left if negative).
+[\]  -- delete spaces around cursor.
+
+^A -- go to start of sentence
+^E -- go to end of sentence
+[^A] -- kill back to start of sentence
+[^D] -- kill entire sentence
+
+[L]  -- lowercase (from point to end of word)
+[U]  -- Uppercase
+[C]  -- Capitalize
+
+[T]  -- Transpose the words that point is
+	between.
+[nT] -- Moves word before point n words to
+	the right.
+
+Information
+
+^_  -- Help.  Type another char to get
+	various kinds of help:
+ ^_A -- Apropos.  Lists commands containing a
+	keyword you type.
+ ^_L -- Lossage.  Prints the last 60 or so
+	commands you typed, so you can figure
+	out how you blew it.
+ ^_? -- will tell you what else you can do.
+[?] -- Gives a description of any command
+	you type.
+[=] -- print cursor row and column, and byte
+	address in file.
+[$=] -- print current page and line number.
+^T  -- print Time and Load average.
+
+Misc commands
+
+^G  -- (interrupt char) abort whatever is
+	happening
+^O  -- insert blank line at point.
+^U^O -- insert 4 blank lines.
+^X^O -- delete all extra blank lines from
+	point to next non-blank line.
+[^O] -- break line at point, moving right
+	half of line down one line without
+	disturbing its horizontal position.
+^Q char -- insert char Quoted and
+	Controlified, without regard for its
+	use as a command.  E.g. ^QC will
+	insert a ^C.
+[N] -- refresh current line.
+[$N] or [^N] -- refresh whole screen.
+
+^X ( -- start defining a macro
+^X ) -- end definition of macro
+^X E -- Execute last macro
+[x] Name Kbd Macro -- assign last macro a
+	name and/or a command char.
+
+Misc extend commands:
+  (type these following [X]; most of them can
+   be abbreviated; type $ for completion)
+
+Replace String$oldstring$newstring  -- does
+	string substitution.  With arg does
+	only cases where oldstring is
+	surrounded by non-text delimiters.
+Auto Save -- go into auto save mode; with arg
+	of zero turns it off.
+Auto Fill -- go into auto fill mode; with arg
+	of zero turns it off.
+Insert File$filename -- insert indicated file
+	into buffer at point.
+View Page Directory -- Print a "directory" giving
+	first line of each page in file; with
+	arg of n starts at page n.
+Save All Files -- Saves each buffer that has
+	changed, prompting you about each.
+	With arg doesn't ask. 

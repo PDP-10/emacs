@@ -1,0 +1,212 @@
+-*-TEXT-*-
+
+File: DMACS		Node: Top	Up: (DIR)	Next: Doc
+
+DMACS is an adaptation of EMACS.  Its purpose is to make EMACS more
+accessible to the SRI user.  It does this in three ways:
+
+	1.  The command set has been rearranged and regularized,
+making it easier to learn and easier to remember.
+	2.  The command set is optimized for the Datamedia keyboard.
+Maximal use is made of the keypad at the right side.  Almost all
+editing commands use the edit-key, some use the control-key as well;
+there are very few commands that use the control-key alone.
+	3.  Some new functions have been added, and others have been
+modified, to provide additional capability.
+
+DMACS is still undergoing a certain amount of development.  If you
+plan to make regular use of DMACS, send a message to AGIN@SRI-KL so
+you can be kept up to date on changes.
+
+* Menu:
+
+* Documentation: Doc	Getting started.  Pointers to documentation files
+
+* Differences: Diffs	Differences between DMACS and "Vanilla" EMACS.
+
+Node: Doc	Previous: Top	Up: Top		Next: Diffs
+
+The best introduction to DMACS is to run the system program
+TEACH-DMACS.  Just give the command @TEACH-DMACS to the TOPS-20 exec
+and follow instructions.  You will actually use the DMACS editor to
+move around the file containing an introduction to the editor.
+
+Later on you'll want to list yourself a copy of <EMACS>DMACS.CHART.
+(It's formatted for wide paper, so use LLIST instead of LIST.)  This
+file lists the names of all the commands and the keys they are
+assigned  to.
+
+EMACS has an excellent system for self-documentation.  It's very
+helpful in learning about new features in the system.  And whenever
+anything changes, the self-documentation is automatically up to date.
+The most efficient way to invoke it is via the help character: ^_,
+control-backarrow, or the "hold" key on Datamedia keyboards.
+TEACH-DMACS tells about help subcommands that are useful for
+exploring the system.
+
+The file <INFO>EMACS.. is a good source of information about EMACS in
+general.  The file is intended to be accessed through the INFO
+subsystem of EMACS or DMACS (type help-I to invoke INFO).  The same
+information is contained in the file <DOCUMENTATION>EMACS.GUIDE, but
+formatted for line printer output.  Be aware that the character
+assignments discussed there are mainly different from the assignments
+in the DMACS command set.
+
+
+Node: Diffs	Previous: Doc		Up: Top
+
+DMACS is more than just a re-wiring of existing commands.  There are
+a number of omissions and awkwardnesses in vanilla EMACS that have
+been corrected either by modifying existing functions, or by adding
+new ones.
+
+The commands that move forward and back by words or delete words
+always move to the beginnings of words.  The same commands with a ^X
+prefix move to the ends of words.  In vanilla EMACS it depends on
+which direction you approach from.
+
+There are three options in the typing of control and meta bits:
+	1.  Use the Ctrl and Edit keys on the Datamedia Keyboard.
+	2.  Use Escape for Meta and either Edit-Escape or
+Escape-Escape for Control-Meta.
+	3.  Use the three unlabeled keys on the left of the keyboard
+(between ^L and ^A).  The bottom key, ^^, is Prefix Control.  The
+middle key, ^], is Prefix Meta.  The top key, ^\, is Prefix
+Control-Meta.
+
+Tab and Carriage Return are self-inserting characters.   The business
+of Carriage Return eating up blank lines has been discarded.  In most
+major modes Edit-tab is Indent Nested.  A negative argument -n to
+Edit-tab will indent n spaces to the right of the previous line (or n
+times the value of the variable Q$Indentation Increment$).
+
+M-_ deletes characters backwards, like rubout, but when it encounters
+a tab it turns it into spaces so it can delete the spaces one at a
+time. 
+
+Ten "fixed marks" have been provided in addition to THE mark.  "The
+region" is still defined by the pointer and THE mark; the additional
+fixed marks provide the capability of designating some particular
+spot in your file that stays put while you copy text elsewhere.  With
+no arguments, the command M-M sets THE mark and the command M-G goes
+to THE mark (Exchange Point and Mark).  With a numeric argument
+(0-9) they set or go to the corresponding fixed mark.
+
+Edit-A, Append Next Kill, has been fixed to work sensibly.  The
+problem was that sometimes the text being killed would append to the
+end of the previously-killed text, and sometimes prepend to the
+beginning.  The version in DMACS always appends to the end, unless
+you give it a negative argument, in which case it prepends to the
+beginning.
+
+C-X and M-X provide the identical function in the DMACS command set.
+They are redundant for convenience in typing commands like C-X C-D
+(Directory Display) or M-X M-D (Kill Word) without shifting bits in
+mid-command.
+
+It should be unnecessary for a user to know anything about TECO to
+make full use of DMACS.  The minibuffer still exists, but most users
+need not be aware of it.  Commands that use the minibuffer in vanilla
+EMACS (such as ^R Query Replace) have been redefined to request their
+type-in in the echo area.  There are commands [not implemented yet]
+to set and type the contents of arbitrary variables.
+
+^Z is the universal exit character.  When you type ^Z at the top
+level, DMACS will clear the screen, save whatever file you are
+editing, and escape to the EXEC.  (You may type CONTINUE to resume
+your edit.)  ^Z is the character to type to end the edit when DMACS
+was invoked from SNDMSG, LISP, or some other higher-level program.
+Use ^Z to exit from submodes such as Alter Options and Edit Tabular
+Text, and to exit from recursive ^R invoked from Query Replace or
+from the INFO package. 
+
+SOS line numbers and the multiple nulls left in files by TVEDIT are
+automatically removed when you read a file.  (Exception: nulls are
+not removed in TECO Mode.)
+
+DMACS has a capability of dealing with page numbers.  <n>Meta-P will
+go to the top of page <n> of the buffer.  Meta-P by itself will go to
+the top of the next page.  Minus Meta-P will go backward a page.  The
+Where Am I function (^X =) prints the current page and line.
+
+As in vanilla EMACS, search commands keep a record of the "last thing
+searched for" so that you can repeat the previous search.  But now
+the record for Character Search is kept separate from that for longer
+searches (String Search and Incremental Search).  Within Incremental
+Search, Control-S and Meta-S are equivalent, as are Control-R and
+Meta-R.
+
+The way exchanging works (for characters, words, sexps, and lines)
+has been slightly modified.  A positive numeric argument means to
+exchange the chunk before the cursor with <n> chunks following the
+cursor.  A negative arg means to the exchange <n> chunks before the
+cursor with the one after.  A zero argument is a special case, and
+means to exchange the two chunks at the point and the mark.  The
+cursor always ends up between the chunks interchanged, with the
+following exceptions: At the end of a line (Exchange Characters), and
+at the end of the buffer (Exchange Lines).
+
+Two new major modes have been implemented.  Indented Text Mode is
+like Text Mode, but AutoFill makes new lines be indented, and
+paragraphs are defined to start only with blank lines.   Tabular Text
+Mode is similar to Text Mode, but it redefines edit-Tab to be Tab to
+Tab Stop, and makes AutoFill indent.  (Also, these modes continue to
+be available as "temporary" submodes--see MM Edit Indented Text and
+MM Edit Tabular Text.)
+
+A new SAIL Mode provides commands for moving forward and back by
+stataments and by blocks.  A BLISS Mode is planned.  MACRO Mode is
+provided instead of what was called MIDAS mode in vanilla EMACS.
+
+The various "F" and "B" commands depend on what major mode you're
+editing in.  For example M-F is Forward Sentence if you're in Text
+Mode, Forward List if you're in LISP Mode, Forward Statement if
+you're in SAIL Mode, etc.  Some modes also make use of "@", "T", or
+"V" commands too.  See the second page of <EMACS>DMACS.CHART for
+all the commands thus defined.
+
+There are ties to the Interlisp/EMACS interface, which allows you to
+call DMACS directly from Interlisp to edit LISP functions and
+S-expressions.  The interface is documented in the file
+<BOYER>NEMACS.DOC.
+
+When a new buffer is created, the major mode that was in effect
+previously becomes the mode in the new buffer.  Auto-filling is now
+local to buffers, and in new buffers gets turned on or off according
+to what was in force previously.
+
+Autosave Filename is now defaulted to AUTOSAVE..1000nn, where nn is
+your job number, on your login directory.  In this way, auto saving
+needn't fill up your directory with multiple deleted files.  ^X ^S
+will write to the "permanent" file name rather than the Auto Save
+File, unless you give it an arg of 0.  ^Z saves your file and cleans
+up (deletes) auto save files.
+
+The library for defining keyboard macros (KBDMAC) is automatically
+loaded when required.  Type M-/ to start or end macro definition.
+While a keyboard macro is being defined, the word "Defining" appears
+in the mode line.  If you give a numeric argument n to the closing
+M-/, the macro will be repeated n-1 additional times.  If you do not
+specify a numeric argument, you will be prompted for a character to
+assign the macro to.
+
+We now have a multi-forking capability.  MM Push will get a lower fork
+for you, running the subsystem of your choice.  First it will prompt
+for a handle (name) by which it can access the fork, then the name of
+a subsystem to run in the fork.  "EXEC" is a reasonable answer for
+both of these.  When you pop back from your lower exec, you edit will
+be in the same state you left it.  You can re-enter the same fork
+again later by re-specifying the same handle.  MM Push is based on
+the EFORK package written by Chuck Weinstock.
+
+Other functions have been added.  Generally, their names tell what
+they do.  See their self-documentation for fuller explanations.
+	^R Center Region
+	^R Exchange Lines
+	^R Kill into Q-reg
+	^R No-op
+	^R Copy Lines
+	^R Zap to Character
+	^R Zap thru Character
+	^R Move to Hpos
+	^R Set Hpos Target Column

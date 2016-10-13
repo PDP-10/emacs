@@ -1,0 +1,61 @@
+!* -*- teco -*- *!
+!* [toed.xkl.com]DXX:<EMACS>BABYL-BUILD.INIT.2, 10-Apr-96 14:18:14, Edit by ALDERSON!
+!* [MIT-XX]PS:<EMACS>DUMP-BABYL.INIT.5, 27-Jun-83 22:38:50, Edit by FHSU!
+!* [MIT-OZ]<EMACS>DUMP-BABYL.INIT.5,  10-Apr-83 20:01:23, Edit by ECC!
+!* [MIT-OZ]<EMACS>DUMP-BABYL.INIT.4,  27-Jan-83 16:04:24, Edit by ECC!
+!* [MIT-OZ]<EMACS>DUMP-BABYL.INIT.3,  15-Jul-82 12:46:13, Edit by ECC!
+!* [MIT-OZ]<EMACS>DUMP-BABYL.INIT.2,  8-Jul-82 16:38:28, Edit by SHSU!
+!* [BBNG]<FHSU>DUMP-BABYL.INIT.6, 27-Jun-82 09:40:49, Edit by: FHSU!
+
+!* To dump: set your own EMACS and Babyl init and vars files invisible, if you!
+!* have any, so that they do not get processed when we load Babyl now.  Then!
+!* go into TECO, let emacs; teco init run, which then runs emacs; emacs init,!
+!* then do "@er babyl-build.init$ @y m(hfx*)$$ and hopefully it will dump!
+!* something out somewhere...!
+
+etDSK: fsHSNamefsDSNamew		!* Default for check to home dir.!
+
+e?BABYL.VARS"e :i*You must first set your BABYL.VARS invisible.fsErr'
+e?BABYL.INIT"e :i*You must first set your BABYL.INIT invisible.fsErr'
+e?EMACS.VARS"e :i*You must first set your EMACS.VARS invisible.fsErr'
+e?EMACS.INIT"e :i*You must first set your EMACS.INIT invisible.fsErr'
+
+mmRun LibraryMKDUMP			!* dump this thing out!
+m(m.mLoad Library)BABYL		!* get pointer to babyl library!
+!* Note that loading Babyl now will do its call to Babyl Setup Hook now, but!
+!* that is really wrong -- needs to be done when this job starts up, after!
+!* processing BABYL.VARS etc. so user can have it do things.  See below.!
+
+m(m.mLoad Library)BBOARD
+
+:I*BABYLm.vEditor Name		!* a change of name!
+:I..jBABYL
+
+@:i*|
+     fsRGetty-2"l
+       @m(m.aTRMTYPInit File Set Terminal Type)'
+     m(m.mProcess Babyl Init or Vars File)	!* Process users Babyl init or!
+						!* vars file.!
+     qBabyl Setup Hookf"n[1 m1w ]1'w	!* Run users hook if any.!
+     etDSK: fsHSNamefsDSNamew	!* Default to home directory,!
+     etMAIL.TXT 1fsDVersionw		!* and normal mail file.!
+     :m..L
+|m.vMM & Startup BABYL
+
+@:i*|<					!* make us restartable!
+      0fsMode Macro			!* what does this do??!
+      fsXJName:f6[1			!* start off with bboards?!
+      f~1BBOARD"e
+         m(m.m# Babyl ^B)'		!* start BBoard reader!
+      ]1
+      1,m(m.mBABYL)			!* enter babyl!
+      160000. fs Exit>			!* exit!
+|m.v*Initialization*
+
+m(m.mDump EMACS)emacs:BABYL.EXE	!* out we go...!
+
+@ft
+BABYL Standalone Job Dumped
+					!* say so...!
+
+160000. fs Exit			!* bye for good.!

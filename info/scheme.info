@@ -1,0 +1,2204 @@
+This is the scheme info node.  Somebody should probably make this
+better.
+			-Joshm@Oz
+
+File: Scheme, Node: Top, Previous: (Languages)Ilisp, Up: (Languages)Lisp
+
+Invoke via: "Scheme"
+Default extension: ".SCM"
+Emacs interface: "(edit)" ;from scheme
+
+* Menu:
+
+* Abstract::		My (JOSHM's) little flame about scheme
+* SchMan::		My attempt to infoize the scheme manual.
+			  List of scheme functions normally handed out to
+			  6.001 students.
+
+File: Scheme, Node: Abstract, Up: Top, Next: Schman
+
+Scheme is  the  lisp used  in  MIT's  6.001, Structure  and  Interpretation  of
+Computer Programs.  It is an interpreter that runs on top of Maclisp, and  thus
+is somewhat slow.  It differs from most other lisps in that it is lexically (as
+opposed to dynamically) scoped.  Also a small effort seems to have been made to
+make some of the function names more pneumonic, such as replacing remprop  with
+remove!-prop.  It is "nicer"  than Maclisp in that  virtually all data  objects
+incuding functions are  considered "first class"  (i.e. they don't  have to  be
+quoted when passed  to other  functions and  can be  returned as  the value  of
+another  function   without   special  quoting   or   FUNARGing.)   It   is   a
+pedagologically oriented language.  Much of the power that Maclisp has (such as
+Jsys calls,  macros, fexprs,  etc) has  been sacrificed  in order  to make  the
+language more suitable for learning with.  However, its lexical scoping enables
+the student to have more control  over environments, frames, thus allowing  him
+to study  topics such  as  message passing,  object oriented  programming,  and
+decentralization of control in a more straightforward manner.
+
+On  line  documentation  is  availiable  (at  the  time  of  this  writing)  in
+PS:<SCHEME.MC-6001>SCHMAN.LSP (this is the same thing that 6.001 students  get)
+However, it is a little more readable in its XINFO form.  It has been  menuized
+by chapters and then functions.  However, the individual function  descriptions
+could be a little  more computer readable.   If anyone wants  to do that,  feel
+free.
+
+(comments to JOSHM@OZ)
+
+File: Scheme, Node: Schman, Previous: Abstract, Up: Top
+
+Book:		Scheme Manual, Version 2
+Copyright:	Massachusetts Institute of Technology
+
+This manual has been infoized (by JoshM).  At this level you can select
+chapters, and similarly, on the chapter level you can select the documentation
+for individual functions.  At the function level, things might have been made a
+little more computer readable.  If someone wants to do that, feel free.
+
+
+* Menu:	Chapters
+
+* Special Forms::
+* Arithmetic::
+* Compound Data::
+* Reading and Printing::
+* Advanced Special Forms::
+* System Support::
+
+File: Scheme, Node: Special Forms, Up: Schman, Next: Arithmetic
+
+* Menu:	Functions
+
+* LAMBDA::
+* LET::
+* DEFINE::
+* SET!::
+* IF::
+* SEQUENCE::
+* COND::
+* QUOTE::
+* AND::
+* OR::
+* NOT::
+* NIL?::
+
+
+File: Scheme, Node: LAMBDA, Up: Special Forms
+
+SpecialForm:	(LAMBDA (var1 var2 ...) exp1 exp2 ...)
+Description:	LAMBDA constructs procedure objects.  It makes an unnamed
+                procedure with formal parameters var1, var2, ... and a
+                body consisting of exp1, exp2, ....  The procedure object
+                is executed by applying it to a number of arguments.
+		In such a procedure application, each formal parameter is
+		bound to the value of the corresponding argument supplied to
+		the procedure producing a frame with which variable references
+		in the body of the procedure can be resolved.  The expressions
+		in the body are then evaluated sequentially.  Free variables
+		in the procedure body, ie, variables other than the formal
+		parameters, are evaluated in the lexically enclosing frame.  
+		A LAMBDA combination consists of a LAMBDA expression
+                together with argument expressions.
+Demo:		;; A lambda expression
+		(LAMBDA (X Y) (+ X Y))
+		 #<COMPOUND-PROCEDURE (LAMBDA (X Y) (+ X Y))>
+		;; A lambda combination
+		((LAMBDA (X) (+ X 3)) 5)
+		8
+End-Entry:	LAMBDA
+						      
+
+File: Scheme, Node: LET, Up: Special Forms
+
+SpecialForm:	(LET bindings exp1 exp2 ...)
+Description:	LET is used to declare and initialize local variables. bindings
+                is a list of two-element lists; the first element of each list
+                is the variable name and the second element of the list is an
+                expression whose value is being named:
+                   bindings  ((name1 val1) (name2 val2) ...).
+                The variables only have these values in the expressions in the
+                body of the LET.  This is called the "scope" of the
+		variables.
+		The expressions in the body of the LET are
+		sequentially evaluated
+		and the value of the last one is returned. All of the
+		expressions
+                whose values are being named in the LET are evaluated
+		in the context before the local names exist. So, the
+		value of
+                one variable in the bindings list may not, in
+		particular, depend
+                on the new value assigned to a variable preceding it
+		in the list.
+                LET is "syntactic sugar" for the LAMBDA combination:
+		((LAMBDA (name1 name2 ...) exp1 exp2 ...) val1 val2 ...).
+Demo:		(LET ((X 3) (Y 4))
+		  (LET ((Z (+ X Y)) (X 1))
+		    (* X Y Z)))
+		28
+End-Entry:	LET
+
+Page-Break:
+
+
+File: Scheme, Node: DEFINE, Up: Special Forms
+
+SpecialForm:    (DEFINE name exp)
+Description:	Defines name to be a local variable and initializes it to the
+                value of exp (name is not evaluated). A special syntax is provided
+                for defining named procedures, namely,                        
+Code:		(DEFINE (name var1 var2 ...) exp1 exp2 ...)
+Description:	which is equivalent to
+Code:		(DEFINE name (LAMBDA (var1 var2 ...) exp1 exp2)).
+Example:        (DEFINE H 4)                    => H
+Example:        H                               => 4
+Example:        (DEFINE J (LAMBDA (X) (+ 2 X))) => J
+Example:        (J 4)                           => 6
+Example:	(DEFINE (F X) (+ X 5))		=> F
+Example:	(F 23)				=> 28
+Example:	(DEFINE (G X Y) (* (F X) X Y)) 	=> G
+Example:	(G 3 4)				=> 96
+End-Entry:	DEFINE
+
+
+File: Scheme, Node: SET!, Up: Special Forms
+
+SpecialForm:	(SET! var exp) 
+Description:    SET! is used to assign a new value to a previously DEFINE'd
+       		(or LAMBDA bound) variable.  The value
+                of exp becomes the new value of var.  var itself is not
+                evaluated.  An error will occur if var has not been
+                already DEFINE'd (or LAMBDA bound).  Use of SET! is
+                rare in well written SCHEME code.
+End-Entry:	SET!
+
+
+File: Scheme, Node: IF, Up: Special Forms
+
+SpecialForm:	(IF condition consequent alternative)
+Description:    IF is the primitive conditional statement. If condition evaluates
+                to non-NIL, the consequent is evaluated, otherwise the alternative
+                is evaluated. If no alternative is supplied and the condition
+                fails, NIL is returned.
+Example:	(IF (NULL? NIL) 'A 'B)			=> A
+Example:        (IF (= 3 4) 'yes 'no)                   => no
+Example:	(IF NIL 0 (+ 3 4))		=> 7
+End-Entry:	IF
+
+
+File: Scheme, Node: SEQUENCE, Up: Special Forms
+
+SpecialForm:	(SEQUENCE exp1 exp2 ...)
+Description:	SEQUENCE is used for the evaluation of sequential
+		expressions. It evaluates exp1 exp2 ... in order (from left to 
+		right!).
+End-Entry:	SEQUENCE
+
+Page-Break:
+
+
+File: Scheme, Node: COND, Up: Special Forms
+
+SpecialForm:	(COND clause1 clause2 ...)
+Description:	COND is a generalized conditional facility.  Each clause is a 
+                list (P E1 E2 ...) consisting of a predicate expression, and 
+                any number of consequent expressions, E1, E2, ....  The predicate
+                expressions are evaluated sequentially until one 
+		evaluates to a non-NIL value.  
+		Once a non-nil predictate is found its consequents are
+		evaluated then control leaves the COND.
+		The syntactic token, ELSE, may be used as the predicate part of
+                the final clause, causing the consequent sequence of that clause 
+                to be evaluated when the predicates of all other clauses evaluate 
+                to NIL.
+Example:	(COND (NIL 'LOSE) ((ZERO? 1) 3) (ELSE 'WIN))	=> WIN
+Example:	(COND ((EQ? 'A 'A) 'SAME) (ELSE 'HUH?))		=> SAME
+Example:	(COND ((EQ? 'A 'B) 'FOO))			=> NIL
+End-Entry:	COND
+
+
+File: Scheme, Node: QUOTE, Up: Special Forms
+
+SpecialForm:	(QUOTE obj)
+Description:	QUOTE returns obj unevaluated.  A symbolic constant is
+		notated
+		using QUOTE. 'obj is a syntactic abbreviation for
+                (QUOTE obj); both forms are equivalent, but
+		the abbreviation is preferable for legibility.
+Example:	(QUOTE (A B))	=> (A B)
+Example:	(QUOTE (+ 3 5))	=> (+ 3 5)
+Example:	'X		=> X
+End-Entry:	QUOTE
+
+
+File: Scheme, Node: AND, Up: Special Forms
+
+SpecialForm:	(AND exp1 exp2 ...)
+Description:	AND evaluates expressions
+                from left to right. If any evaluates to NIL, AND returns
+                NIL and the remaining expressions are not evaluated.
+Example:	(AND NIL (PRINT 'FOO))	=> NIL ; Nothing is printed
+Example:	(AND 'A 'B)		=> B
+Example:        (AND (< 3 4) (> 6 5))   => 
+End-Entry:	AND
+
+
+File: Scheme, Node: OR, Up: Special Forms
+
+SpecialForm:	(OR exp1 exp2 ...)
+Description:	OR evaluates
+                expressions from left to right. If some expression
+                evaluates to a non-NIL value, OR returns the value of that
+                expression and the remaining expressions are not evaluated. 
+Example:	(OR NIL 'Q)			=> Q
+Example:	(OR 'A 'B)			=> A
+Example:	(OR (EQ? 'X 'Y) (EQ? 'Z 'Y))	=> NIL
+End-Entry:	OR
+
+Page-Break:
+
+
+File: Scheme, Node: NOT, Up: Special Forms
+
+Syntax:		(NOT obj)
+Args:		1 arg
+Description:	NOT is used to complement a true/false value. NOT evaluates obj  
+                and returns  if its value is NIL, and returns NIL if its value
+                is non-NIL. NOT is equivalent to NIL? . The former is often used
+                as a logical operator while the latter is used as a predicate.
+                Stylistic conventions determine which is more appropriate in a
+                particular context.
+Example:	(NOT CAR)		=> NIL
+Example:	(NOT (EQ? 'A 'B))	=> 
+End-Entry:	NOT
+
+
+File: Scheme, Node:    NIL?, Up: Special Forms
+
+Syntax:         (NIL? obj)
+Args:           1 arg
+Description:    NIL? is the NIL predicate.  It evaluates obj and returns 
+                if its value is NIL, and returns NIL if its value is non-NIL.
+Example:        (DEFINE A 3)           => A
+Example:        (NIL? (EQ? A 3))       => NIL
+Example:        (NIL? (EQUAL? A 3))    => 
+End-Entry:      NIL?
+
+
+File: Scheme, Node: Arithmetic, Up: Schman, Previous: Special Forms, Next: Compound Data
+
+* Menu: Functions
+
+
+* MUL::
+* +::
+* -::
+* /::
+* IDIV::
+* MOD::
+* -1+::
+* 1+::
+* ABS::
+* FLOOR::
+* CEILING::
+* TRUNCATE::
+* MAX::
+* MIN::
+* SIN::
+* ASIN::
+* COS::
+* ACOS::
+* TAN::
+* ATAN::
+* LOG::
+* EXP::
+* EXPT::
+* SQRT::
+* NUMBER?::
+* INTEGER?::
+* ODD?::
+* EVEN?::
+* ZERO?::
+* NEGATIVE?::
+* POSITIVE?::
+* =::
+* >::
+* >=::
+* <::
+* <=::
+* RANDOM::
+* RANDOMIZE::
+* HASH::
+
+
+File: Scheme, Node: MUL, Up: Arithmetic
+
+Syntax:		(* n1 n2 ...)
+Args:		0 or more args
+Type:		Procedure
+Description:	Returns the product of its arguments. * is equivalent to MUL.
+End-Entry:	*
+
+
+File: Scheme, Node: +, Up: Arithmetic
+
+Syntax:		(+ n1 n2 ...)
+Args:		0 or more args
+Type:		Procedure
+Description:	Returns the sum of its arguments. + is equivalent to ADD.
+End-Entry:	+
+
+
+File: Scheme, Node: -, Up: Arithmetic
+
+Syntax:		(- n1 n2 n3 ...)
+Args:		0 or more args
+Type:		Procedure
+Description:	Returns the difference of its arguments. n1-n2-n3-...
+		When applied to one argument, negates the argument. - is
+                equivalent to SUB.
+Example:	(- 10)		=> -10
+Example:	(- 3 -7)	=> 10
+End-Entry:	-
+
+
+File: Scheme, Node: /, Up: Arithmetic
+
+Syntax:		(/ x1 x2)
+Args:		2 args
+Type:		Procedure
+Description:	General division.  Returns the quotient of x1 and x2.
+		When applied to one argument, returns its reciprocal. 
+                / is equivalent to DIV.
+                Note: (/ 0) returns 1 while (/ x1 0) gives an error.
+End-Entry:	/
+
+
+File: Scheme, Node: IDIV, Up: Arithmetic
+
+Syntax:		(IDIV x1 x2)
+Args:		2 args
+Type:		Procedure
+Description:	Integer division. Returns the integer part of the quotient of
+		x1 and x2.
+Example:	(IDIV 10 5)	=> 2
+Example:	(IDIV 11 3)	=> 3
+Example:	(IDIV 10 2.5)	=> 4
+End-Entry:	IDIV
+
+
+File: Scheme, Node: MOD, Up: Arithmetic
+
+Syntax:		(MOD x1 x2)
+Args:		2 args
+Type:		Procedure
+Description:	Returns the remainder of dividing x1/x2.
+End-Entry:	MOD
+
+
+File: Scheme, Node: -1+, Up: Arithmetic
+
+Syntax:		(-1+ n)
+Args:		1 arg
+Type:		Procedure
+Description:	Subtracts one from its argument.
+End-Entry:	-1+
+
+
+File: Scheme, Node: 1+, Up: Arithmetic
+
+Syntax:		(1+ n)
+Args:		1 arg
+Type:		Procedure
+Description:	Adds one to its argument.
+End-Entry:	1+
+
+Page-Break:
+
+
+File: Scheme, Node: ABS, Up: Arithmetic
+
+Syntax:		(ABS n)
+Args:		1 arg
+Type:		Procedure
+Description:	Absolute value function.  Returns the positive
+		difference between the number n and zero.
+Example:	(ABS -3.2)	=> 3.2
+Example:	(ABS 0)		=> 0
+Example:	(ABS 3.2)	=> 3.2
+End-Entry:	ABS
+
+
+File: Scheme, Node: FLOOR, Up: Arithmetic
+
+Syntax:		(FLOOR n)
+Args:		1 arg
+Type:		Procedure
+Description:	Returns the greatest integer, i, such that i is
+		less than or equal to n.
+Example:	(FLOOR 2.4)	=> 2
+Example:	(FLOOR -2.4)	=> -3
+Example:	(FLOOR 2)	=> 2
+End-Entry:	FLOOR
+
+
+File: Scheme, Node:    CEILING, Up: Arithmetic
+
+Syntax:         (CEILING n)
+Args:           1 arg
+Type:		Procedure
+Description:    Returns the smallest integer, i, such that i is
+                greater than or equal to n.
+Example:        (CEILING 4.2)     => 5
+Example:        (CEILING -4.2)    => -4
+Example:        (CEILING -4)      => -4
+End-Entry:      CEILING
+
+
+File: Scheme, Node:    TRUNCATE, Up: Arithmetic
+
+Syntax:         (TRUNCATE n)
+Args:           1 arg
+Type:		Procedure
+Description:    Returns the integer part of the number n. For positive 
+                numbers, this is the same as FLOOR while for negative 
+                numbers, this is the same as CEILING.
+Example:        (TRUNCATE 2.4)    => 2
+Example:        (TRUNCATE -4.2)   => -4
+End-Entry:      TRUNCATE
+
+
+File: Scheme, Node: MAX, Up: Arithmetic
+
+Syntax:		(MAX n1 n2 ...)
+Args:		1 or more args
+Type:		Procedure
+Description:	Returns the largest numerical value in its argument
+		list. 
+Example:	(MAX -1 3 0)	=> 3
+End-Entry:	MAX
+
+
+File: Scheme, Node: MIN, Up: Arithmetic
+
+Syntax:		(MIN n1 n2 ...)
+Args:		1 or more args
+Type:		Procedure
+Description:	Returns the smallest numerical value in its argument list.
+Example:	(MIN -1 3 0)	=> -1
+End-Entry:	MIN
+
+Page-Break:
+
+
+File: Scheme, Node: SIN, Up: Arithmetic
+
+Syntax:		(SIN n)
+Args:		1 arg
+Type:		Procedure
+Description:	Returns the trigonometric sine of th angle n.  n
+		is assumed to be given in radians.
+End-Entry:	SIN
+
+
+File: Scheme, Node:    ASIN, Up: Arithmetic
+
+Syntax:         (ASIN y r)
+Args:           1 arg
+Type:		Procedure
+Description:    Returns the arcsine, in radians, of y/r. This is the
+                measure of the angle of a right triangle with hypotenuse
+                of length r and side opposite to angle of length y.
+End-Entry:      ASIN
+
+
+File: Scheme, Node: COS, Up: Arithmetic
+
+Syntax:		(COS n)
+Args:		1 arg
+Type:		Procedure
+Description:	Returns the trigonometric cosine of the angle n.  n
+		is assumed to be given in radians.
+End-Entry:	COS
+
+
+File: Scheme, Node:    ACOS, Up: Arithmetic
+
+Syntax:         (ACOS x r)
+Args:           1 arg
+Type:		Procedure
+Description:    Returns the arccosine, in radians, of x/r. This is the
+                measure of the angle of a right triangle with hypotenuse
+                of length r and side adjacent to angle of length x.
+End-Entry:      ACOS
+
+
+File: Scheme, Node:    TAN, Up: Arithmetic
+
+Syntax:         (TAN n)
+Args:           1 arg
+Type:		Procedure
+Description:    Returns the tangent of the angle n. n is assumed 
+                to be given in radians.
+End-Entry:      TAN
+
+
+File: Scheme, Node: ATAN, Up: Arithmetic
+
+Syntax:		(ATAN y x)
+Args:		2 args
+Type:		Procedure
+Description:	Returns the arctangent, in radians, of y/x. This is
+                the measure of the angle of the triangle with side
+                opposite to angle of length y, and side adjacent to
+                angle of length x.
+End-Entry:	ATAN
+
+
+File: Scheme, Node: LOG, Up: Arithmetic
+
+Syntax:		(LOG n)
+Args:		1 arg
+Type:		Procedure
+Description:	Natural logarithm.  Returns the log, base e, of n.
+End-Entry:	LOG
+
+
+File: Scheme, Node: EXP, Up: Arithmetic
+
+Syntax:		(EXP x)
+Args:		1 arg
+Type:		Procedure
+Description:	Returns e raised to the x power.
+End-Entry:	EXP
+
+
+File: Scheme, Node: EXPT, Up: Arithmetic
+
+Syntax:		(EXPT x y)
+Args:		2 args
+Type:		Procedure
+Description:	Exponentiation.  Returns x raised to the y power.
+End-Entry:	EXPT
+
+
+File: Scheme, Node: SQRT, Up: Arithmetic
+
+Syntax:		(SQRT n)
+Args:		1 arg
+Type:		Procedure
+Description:	Square root.  Returns the squareroot of n.
+End-Entry:	SQRT
+
+End-Family:	Numerical Functions
+
+Page-Break:
+
+Begin-Family:	Numerical Predicates
+
+
+File: Scheme, Node: NUMBER?, Up: Arithmetic
+
+Syntax:		(NUMBER? obj)
+Args:		1 arg
+Type:		Procedure
+Description:	Returns  if obj is a number, otherwise returns NIL.
+Example:	(NUMBER? 'A)	=> NIL
+Example:	(NUMBER? 3)	=> 
+Example:	(NUMBER? 2.0)	=> 
+End-Entry:	NUMBER?
+
+
+File: Scheme, Node: INTEGER?, Up: Arithmetic
+
+Syntax:		(INTEGER? obj)
+Args:		1 arg
+Type:		Procedure
+Description:	Predicate; returns  if obj is an integer, otherwise NIL.
+End-Entry:	INTEGER?
+
+
+File: Scheme, Node: ODD?, Up: Arithmetic
+
+Syntax:		(ODD? n)
+Args:		1 arg
+Type:		Procedure
+Description:	Returns  if n is an odd integer, otherwise, NIL is
+		returned.
+End-Entry:	ODD?
+
+
+File: Scheme, Node:    EVEN?, Up: Arithmetic
+
+Syntax:         (EVEN? n)
+Args:           1 arg
+Type:		Procedure
+Description:    Returns  if n is an even integer, otherwise, NIL is
+                returned.
+End-Entry:      EVEN?
+
+
+File: Scheme, Node: ZERO?, Up: Arithmetic
+
+Syntax:		(ZERO? n)
+Args:		1 arg
+Type:		Procedure
+Description:	Predicate; returns  if n = 0 , otherwise NIL.
+		n must be a number.
+Example:	(ZERO? 0)	=> 
+Example:	(ZERO? 0.0)	=> 
+Example:	(ZERO? 65)	=> NIL
+End-Entry:	ZERO?
+
+
+File: Scheme, Node: NEGATIVE?, Up: Arithmetic
+
+Syntax:		(NEGATIVE? n)
+Args:		1 arg
+Type:		Procedure
+Description:	Predicate; returns  if n < 0 , otherwise NIL.
+		n must be a number.
+Example:	(NEGATIVE? -238472234234234233)	   => 
+Example:	(NEGATIVE? 0)  		           => NIL
+Example:	(NEGATIVE? 4.5)			   => NIL
+End-Entry:	NEGATIVE?
+
+
+File: Scheme, Node: POSITIVE?, Up: Arithmetic
+
+Syntax:		(POSITIVE? n)
+Args:		1 arg
+Type:		Procedure
+Description:	Predicate; returns  if n > 0 , otherwise NIL.
+		n must be a number.
+Example:	(POSITIVE? 4)  	           => 
+Example:	(POSITIVE? 0.0)	           => NIL
+Example:	(POSITIVE? -0.0002)	   => NIL
+End-Entry:	POSITIVE?
+
+Page-Break:
+
+
+File: Scheme, Node: =, Up: Arithmetic
+
+Syntax:		(= x1 x2 ...)
+Args:		2 or more args
+Type:		Procedure
+Description:	Predicate; returns  if all of the arguments have the same
+		numerical magnitude, else NIL.  The arguments must be numbers.
+Example:	(= 3 3.0)			=> 
+Example:	(= 3.5 3.0)			=> NIL
+End-Entry:	=
+
+
+File: Scheme, Node: >, Up: Arithmetic
+
+Syntax:		(> x1 x2 ...)
+Args:		2 or more args
+Type:		Procedure
+Description:	Predicate; returns  if each argument is strictly greater than
+		all subsequent arguments, otherwise NIL.
+Example:	(> 3.0 4 5.6)	=> NIL
+Example:	(> 5.3 3 2)	=> 
+Example:	(> 5.3 2 3)	=> NIL
+End-Entry:	>
+
+
+File: Scheme, Node:    >=, Up: Arithmetic
+
+Syntax:         (>= x1 x2 ...)
+Args:           2 or more args
+Type:		Procedure
+Description:    Predicate; returns  if each argument is greater than or equal
+                to all subsequent arguments, otherwise NIL.
+Example:        (>= 4.0 5.0 5.0)   => NIL
+Example:        (>= 4.6 3.8 3.8)   => 
+End-Entry:      >=
+
+
+File: Scheme, Node: <, Up: Arithmetic
+
+Syntax:		(< x1 x2 ...)
+Args:		2 or more args
+Type:		Procedure
+Description:	Predicate; returns  if each argument is strictly less than
+		all subsequent arguments, otherwise NIL.
+Example:	(< 3.0 4 5.6)	=> 
+Example:	(< 5.3 3 2)	=> NIL
+Example:	(< 5.3 2 3)	=> NIL
+End-Entry:	<
+
+
+File: Scheme, Node:    <=, Up: Arithmetic
+
+Syntax:         (<= x1 x2 ...)
+Args:           2 or more args
+Type:		Procedure
+Description:    Predicate; returns  if each argument is less than or equal
+                to all subsequent arguments, otherwise NIL.
+Example:        (<= 3 3 4 5.8)   => 
+Example:        (<= 2 1.7 4 4)   => NIL
+End-Entry:      <=
+
+End-Family:	Numerical Predicates
+
+Page-Break:
+
+Begin-Family:	Miscellaneous Numerical Procedures
+
+
+File: Scheme, Node: RANDOM, Up: Arithmetic
+
+Syntax:		(RANDOM n)
+Args:		1 arg
+Type:		Procedure
+Description:	Returns a random integer between 0 and n-1, inclusive.
+End-Entry:	RANDOM
+
+
+File: Scheme, Node: RANDOMIZE, Up: Arithmetic
+
+Syntax:		(RANDOMIZE q)
+Args:		1 arg
+Type:		Procedure
+Description:	RANDOMIZE is used to initialize the random number generator.  
+                If q is NIL, the generator is initialized with an arbitrary
+		(random) seed.  Otherwise, q should be an integer and
+		the generator is initialized with q as its seed.
+End-Entry:	RANDOMIZE
+
+
+File: Scheme, Node: HASH, Up: Arithmetic
+
+Syntax:		(HASH object n)
+Args:		2 args
+Type:		Procedure
+Description:	Returns an integer between 0 and n-1, inclusive, which
+		can be used as a hash value for object.
+Example:	(HASH 'ABC 87)		=> 18
+Example:	(HASH 'DEF 87)		=> 69
+Example:	(HASH '(A B) 23)	=> 12
+End-Entry:	HASH
+
+End-Family:	Miscellaneous Numerical Procedures
+
+
+File: Scheme, Node: Compound Data, Up: Schman, Previous: Arithmetic, Next: Reading and Printing
+
+List Structure Constructors
+
+	The pair  is an  object which  is used  to bond  two objects  together.
+These component objects  may be  atoms or they  may themselves  be pairs.   Any
+structure built out  of pairs  is called  a "list  structure", but  confusingly
+enough, list itself describes a special type of structure.  In a list, the  CDR
+of each pair is another pair, with the exception that the CDR of the last  pair
+is a special atom  NIL, which denotes  the empty list. Thus  the elements of  a
+list are stored in the CAR slots of its pairs, while the CDR slots are used  to
+link the elements together.
+
+* Menu:
+
+
+* CONS::
+* CONS*::
+* LIST::
+* CAR::
+* CDR::
+* C...R::
+* SET!-CAR::
+* SET!-CDR::
+* ATOM?::
+* SYMBOL?::
+* PAIR?::
+* LIST?::
+* NULL?::
+* EQ?::
+* EQUAL?::
+* NTHCDR::
+* NTH::
+* LENGTH::
+* APPEND::
+* REVERSE::
+* CONC!::
+* MEMQ::
+* MEMBER::
+* ASSQ::
+* ASSOC::
+* MAKE-ARRAY::
+* ACCESS-ARRAY::
+* SET!-ARRAY::
+* BOUNDS-ARRAY::
+* ARRAY?::
+* AMAKE::
+* AREF::
+* ASET!::
+* PUT!-PROP::
+* GET-PROP::
+* REMOVE!-PROP::
+* LIST-PROP::
+* PRIMITIVE-TYPE::
+* EXTEND?::
+* PROCEDURE?::
+* ALPHALESS?::
+
+
+File: Scheme, Node: CONS, Up: Compound Data
+
+Syntax:		(CONS obj1 obj2)
+Args:		2 args
+Type:		Procedure
+Description:	CONS is the constructor of a pair whose CAR is obj1 and whose CDR 
+		is obj2. 
+		By definition, (CAR (CONS a b)) = a and
+		(CDR (CONS a b)) = b.
+                A property of lists is that if obj2 is a list, CONS makes a new list
+                which has obj1 as its first element and obj2 as the rest of the elements.
+Example:	(CONS '(A B) '(C D))	=> ((A B) C D)
+Example:	(CONS 'A '(B C))	=> (A B C)
+Example:	(CONS 'A 'B)		=> (A . B)
+End-Entry:	CONS
+
+
+File: Scheme, Node:    CONS*, Up: Compound Data
+
+Syntax:         (CONS* obj1 obj2 ...)
+Args:           0 or more args
+Type:		Procedure
+Description:    CONS* CONSes together an arbitrary number of arguments.CONS*
+                constructs a pair whose CAR is obj1 and whose CDR is 
+                (CONS* obj2 ...) : (CONS obj1 (CONS* obj2 ...)). When it has
+                only two arguments, it behaves in the same way as CONS. 
+Example:        (CONS* 'A 'B 'C)                => (A B . C)
+Example:        (CONS* '(A B) 'C '(D E))        => ((A B) C D E)
+Example:        (CONS* 'A 'B)                   => (A . B)
+End-Entry:      CONS*
+
+
+File: Scheme, Node: LIST, Up: Compound Data
+
+Syntax:		(LIST obj1 obj2 ...)
+Args:		0 or more args
+Type:		Procedure
+Description:    LIST constructs a list whose elements are obj1, obj2,.. etc.
+Example:	(LIST 'A 'B 'C)			=> (A B C)
+Example:	(LIST '(A B) '3 '(FOO BAR))	=> ((A B) 3 (FOO BAR))
+End-Entry:	LIST
+
+End-Family:	List Structure Constructors
+
+Page-Break:
+
+Begin-Family:	List Structure Selectors
+
+
+File: Scheme, Node: CAR, Up: Compound Data
+
+Syntax:		(CAR pair)				
+Args:		1 arg					
+Type:		Procedure
+Description:	CAR selects the CAR component of a pair. If pair is a list,
+                the CAR is the first element of the list.
+Example:	(CAR '(A))		=> A
+Example:	(CAR '(A B))		=> A
+Example:	(CAR '((A B) C D))	=> (A B)
+Example:	(CAR NIL)		=> NIL	; By convention
+Example:	(CAR '((A B) . (C D)))	=> (A B)
+Example:	(CAR '(Y . X))		=> Y
+End-Entry:	CAR
+
+
+
+File: Scheme, Node: CDR, Up: Compound Data
+
+Syntax:		(CDR pair)
+Args:		1 arg
+Type:		Procedure
+Description:	CDR selects the CDR component of a pair. If pair is a list,
+                the CDR is the list of all of the elements except the first one.
+Example:	(CDR '(A))		=> NIL
+Example:	(CDR '(A B))		=> (B)
+Example:	(CDR '((A B) C D))	=> (C D)
+Example:	(CDR NIL)		=> NIL	;By convention
+Example:	(CDR '((A B) . (C D)))	=> (C D)
+Example:	(CDR '(Y . X))		=> X
+End-Entry:	CDR
+
+
+File: Scheme, Node: C...R, Up: Compound Data
+
+Syntax:		(C...R l)
+Type:		Procedure
+Args:		1 arg
+Description:	Short names for up to four levels of CAR/CDR compositions are
+                provided in Scheme. eg, (CAAR l) is (CAR (CAR l)) and (CADAAR l)
+                is (CAR (CDR (CAR (CAR l)))).
+Example:	(CAR '(A (B C) D))		=>	A
+Example:	(CADR '(A (B C) D))		=>	(B C)
+Example:	(CDDR '(A (B C) D))		=>	(D)
+Example:	(CADADR '(A (B C) D))		=>	C
+End-Entry:	C...R
+
+End-Family:	List Structure Selectors
+
+Page-Break:
+
+Begin-Family:	List Structure Mutators
+
+
+File: Scheme, Node: SET!-CAR, Up: Compound Data
+
+Syntax:		(SET!-CAR pair newcar)
+Args:		2 args
+Type:		Procedure
+Description:	Mutates obj so that its CAR becomes newcar. 
+Example:	(SET! A '(A B))		=> (A B)
+Example:	A			=> (A B)
+Example:	(SET!-CAR (CDR A) 3)	=> (3)
+Example:	A			=> (A 3)
+End-Entry:	SET!-CAR
+
+
+File: Scheme, Node: SET!-CDR, Up: Compound Data
+
+Syntax:		(SET!-CDR pair newcdr)
+Args:		2 args
+Type:		Procedure
+Description:	Mutates obj so that its CDR becomes newcdr.
+Example:	(SET! B '(A B C))	=> (A B C)
+Example:	(SET!-CDR B 'E)		=> (A . E)
+Example:	B			=> (A . E)
+End-Entry:	SET!-CDR
+
+End-Family:	List Structure Mutators
+
+Begin-Family:	List Structure Predicates
+
+
+File: Scheme, Node: ATOM?, Up: Compound Data
+
+Syntax:		(ATOM? obj)
+Args:		1 arg
+Type:		Procedure
+Description:	Atomic predicate that returns  if obj is an atom and otherwise
+                returns NIL. In our structure view of the world, pairs are the
+                bond by which lists (molecules) are constructed from the basic
+                elements, or atoms. An atom is anything which cannot be further
+                decomposed via CAR or CDR  ; in other words, everything that is 
+                not a pair is an atom.
+Example:	(ATOM? 3)	=> 
+Example:	(ATOM? NIL)	=> 
+Example:	(ATOM? 'CAR)	=> 
+Example:	(ATOM? CAR)	=> NIL
+Example:	(ATOM? '(A 3))	=> NIL
+End-Entry:	ATOM?
+
+Page-Break:
+
+
+File: Scheme, Node: SYMBOL?, Up: Compound Data
+
+Syntax:		(SYMBOL? obj)
+Args:		1 arg
+Type:		Procedure
+Description:	SYMBOL? is a predicate that returns  if obj is an 
+		atomic symbol (variable or NIL), otherwise returns NIL.
+Example:	(SYMBOL? 3)	=> NIL
+Example:	(SYMBOL? 'CAR)	=> 
+Example:	(SYMBOL? CAR)	=> NIL
+Example:	(SYMBOL? NIL)	=> 
+End-Entry:	SYMBOL?
+
+
+File: Scheme, Node: PAIR?, Up: Compound Data
+
+Syntax:		(PAIR? obj)
+Args:		1 arg
+Type:		Procedure
+Description:	PAIR? is a predicate that returns  if obj is of datatype
+                PAIR. Same as LIST? except in the case of '. ' 
+		represents the empty list which is a list but not a pair.
+Example:	(PAIR? '(A B))	=> 
+Example:	(PAIR? ')	=> NIL
+Example:	(PAIR? 'A)	=> NIL
+End-Entry:	PAIR?
+
+
+File: Scheme, Node: LIST?, Up: Compound Data
+
+Syntax:		(LIST? obj)
+Args:		1 arg
+Type:		Procedure
+Description:	LIST? is a predicate that is used to determine whether
+                an object is a list.  For reasons of efficiency, LIST? employs
+                a very weak rule, namely, an object is considered a list if it
+                is a pair (even a dotted pair) or ', the empty list, i.e.,
+                (LIST? obj)  (OR (EMPTY? obj) (PAIR? obj))
+                Thus if LIST? returns NIL, the object is definitely not a list, 
+                but if it returns ,the object may not be a list in the strict
+                sense of the term. The dotted pair in the last example below
+                is not really a list.
+		Note: Many programs, such as APPEND, construct structure using CONS.
+Example:	(LIST? 'A)	 => NIL
+Example:	(LIST? ')	 => 
+Example:	(LIST? '(A B))	 => 
+Example:        (LIST? '(A . B)) => 
+End-Entry:	LIST?
+
+Page-Break:
+
+
+File: Scheme, Node: NULL?, Up: Compound Data
+
+Syntax:		(NULL? obj)
+Args:		1 arg
+Type:		Procedure
+Description:	NULL? is the empty list predicate which returns  if obj
+                is ', and NIL if obj is non-'. 
+Example:	(NULL? '(A B C))			=> NIL
+Example:        (NULL? ')                             => 
+End-Entry:	NULL?
+
+
+File: Scheme, Node: EQ?, Up: Compound Data
+
+Syntax:		(EQ? obj1 obj2)
+Args:		2 args
+Type:		Procedure
+Description:  	EQ? is the primitive equivalence predicate. It returns  
+                if obj1 and obj2 are the same object.
+		Unless you are rather
+		advanced, do not use EQ? to test identity of objects other
+		than atomic symbols.  In particular, two numbers which are
+		equal in value may not be EQ? -- use "=" to test numerical
+		equality.  Also, two lists which have the same elements and
+		print the same may not be EQ? -- use EQUAL? to test if lists
+		have the same elements.
+Description:	For more advanced users only:  Two structures are EQ? if
+		any attempt to modify one of them modifies the other in
+		the same way. From a pragmatic point of view, EQ? tests if the
+                two structures share the same location in the memory space.
+Example:	(SET! X '(A B))			=> (A B)
+Example:	(SET! Y '(A B))			=> (A B)
+Example:	(SET! Z X)			=> (A B)
+Example:	(EQ? X Y)			=> NIL
+Example:	(EQ? X Z)			=> 
+Example:	(EQ? Y Z)			=> NIL
+Example:	(SET! X 'FOO)			=> FOO
+Example:	(SET! Y 'FOO)			=> FOO
+Example:	(SET! Z X)			=> FOO
+Example:	(EQ? X Y)			=> 
+Example:	(EQ? X Z)			=> 
+Example:	(EQ? Y Z)			=> 
+Example:	(EQ? 1000 1000) 		=> NIL
+End-Entry:	EQ?
+
+Page-Break:
+
+
+File: Scheme, Node: EQUAL?, Up: Compound Data
+
+Syntax:		(EQUAL? obj1 obj2)
+Args:		2 args
+Type:		Procedure
+Description:	EQUAL? is a list structure equivalence predicate which 
+                returns  if both args are EQ? atoms, or are lists 
+		of the same length and component-wise EQUAL?.
+		That is, EQUAL? lists
+                have an identical arrangement of atoms, with each such
+                atom in obj1 being EQ? to the corresponding 
+		atom in obj2.
+		As illustrated below, EQ? and EQUAL? are quite different.
+Example:	(EQ? '(A B) '(A B))		=> NIL
+Example:	(EQUAL? '(A B) '(A B))		=> 
+Example:        (SET! X '(A B))                 => (A B)
+Example:        (SET! Y '(A B))                 => (A B)
+Example:        (EQUAL? X Y)                    => 
+Example:	(EQUAL? 3 3)			=> 
+End-Entry:	EQUAL?
+
+End-Family:	List Structure Predicates
+
+Begin-Family:	Commonly Useful List Functions
+
+
+File: Scheme, Node: NTHCDR, Up: Compound Data
+
+Syntax:		(NTHCDR n l)
+Args:		2 args
+Type:		Procedure
+Description:	NTHCDR selects the nth CDR of the list l.
+                (if n=0, l is returned).
+Example:	(NTHCDR 0 '(A B))	=> (A B)
+Example:	(NTHCDR 2 '(A B C D))	=> (C D)
+End-Entry:	NTHCDR
+
+
+File: Scheme, Node:    NTH, Up: Compound Data
+
+Syntax:         (NTH n l)
+Args:           2 args
+Type:		Procedure
+Description:    NTH is the short form for (CAR (NTHCDR n l)). 
+		It selects the (n+1)th element of the list l.
+		If n=0, NTH returns the CAR of the argument.
+Example:        (NTH 0 '(A B C D))      => A
+Example:        (NTH 2 '(A B C))        => C
+Example:        (NTH 4 '(A B))          => NIL
+End-Entry:      NTH
+
+
+File: Scheme, Node: LENGTH, Up: Compound Data
+
+Syntax:		(LENGTH l)
+Args:		1 arg
+Type:		Procedure
+Description:	Returns the length of its argument l, which must be a list.
+Example:	(LENGTH NIL)		=> 0
+Example:	(LENGTH '(A B C))	=> 3
+Example:	(LENGTH '(A . B))	=> 
+End-Entry:	LENGTH
+
+Page-Break:
+
+
+File: Scheme, Node: APPEND, Up: Compound Data
+
+Syntax:		(APPEND l1 l2 ...)
+Args:		0 or more args
+Type:		Procedure
+Description:	Constructs a list whose elements are, in order,
+		the elements of each of the lists given as its
+		arguments.  Cf. LIST.
+Example:	(APPEND '(A) '(B C) '(D))	=> (A B C D)
+Example:	(APPEND '((A B) C) '((D E)))	=> ((A B) C (D E))
+Example:	(APPEND '(A B) NIL)		=> (A B)
+End-Entry:	APPEND
+
+
+File: Scheme, Node: REVERSE, Up: Compound Data
+
+Syntax:		(REVERSE l)
+Args:		1 arg
+Type:		Procedure
+Description:	Constructs a list which contains the elements of the list l
+                in reverse order.
+Example:	(SET! A '(A B C))	=> (A B C)
+Example:	(REVERSE A)		=> (C B A)
+Example:	A			=> (A B C)
+Example:	(REVERSE '(A (B C) D))  => (D (B C) A)
+End-Entry:	REVERSE
+
+
+File: Scheme, Node:    CONC!, Up: Compound Data
+
+Syntax:         (CONC! list1 list2)
+Args:           2 args
+Type:		Procedure
+Description:    Mutates list1 so that it includes all the elements of the original
+                list1 and the elements of list2 in that order. CONC! is
+                similar to APPEND except that it is a mutator while APPEND is
+                a constructor.
+Example:        (DEFINE l1 '(A B))              => l1
+Example:        (DEFINE l2 '(C D))              => l2
+Example:        (APPEND l1 l2)                  => (A B C D)
+Example:        l1                              => (A B)
+Example:        l2                              => (C D)
+Example:        (CONC! l1 l2)                   => (A B C D)
+Example:        l1                              => (A B C D)   
+Example:        l2                              => (C D)
+End-Entry:      CONC!
+
+End-Family:	Commonly Useful List Functions
+
+Page-Break:
+
+Begin-Family:	Lists as sets and tables
+
+
+File: Scheme, Node: MEMQ, Up: Compound Data
+
+Syntax:		(MEMQ obj list)
+Args:		2 args
+Type:		Procedure
+Description:	Using EQ?, tests each object in list to see
+		if it is the same as obj.  Returns the first sublist of list beginning
+		with obj, or NIL if obj doesn't occur in list.
+Example:	(MEMQ 'B '(A B C A B C))	=> (B C A B C)
+Example:	(MEMQ 'Q '(A B C A B C))	=> NIL
+Example:	(MEMQ 'A '((A B) A D))		=> (A D)
+Example:	(MEMQ '(A B) '(A (A B) C))	=> NIL
+End-Entry:	MEMQ
+
+
+File: Scheme, Node: MEMBER, Up: Compound Data
+
+Syntax:		(MEMBER obj list)
+Args:		2 args
+Type:		Procedure
+Description:	Using EQUAL?, tests each object in list to see
+		if it is the same as obj. Returns the first sublist of list beginning
+		with obj, or NIL if obj doesn't occur in list.
+Example:	(MEMBER '(A B) '(A (A B) C))	=> ((A B) C)
+Example:	(MEMBER 'B '(A B C))		=> (B C)
+Example:	(MEMBER 3.0 '(3 4 5))		=> NIL
+End-Entry:	MEMBER
+
+
+File: Scheme, Node: ASSQ, Up: Compound Data
+
+Syntax:		(ASSQ obj alist)
+Args:		2 args
+Type:		Procedure
+Description:	alist is presumed to be a list of pairs representing a table.
+		The CAR of each pair is the key to the table and the CDR is the
+		information stored in the table under that key.  ASSQ tests each pair in alist
+		to see
+		if its CAR is EQ? to OBJ.  ASSQ returns the first element of
+		alist whose CAR is obj, or NIL if obj doesn't occur in the CAR
+		of any element of alist.  Thus ASSQ is useful for table lookup if the keys
+		are atomic symbols.
+Example:	(ASSQ 'A '((D E) (A B) (C D)))		=> (A B)
+Example:	(ASSQ '(A B) '((D E) ((A B) C) (B D)))	=> NIL	;see below
+End-Entry:	ASSQ
+
+
+File: Scheme, Node: ASSOC, Up: Compound Data
+
+Syntax:		(ASSOC obj alist)
+Args:		2 args
+Type:		Procedure
+Description:	alist is presumed to be a list of pairs representing a table.  The CAR
+		of each pair is the key to the table and the CDR is the information
+		stored in the table under that key.  ASSOC tests each pair in alist to
+		see if its CAR is EQUAL? to OBJ.  ASSOC returns the first element of
+		alist whose CAR is obj, or NIL if obj doesn't occur in the CAR of any
+		element of alist.  Thus ASSOC is useful for table lookup in situations
+		where the table keys are not symbols.
+Example:	(ASSQ '(A B) '((D E) ((A B) C) (B D)))	=> ((A B) C)
+Example:	(ASSOC 3 '((1 A) (2 B) (3 C))) => (3 C)
+Example:	(ASSOC 4 '((1 A) (2 B) (3 C))) => NIL
+End-Entry:	ASSOC
+
+End-Family:	Lists as sets and tables
+
+Page-Break:
+
+Begin-Family:	Arrays
+
+Description:    There are two sets of commands for creating and using arrays.
+		MAKE-ARRAY and AMAKE are similar
+                in that they both create initialized arrays.
+		SET!-ARRAY and ASET! are
+                similar in that they are both used to assign values to the slots
+                in arrays. ACCESS-ARRAY and AREF are similar in that they are both
+                used to retrieve values from slots in arrays. However, they differ
+                in the way slots are referenced. In MAKE-ARRAY, SET!-ARRAY and
+                ACCESS-ARRAY, the slot is specified by one argument, a list of the
+                coordinates of the slot. AMAKE, ASET! and AREF, on the other
+                hand, accept the coordinates as individual arguments. Though the
+                syntax used in the former case is more systematic and consistent, 
+                the syntax of the latter case is easier for typing.
+
+
+File: Scheme, Node: MAKE-ARRAY, Up: Compound Data
+
+Syntax:		(MAKE-ARRAY bounds initproc)
+Args:		2 args
+Type:		Procedure
+Description:	Constructs an array with the given bounds and initializes
+                slots as specified by initproc. bounds is a list of integers
+                and each element gives the  number of distinct subscript 
+                values for the corresponding dimension.  Arrays in
+		SCHEME are zero-based; the maximum subscript along any
+		dimension is one less than the bound.  initproc is a procedure
+                of one argument, a list of coordinates identifying one array
+                slot, which computes the initial value for that array slot.
+                initproc can be NIL, in which case the array is not initialized.
+End-Entry:	MAKE-ARRAY
+
+Page-Break:
+
+
+File: Scheme, Node: ACCESS-ARRAY, Up: Compound Data
+
+Syntax:         (ACCESS-ARRAY a coords)
+Args:           2 args
+Type:		Procedure
+Description:    Returns the value located in the slot of the array, a,
+                specified by coords, the list of subscript values i1, i2, ...
+End-Entry:	ACCESS-ARRAY
+
+
+File: Scheme, Node: SET!-ARRAY, Up: Compound Data
+
+Syntax:		(SET!-ARRAY a coords val)
+Args:		3 args
+Type:		Procedure
+Description:	Stores val into the slot of the array, a, specified by coords,
+                the list subscript values i1, i2, ...
+Example:	(DEFINE A (MAKE-ARRAY '(10 20) (LAMBDA (list) (+ (CAR list) (CDR list))))) => A
+Example:	(ACCESS-ARRAY A '(9 17)) => 26
+Example:	(SET!-ARRAY A '(3 14) 'FOO) => FOO
+Example:	(ACCESS-ARRAY A '(3 14)) => FOO
+Example:	(DEFINE B (MAKE-ARRAY '(5 5) NIL)) => B
+Example:	(SET!-ARRAY B '(2 1) 'BAR) => BAR
+Example:	(ACCESS-ARRAY B '(2 1)) => BAR
+End-Entry:	SET!-ARRAY
+
+
+File: Scheme, Node: BOUNDS-ARRAY, Up: Compound Data
+
+Syntax:		(BOUNDS-ARRAY a)
+Args:		1 arg
+Type:		Procedure
+Description:	Returns a list of the bounds of the array, a.
+Example:	(BOUNDS-ARRAY (MAKE-ARRAY '(3 5) NIL))	=> (3 5)
+End-Entry:	BOUNDS-ARRAY
+
+
+File: Scheme, Node: ARRAY?, Up: Compound Data
+
+Syntax:		(ARRAY? obj)
+Args:		1 arg
+Type:		Procedure
+Description:	Predicate; returns  if obj is an ARRAY, otherwise NIL.
+Example:	(DEFINE A (MAKE-ARRAY '(10) NIL)) => A
+Example:	(ARRAY? A) => 
+Example:	(ARRAY? 'A) => NIL
+End-Entry:	ARRAY?
+
+
+File: Scheme, Node:    AMAKE, Up: Compound Data
+
+Syntax:         (AMAKE initproc bound1 bound2 ...)
+Args:           2 or more args
+Type:		Procedure
+Description:    Constructs an array with the given bounds. initproc,
+                a procedure of n arguments (where n is the order of 
+		the array), is used to initialize the array. When 
+                initproc is NIL, the array is not initialized.
+End-Entry:      AMAKE
+
+Page-Break:
+
+
+File: Scheme, Node:    AREF, Up: Compound Data
+
+Syntax:		(AREF a i1 i2 ...)
+Args:		2 or more args
+Type:		Procedure
+Description:	Returns the value located in the slot of the array, a,
+		specified by the subscripts i1, i2, ... 
+End-Entry:	AREF
+
+
+File: Scheme, Node:    ASET!, Up: Compound Data
+
+Syntax:		(ASET! val a i1 i2 ...)
+Args:		3 or more args
+Type:		Procedure
+Description:	Stores val into the slot of the array, a, specified by the
+		subscripts i1, i2, ... 
+Example:	(DEFINE A (AMAKE (LAMBDA (X Y) (+ X Y)) 5 8)) => A
+Example:	(AREF A 3 7) => 10
+Example:	(ASET! 'FOO A 3 3) => FOO
+Example:	(AREF A 3 3) => FOO
+End-Entry:      ASET!
+
+End-Family:	Arrays
+
+Page-Break:
+
+Begin-Family:	Properties
+
+
+File: Scheme, Node: PUT!-PROP, Up: Compound Data
+
+Syntax:		(PUT!-PROP sym propname val)
+Args:		3 args
+Type:		Procedure
+Description:	PUT!-PROP is used to specify the properties of an atomic symbol.
+                It assigns val to the propname of sym.
+End-Entry:	PUT!-PROP
+
+
+File: Scheme, Node: GET-PROP, Up: Compound Data
+
+Syntax:		(GET-PROP sym propname)
+Args:		2 args
+Type:		Procedure
+Description:	GET-PROP is used to retrieve properties of atomic symbols. It
+                gets the value of the propname of sym.
+End-Entry:	GET-PROP
+
+
+File: Scheme, Node: REMOVE!-PROP, Up: Compound Data
+
+Syntax:		(REMOVE!-PROP sym propname)
+Args:		2 args
+Type:		Procedure
+Description:	REMOVE!-PROP is used to remove properties of atomic symbols.
+		It removes
+                the value assigned to the propname of sym. If sym had such a 
+                value, the portion of its property list beginning with the value
+                is returned, otherwise NIL is returned.
+End-Entry:	REMOVE!-PROP
+
+
+File: Scheme, Node: LIST-PROP, Up: Compound Data
+
+Syntax:		(LIST-PROP sym)
+Args:		1 arg
+Type:		Procedure
+Description:	LIST-PROP returns an association list representing the property
+                list of sym. This association list has the form:
+                ((propname1 val1) (propname2 val2) ...).
+Example:	(LIST-PROP 'JOE)			=> NIL
+Example:	(PUT!-PROP 'JOE 'FATHER 'ARTHUR) 	=> ARTHUR
+Example:	(LIST-PROP 'JOE)	       	        => ((FATHER ARTHUR))
+Example:	(PUT!-PROP 'JOE 'MOTHER 'ANNE)	        => ANNE
+Example:	(LIST-PROP 'JOE)
+		=> ((MOTHER ANNE) (FATHER ARTHUR))
+
+Example:	(GET-PROP 'JOE 'MOTHER)		=> ANNE
+Example:	(REMOVE!-PROP 'JOE 'MOTHER)	=> (ANNE FATHER ARTHUR)
+Example:	(LIST-PROP 'JOE)	       	=> ((FATHER ARTHUR))
+End-Entry:	LIST-PROP
+
+End-Family:	Properties
+
+Page-Break:
+
+Begin-Family:	Miscellaneous
+
+
+File: Scheme, Node: PRIMITIVE-TYPE, Up: Compound Data
+
+Syntax:		(PRIMITIVE-TYPE obj)
+Args:		1 arg
+Type:		Procedure
+Description:    Returns the datatype of obj. 
+Example:	(PRIMITIVE-TYPE 3)	  	         => NUMBER
+Example:	(PRIMITIVE-TYPE 'A)	      	         => SYMBOL
+Example:	(PRIMITIVE-TYPE NIL)		         => NULL
+Example:	(PRIMITIVE-TYPE '(A B))		         => PAIR
+Example:	(PRIMITIVE-TYPE CAR)		         => PRIMITIVE-PROCEDURE
+Example:	(PRIMITIVE-TYPE TOP-LEVEL-ENVIRONMENT)   => ENVIRONMENT
+Example:	(PRIMITIVE-TYPE (MAKE-ARRAY '(2 3) NIL)) => ARRAY
+End-Entry:	PRIMITIVE-TYPE
+
+
+File: Scheme, Node: EXTEND?, Up: Compound Data
+
+Syntax:		(EXTEND? obj)
+Args:		1 arg
+Type:		Procedure
+Description:	EXTEND? is a predicate which returns  if obj is neither an 
+                atom or a list, and returns NIL otherwise.  Procedures, arrays,
+                and environment representations are all extended objects.
+Example:	(EXTEND? CAR)		=> 
+Example:	(EXTEND? 'CAR)		=> NIL
+End-Entry:	EXTEND?
+
+
+File: Scheme, Node: PROCEDURE?, Up: Compound Data
+
+Syntax:		(PROCEDURE? obj)
+Args:		1 arg
+Type:		Procedure
+Description:	PROCEDURE? is a predicate which returns  if obj is either
+                a primitive or compound procedure. 
+Example:	(PROCEDURE? CAR)		=> 
+Example:	(PROCEDURE? (LAMBDA (X) X))	=> 
+End-Entry:	PROCEDURE?
+
+
+File: Scheme, Node: ALPHALESS?, Up: Compound Data
+
+Syntax:		(ALPHALESS? sym1 sym2)
+Args:		2 args
+Type:		Procedure
+Description:	Both arguments must be atomic symbols. ALPHALESS? returns
+                 if sym1 precedes sym2 in alphabetical order, otherwise
+		returns NIL.  (Note that ASCII values are used for
+		ordering, which means that lowercase letters, digits,
+		or other odd characters may cause unexpected results
+		for those not familiar with the table of ASCII codes.) 
+Example:	(ALPHALESS? 'COT 'CAT)	 => NIL
+Example:	(ALPHALESS? 'ANT 'AXE)	 => 
+Example:        (ALPHALESS? 'SAME 'SAME) => ^F
+End-Entry:	ALPHALESS?
+
+End-Family:	Miscellaneous
+
+
+File: Scheme, Node: Reading and Printing, Up: Schman, Previous: Compound Data, Next: Advanced Special Forms
+
+* Menu: Functions
+
+* READ::
+* PRINT::
+* NEWLINE::
+* PRINC::
+* PRIN1::
+* TYI::
+* TYO::
+* READC::
+* PEEKC::
+* TYIPEEK::
+* CHAR::
+* ASCII::
+
+
+File: Scheme, Node: READ, Up: Reading and Printing
+
+Syntax:		(READ [prompt])
+Args:		0 or 1 arg
+Type:		Procedure
+Description:	Reads one expression from the terminal and returns it as a
+		value.  prompt, if supplied, will be printed to prompt the user.
+End-Entry:	READ
+
+
+File: Scheme, Node: PRINT, Up: Reading and Printing
+
+Syntax:		(PRINT value)
+Args:		1 arg
+Type:		Procedure
+Description:	This is the normal LISP printer.  It puts out a carriage-return, then
+		prints out value, then puts out a space:
+
+			(DEFINE (PRINT X)
+			   (NEWLINE)
+			   (PRIN1 X)
+			   (PRINC " "))
+End-Entry:	PRINT
+
+
+File: Scheme, Node: NEWLINE, Up: Reading and Printing
+
+Syntax:		(NEWLINE)
+Args:		No args
+Type:		Procedure
+Description:	Types a carriage return on the console.
+End-Entry:	NEWLINE
+
+
+File: Scheme, Node: PRINC, Up: Reading and Printing
+
+Syntax:		(PRINC value)
+Args:		1 arg
+Type:		Procedure
+Description:	Prints value on the console.
+End-Entry:	PRINC
+
+
+File: Scheme, Node: PRIN1, Up: Reading and Printing
+
+Syntax:		(PRIN1 value)
+Args:		1 arg
+Type:		Procedure
+Description:	Prints value on the console.  If any symbol has as part of its
+		printed representation a character which would normally terminate
+		a symbol (such as space, left-parentheses, right-parentheses, comma, etc.)
+		PRIN1 prints the symbol in a special way -- known as slashification.
+End-Entry:	PRIN1
+
+End-Family:	Essential Knowledge
+
+Page-Break:
+
+Begin-Family:	Advanced Knowledge
+
+
+File: Scheme, Node: TYI, Up: Reading and Printing
+
+Syntax:		(TYI [prompt])
+Args:		0 or 1 arg
+Type:		Procedure
+Description:	Reads a character from the current input source and returns the
+		character's ASCII code, an integer.  A prompt may be supplied.
+End-Entry:	TYI
+
+
+File: Scheme, Node: TYO, Up: Reading and Printing
+
+Syntax:		(TYO n)
+Args:		1 arg
+Type:		Procedure
+Description:	Types the character whose ascii value is n on the console.
+End-Entry:	TYO
+
+
+File: Scheme, Node: READC, Up: Reading and Printing
+
+Syntax:		(READC [prompt])
+Args:		0 or 1 arg
+Type:		Procedure
+Description:	Reads a character from the terminal and returns it as a symbol.
+End-Entry:	READC
+
+
+File: Scheme, Node: PEEKC, Up: Reading and Printing
+
+Syntax:		(PEEKC)
+Args:		No args
+Type:		Procedure
+Description:	Peeks at a character from the terminal, without
+		actually reading it, and returns it as a symbol.
+End-Entry:	PEEKC
+
+
+File: Scheme, Node: TYIPEEK, Up: Reading and Printing
+
+Syntax:		(TYIPEEK)
+Args:		No args
+Type:		Procedure
+Description:	Peeks at a character from the current input source
+		without actually reading it.  Returns the character
+		code, an integer.
+End-Entry:	TYIPEEK
+
+
+File: Scheme, Node: CHAR, Up: Reading and Printing
+
+Syntax:		(CHAR n)
+Args:		1 arg
+Type:		Procedure
+Description:	Returns the ascii character (symbol) whose ASCII code is n.
+Example:	(CHAR 65)	=> A
+End-Entry:	CHAR
+
+
+File: Scheme, Node: ASCII, Up: Reading and Printing
+
+Syntax:		(ASCII sym)
+Args:		1 arg
+Description:	Returns the ASCII code of the character (symbol) sym.
+Example:	(ASCII 'A)	=> 65
+End-Entry:	ASCII
+
+End-Family:	Advanced Knowledge
+
+Begin-Family:	Printer Control
+
+Description: 	The printer has two adjustable parameters:  the value of the
+		global variable *PRINT-DEPTH* is the maximum
+		depth to which lists are printed; lists nested deeper than
+		*PRINT-DEPTH* levels will be abbreviated when printed.  The
+		value of *PRINT-BREADTH* is the maximum number of elements of a
+		list which will be printed; lists longer than *PRINT-BREADTH*
+		will be abbreviated when printed.  Initially, these variables
+		have very tolerant values.  You may assign their values as
+		desired, but they must, of course, be integers.
+
+End-Family:	Printer Control
+
+
+File: Scheme, Node: Advanced Special Forms, Up: Schman, Previous: Reading and printing, Next: System Support
+
+* Menu:	Functions
+
+
+* EVAL::
+* APPLY::
+* THE-ENVIRONMENT::
+* MAKE-ENVIRONMENT::
+* ACCESS::
+* FRAME-PROCEDURE::
+* FRAME-BINDINGS::
+* FRAME-PARENT::
+
+
+File: Scheme, Node: EVAL, Up: Advanced Special Forms
+
+SpecialForm:	(EVAL exp [env])
+Args:		1 arg
+Description:	EVALuates exp in the lexical environment, lexical
+		environment unless env
+		is supplied, in which case exp will be evaluated in the
+		environment env.  Forces another evaluation of exp.
+Example:	'(+ 3 5)	=> (+ 3 5)
+Example:	(EVAL '(+ 3 5))	=> 8
+Example:	(SET! L '(LIST 'LIST (LIST 'QUOTE +) 3 5)) 
+		=> (LIST 'LIST (LIST 'QUOTE +) 3 5)
+Example:	(EVAL L)
+		=> (LIST '+ 3 5)
+Example:	(EVAL (EVAL L))
+		=> (+ 3 5)
+Example:	(EVAL (EVAL (EVAL L)))
+		=> 8
+End-Entry:	EVAL
+
+
+File: Scheme, Node:    APPLY, Up: Advanced Special Forms
+
+SpecialForm:    (APPLY fn arglist)
+Description:    Applies fn to arglist, returning the resulting value. fn must
+                be an applicable object such as a procedure.
+Example:        (APPLY CAR '(A B))                        => A
+Example:        (APPLY (LAMBDA (X Y) (+ X Y 1)) '(3 4))   => 8
+End-Entry:      APPLY
+
+End-Family:     Evaluation and Application
+
+Begin-Family:   Environments
+
+
+File: Scheme, Node:    THE-ENVIRONMENT, Up: Advanced Special Forms
+
+SpecialForm:    (THE-ENVIRONMENT)
+Description:    THE-ENVIRONMENT returns the current environment.
+End-Entry:      THE-ENVIRONMENT
+
+
+File: Scheme, Node:    MAKE-ENVIRONMENT, Up: Advanced Special Forms
+
+SpecialForm:    (MAKE-ENVIRONMENT exp1 exp2 ...)
+Description:    MAKE-ENVIRONMENT produces a new environment which is contained 
+                statically in the environment in which MAKE-ENVIRONMENT is
+                called . The new environment contains any variables DEFINEd
+                by the expressions exp1, exp2 ...
+End-Entry:      MAKE-ENVIRONMENT
+
+Page-Break:
+
+
+File: Scheme, Node: ACCESS, Up: Advanced Special Forms
+
+SpecialForm:    (ACCESS sym env)
+Description:    ACCESS retrieves the value of sym in the environment env.
+Demo:           (DEFINE RECT-PACKAGE
+                  (MAKE-ENVIRONMENT
+		    (DEFINE (MAKE-COMPLEX-RECTANGULAR REAL IMAG)
+		      (LIST REAL IMAG))
+                    (DEFINE (REAL-PART Z) (CAR Z))
+                    (DEFINE (IMAG-PART Z) (CADR Z)) ...))
+		RECT-PACKAGE
+		(DEFINE Z ((ACCESS MAKE-COMPLEX-RECTANGULAR RECT-PACKAGE) 3 4))
+		Z
+		((ACCESS IMAG-PART RECT-PACKAGE) Z)
+		4
+End-Entry:      ACCESS
+
+
+File: Scheme, Node:    FRAME-PROCEDURE, Up: Advanced Special Forms
+
+Syntax:         (FRAME-PROCEDURE env)
+Args:		1 arg
+Type:		Procedure
+Description:    FRAME-PROCEDURE returns the procedure object which was applied
+                to produce the environment env.
+End-Entry:      FRAME-PROCEDURE
+
+
+File: Scheme, Node:    FRAME-BINDINGS, Up: Advanced Special Forms
+
+Syntax:         (FRAME-BINDINGS env)
+Args:		1 arg
+Type:		Procedure
+Description:    FRAME-BINDINGS returns the association list representing the
+                bindings of the variables to their values in the environment 
+                env.
+End-Entry:      FRAME-BINDINGS
+
+
+File: Scheme, Node:    FRAME-PARENT, Up: Advanced Special Forms
+
+Syntax:         (FRAME-PARENT env)
+Args:		1 arg
+Type:		Procedure
+Description:    FRAME-PARENT returns the environment in which the environment
+                env was created.
+End-Entry:      FRAME-PARENT
+
+End-Family:     Environments
+
+
+File: Scheme, Node: System Support, Up: Schman, Previous: Advanced Special Forms
+
+* Menu:	Functions
+
+* LOAD::
+* PP::
+* PHOTO::
+* TOFU::
+* BKPT::
+* ERROR::
+* QUIT::
+* EDIT::
+* TRACE-ENTRY::
+* TRACE-EXIT::
+* BREAK-ENTRY::
+* BREAK-EXIT::
+* TRACE::
+* BREAK::
+* ADVISE-ENTRY::
+* ADVISE-EXIT::
+* ADVICE::
+* UNADVISE-ENTRY::
+* UNADVISE-EXIT::
+* UNADVISE::
+* STEP::
+* PETS::
+* HISTORY::
+* SETUP-HISTORY::
+* WHERE::
+* Interrupts::	Control character interrupts that Scheme knows about.
+
+
+File: Scheme, Node: Interrupts, Up: System Support
+
+Here is a list of the interrupts that TOPS-20 scheme understands:
+
+^B	Enter a breakpoint.
+^C	Go back to the exec (you can continue with @continue).
+^G	Go back to scheme's top-level.
+Tab	Tab to next tab stop.
+LineFeed	Works the same as carriage-return.
+^R	Reprint current s-expression.
+^S	Temporarily stop output (resume with ^Q)
+^T	Instant System status report.
+^U	Pop up a level.
+^W	Erase last "atom".
+^X	Abort whatever you are doing.
+^Z	Go back to the exec.
+
+
+File: Scheme, Node: LOAD, Up: System Support
+
+Syntax:		(LOAD filename [echo])
+Args:		1 or 2 args
+Type:		Procedure
+Description:	Reads and evaluates sequentially each of the expressions in
+		the specified filename.  If echo is provided, and is non-NIL, 
+		the value of each expression will be typed on the console as
+		it is loaded.  
+End-Entry:	LOAD
+
+
+File: Scheme, Node: PP, Up: System Support
+
+Syntax:		(PP expression)
+Args:		1 arg
+Type:		Procedure
+Description:	pretty-prints expression on the terminal.
+End-Entry:	PP
+
+
+File: Scheme, Node: PHOTO, Up: System Support
+
+Syntax:		(PHOTO filename)
+Args:		1 arg
+Type:		Procedure
+Description:	Used in conjunction with TOFU and the TOPS-20 PRINT
+		command to produce a hardcopy listing of your console
+		session.  PHOTO begins recording the console session;
+		file filename is created to hold the photo.  The TOFU
+		command is used to stop the recording process.  The
+		TOPS-20 PRINT command should be used to actually print
+		the photo on the lineprinter.
+End-Entry:	PHOTO
+
+
+File: Scheme, Node: TOFU, Up: System Support
+
+Syntax:		(TOFU)
+Args:		No args
+Type:		Procedure
+Description:	Closes the photo file and stops the recording process. 
+End-Entry:	TOFU
+
+
+File: Scheme, Node: BKPT, Up: System Support
+
+Syntax:		(BKPT msg [env])
+Args:		1 or 2  args
+Type:		Procedure
+Description:	Sets a breakpoint -- useful in debugging.
+		msg is typed and a breakpoint is set in the specified
+		environment, or the current environment if no
+		environment is specified.  Within a breakpoint,
+		expressions may be typed and will be evaluated in the
+		breakpoint environment.  The bkpt message, 
+		environment, and the history list are saved in the
+		global variables *BKPT-MESSAGE*, *BKPT-WHERE*, and
+		*BKPT-HISTORY*, respectively, for easy access.  To
+		exit from the breakpoint and proceed with the
+		interrupted process, type the symbol $P (escape P)
+		followed by a space.  
+
+Demo:	       	---> (SEQUENCE (PRIN1 'FOO) (BKPT 'TEST-2) (PRIN1 'BAR) 'DONE)
+		FOO
+		TEST-2
+
+		1-Bkpt-> (+ 3 3)	
+		6
+		
+		1-Bkpt-> $P
+		BAR
+		DONE
+End-Entry:	BKPT
+
+Page-Break:
+
+
+File: Scheme, Node: ERROR, Up: System Support
+
+Syntax:		(ERROR msg [data] [env])
+Args:		1 to 3 args
+Description:	Signals an error.  Types message (and data) on the console and
+		creates a debugging breakpoint in the specified
+		environment (the current environment is used if no env
+		is supplied).  data is optional, but, by convention,
+		msg is a description of the error and data is the
+		offending expression, or "irritant".  The error message, data,
+		environment, and the history list are saved in the
+		global variables *ERROR-MESSAGE*, *ERROR-IRRITANT*,
+		*ERROR-WHERE*, and *ERROR-HISTORY*, respectively.
+End-Entry:	ERROR
+
+
+File: Scheme, Node: QUIT, Up: System Support
+
+Syntax:		(QUIT)
+Args:		No args
+Type:		Procedure
+Description:	Suspend SCHEME and return to the TOPS-20 monitor.  QUIT
+		doesn't reset the SCHEME fork. 
+End-Entry:	QUIT
+
+
+File: Scheme, Node: EDIT, Up: System Support
+
+Syntax:		(EDIT)
+Type:		Procedure
+Description:	Internal link to the text editor.  Requests that
+		SCHEME suspend itself temporarily and transfer to 
+		the editor, EMACS.  Once in EMACS, make necessary fixes and use
+		one or more of the following commands to send the
+		altered code back to SCHEME.  Note:  EMACS
+		automatically saves your buffer before returning to SCHEME. 
+Display:	{esc}Z	Mark current DEFINE for eventual transmission back to SCHEME.
+		^X Z	Return to Scheme, sending any marked DEFINE's.
+		^Z Y	Transmit the current DEFINE back to SCHEME -- a combination of {esc}Z and ^X Z.
+		^Z O	Transmit entire buffer back to SCHEME.
+End-Entry:	EDIT
+
+Begin-Family:	Advising Procedures
+
+Description:	Giving advice to procedures is a powerful debugging
+		technique.  TRACE and BREAK are familiar examples of
+		advice-giving procedures.  The global variable
+		*ADVISED-PROCEDURES* lists the procedures which have
+		been advised.
+
+
+File: Scheme, Node: TRACE-ENTRY, Up: System Support
+
+Syntax:		(TRACE-ENTRY proc)
+Args:		1 arg
+Type:		Procedure
+Description:	Causes an informative message to be printed whenever
+		the procedure proc is entered.  The message is of the
+		form "[Entering (fn v1 v2 ...)]", where "v1 v2 ..." is
+		the list of values for the procedure's parameters.
+End-Entry:	TRACE-ENTRY
+
+
+File: Scheme, Node: TRACE-EXIT, Up: System Support
+
+Syntax:		(TRACE-EXIT proc)
+Args:		1 arg
+Type:		Procedure
+Description:	Causes an informative message to be printed when
+		procedure proc terminates.  The message contains the
+		procedure, its argument values, and the value of the
+		last expression evaluated.
+End-Entry:	TRACE-EXIT
+
+
+File: Scheme, Node: BREAK-ENTRY, Up: System Support
+
+Syntax:		(BREAK-ENTRY proc)
+Args:		1 arg
+Type:		Procedure
+Description:	Like TRACE-ENTRY with the additional effect
+		that a breakpoint is entered when procedure proc is
+		invoked.  proc and its arguments are saved in the
+		global variables *PROC* and *ARGS*, respectively, for
+		easy access inside the breakpoint.
+End-Entry:	BREAK-ENTRY
+
+Page-Break:
+
+
+File: Scheme, Node: BREAK-EXIT, Up: System Support
+
+Syntax:		(BREAK-EXIT proc)
+Args:		1 arg
+Type:		Procedure
+Description:	Like TRACE-EXIT with the additional effect that
+		a breakpoint is entered just prior to leaving
+		procedure proc.  proc, its arguments, and the result
+		are saved in the global variables *PROC*, *ARGS*, and
+		*RESULT*, respectively, for easy access inside the
+		breakpoint.  The result computed by proc is 
+		automatically returned from the breakpoint, but the user
+		may return any value by setting *RESULT* prior to proceeding
+		via $p.
+End-Entry:	BREAK-EXIT
+
+
+File: Scheme, Node: TRACE, Up: System Support
+
+Syntax:		(TRACE proc)
+Args:		1 arg
+Type:		Procedure
+Description:	TRACEs proc both when it is invoked and when it
+		terminates.  A combination of TRACE-ENTRY and TRACE-EXIT.
+End-Entry:	TRACE
+
+
+File: Scheme, Node: BREAK, Up: System Support
+
+Syntax:		(BREAK proc)
+Args:		1 arg
+Type:		Procedure
+Description:	Sets a breakpoint at the beginning and at the end of
+		proc.  A combination of both BREAK-ENTRY and
+		BREAK-EXIT. 
+End-Entry:	BREAK
+
+
+File: Scheme, Node: ADVISE-ENTRY, Up: System Support
+
+Syntax:		(ADVISE-ENTRY proc advice)
+Args:		2 args
+Type:		Procedure
+Description:	General entry-advising procedure.  TRACE-ENTRY and
+		BREAK-ENTRY are examples of entry-advising procedures.
+		ADVISE-ENTRY gives advice to proc.  advice should be a
+		procedure of three arguments.  When proc is invoked,
+		advice is passed proc, a list of proc's argument
+		values, and the current environment.
+End-Entry:	ADVISE-ENTRY
+
+
+File: Scheme, Node: ADVISE-EXIT, Up: System Support
+
+Syntax:		(ADVISE-EXIT proc advice)
+Args:		2 args
+Type:		Procedure
+Description:	The general exit-advising procedure.  TRACE-EXIT and
+		BREAK-EXIT are implemented as calls to ADVISE-EXIT.
+		advice should accept four arguments: proc, its
+		argument values, the result computed by proc, and the
+		current environment.  advice is responsible for
+		returning the value produced by proc.
+End-Entry:	ADVISE-EXIT
+
+
+File: Scheme, Node: ADVICE, Up: System Support
+
+Syntax:		(ADVICE proc)
+Args:		1 arg
+Type:		Procedure
+Description:	Returns the advice, if any, given to proc.  
+Example:	(DEFINE (ID X) X)	=> ID
+Example:	(ADVICE ID)		=> NIL
+Example:	(TRACE-ENTRY ID)	=> (ID)
+Example:	(ADVICE ID)		=> (TRACE-ENTRY-ADVICE)
+End-Entry:	ADVICE
+
+Page-Break:
+
+
+File: Scheme, Node: UNADVISE-ENTRY, Up: System Support
+
+Syntax:		(UNADVISE-ENTRY proc)
+Args:		1 arg
+Type:		Procedure
+Description:	Removes entry advice from proc.
+End-Entry:	UNADVISE-ENTRY
+
+
+File: Scheme, Node: UNADVISE-EXIT, Up: System Support
+
+Syntax:		(UNADVISE-EXIT proc)
+Args:		1 arg
+Type:		Procedure
+Description:	Removes exit advice from proc.
+End-Entry:	UNADVISE-EXIT
+
+
+File: Scheme, Node: UNADVISE, Up: System Support
+
+Syntax:		(UNADVISE proc)
+Args:		1 arg
+Type:		Procedure
+Description:	Removes all advice from proc -- a combination of
+		UNADVISE-ENTRY and UNADVISE-EXIT.
+End-Entry:	UNADVISE
+
+End-Family:	Advising Procedures
+
+
+File: Scheme, Node: STEP, Up: System Support
+
+Syntax:		(STEP)
+Args:		No args
+Type:		Procedure
+Description:	Turns on the application stepper.  Before every
+		application, the procedure and its argument list are displayed on the
+		console and the user is consulted before continuing.
+End-Entry:	STEP
+
+
+File: Scheme, Node: PETS, Up: System Support
+
+Syntax:		(PETS)
+Args:		No args
+Type:		Procedure
+Description:	Turns off the application stepper.
+End-Entry:	PETS
+
+
+File: Scheme, Node: HISTORY, Up: System Support
+
+Syntax:		(HISTORY historylist)
+Args:		1 arg
+Type:		Procedure
+Description:	Enters a mode in which the recent process history
+		which has been saved can be examined.  Type ? for
+		a list of one-character commands.  A history of the
+		last several applications is saved everytime a
+		breakpoint is entered.
+End-Entry:	HISTORY
+
+
+File: Scheme, Node: SETUP-HISTORY, Up: System Support
+
+Syntax:		(SETUP-HISTORY q)
+Args:		1 arg
+Type:		Procedure
+Description:	If q is , the current length of the history
+		collector is returned.
+		If q is an integer, the length will be set to q,
+		meaning that only the q most recently evaluated
+		applications will be recorded for examination.  If q is
+		NIL, no history will be collected.
+End-Entry:	SETUP-HISTORY
+
+
+File: Scheme, Node: WHERE, Up: System Support
+
+Syntax:		(WHERE env)
+Args:		1 arg
+Type:		Procedure
+Description:	Enters a mode in which the environment env can be examined.
+		Type ? for a list of one-character commands.
+End-Entry:	WHERE
+
+
+
+Index:
+
+Eof:

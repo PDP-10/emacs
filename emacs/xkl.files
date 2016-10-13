@@ -1,0 +1,72 @@
+The following listing shows the files used in building the current version of
+TECO, which I have called 1220.  The files are not present in the shipped
+version; this is informational only.
+
+The versions named 1208, 1210, 1211, and 1212 I obtained from MIT-AI in 1987;
+the 1996 dates on three of them have to do with removing extraneous blank lines
+and should not be of concern to any but the most demanding purist.  1209 is the
+version from which Bill Westfield began the process of upgrading Stanford's
+version of EMACS to something more modern than what we generally ran there.
+
+The versions 118037 and 165* were taken from Stanford or cisco Systems.
+
+!v *tec*.*
+
+   DXX:<EMACS>
+ TECO.1171.1;P775252      315 804302(7)  21-Oct-81 23:07:43 ALDERSON  
+   .118037.1;P775252      279 712489(7)   7-Jan-85 16:01:56 SATZ      
+   .1208.1;P775252        320 163575(36) 10-Nov-87 10:37:26 ALDERSON  
+   .1209.1;P775252        280 716364(7)  11-Nov-83 17:04:38 ALDERSON  
+   .1210.2;P775252        280 716041(7)  14-Mar-96 15:22:42 ALDERSON  
+   .1211.2;P775252        280 716003(7)  14-Mar-96 15:25:00 ALDERSON  
+   .1212.2;P775252        280 716032(7)  14-Mar-96 15:26:20 ALDERSON  
+      .3;P775252          286 730012(7)  20-Mar-96 19:07:20 ALDERSON  
+      .4;P775252          286 729856(7)  22-Mar-96 18:14:00 ALDERSON  
+      .5;P775252          286 729866(7)  25-Mar-96 15:08:40 ALDERSON  
+      .6;P775252          286 729977(7)  25-Mar-96 15:20:32 ALDERSON  
+      .7;P775252          286 729977(7)  25-Mar-96 15:33:22 ALDERSON  
+      .8;P775252          286 730190(7)  25-Mar-96 15:42:19 ALDERSON  
+   .1220.1;P775252        286 730190(7)  25-Mar-96 15:42:33 ALDERSON  
+      .2;P775252          286 731910(7)  26-Mar-96 12:25:39 ALDERSON  
+      .3;P775252          286 732053(7)  26-Mar-96 16:59:51 ALDERSON  
+      .4;P775252          286 732053(7)  26-Mar-96 17:04:13 ALDERSON  
+      .5;P775252          286 732102(7)   4-Apr-96 16:40:13 ALDERSON  
+      .6;P775252          287 733373(7)   4-Apr-96 18:10:03 ALDERSON  
+   .16502.1;P775252       282 719731(7)  28-Mar-85 09:56:37 ALDERSON  
+   .16504.1;P775252       282 720319(7)   5-Nov-85 18:54:00 ALDERSON  
+   .16505-STANFORD.1;P775252 282 720673(7) 22-Feb-91 09:57:40 ALDERSON 
+   .16507.1;P775252       282 720805(7)  22-Jun-93 14:16:58 ALDERSON  
+   .16508-XKL.1;P775252   282 720943(7)  29-Feb-96 11:37:33 ALDERSON  
+   .BUGS.1;P775252         20 10004(36)  10-Nov-87 11:56:37 ALDERSON  
+   .CHANGES.1;P775252       1 228(36)    30-Oct-84 04:50:48 ALDERSON  
+   .ERROR.1;P775252         1 445(36)    10-Nov-87 11:58:03 ALDERSON  
+   .EXE.1220;P775252       53 27136(36)   4-Apr-96 18:17:00 ALDERSON  
+   .FILES.62172;P775252     9 4142(36)   30-Oct-84 04:50:49 ALDERSON  
+   .INIT.10;P775252         2 615(36)    30-Oct-84 04:50:51 ALDERSON  
+      .11;P775252           1 2319(7)    26-Mar-96 10:51:47 ALDERSON  
+      .12;P775252           1 2321(7)     5-Apr-96 17:59:12 ALDERSON  
+      .13;P775252           2 3072(7)    11-Apr-96 15:41:56 ALDERSON  
+      .14;P775252           2 3074(7)    11-Apr-96 15:43:55 ALDERSON  
+   .MID.1220;P775252      287 733373(7)   4-Apr-96 18:10:03 ALDERSON  
+   .PRINTABLE-INIT.1;P676742   2 3093(7) 21-Mar-96 09:34:04 ALDERSON  
+   .SYMBOLS.1220;P775252   35 17841(36)   4-Apr-96 18:17:00 ALDERSON  
+ TECPUR.EXE.1220;P775252   44 22528(36)   4-Apr-96 18:17:01 ALDERSON  
+ TECTRM.MID.49;P775252     50 127931(7)  21-Sep-85 14:42:17 ALDERSON  
+      .50;P775252          51 128108(7)  29-Jul-88 16:37:57 ALDERSON  
+      .51;P775252          51 129349(7)  22-Feb-91 09:45:20 ALDERSON  
+      .52;P775252          51 128586(7)  22-Jun-93 14:45:41 ALDERSON  
+      .60;P775252          52 130895(7)  18-Mar-96 18:05:46 ALDERSON  
+      .61;P775252          52 130895(7)  26-Mar-96 12:53:18 ALDERSON  
+      .62;P775252          52 132349(7)  26-Mar-96 14:32:38 ALDERSON  
+ XTECO.MID.121705;P775252 282 719731(7)  28-Mar-85 09:56:37 ALDERSON  
+
+ Total of 7978 pages in 46 files
+
+Besides completing the merger of Stanford and MIT sources, TECO 1220 changes
+the reporting of version numbers when you start up TECO:  If built from a
+source file with FN2 other than "MID" on Tops20 (and probably TENEX), the FN2
+will be displayed at startup along with the file version number.  This allows
+hacking the TECO sources without proliferating version numbers unnecessarily.
+
+Because of the way TECO is purified when first run, I've duplicated TECO.1220
+as TECO.MID.1220 for the final build for EMACS and other TECO-based utilities.

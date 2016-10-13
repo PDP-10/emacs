@@ -1,0 +1,19 @@
+"Class list of EE180/CS107, section 7":-
+-
+!Personal name             User name | 1| 2| 3| 4| 5| 6|Sum   !-
+"arturo gamboa-aldeco":    G.GAMBOA, ! 4  3    12 23     42   !-
+"Abraham Bleiberg":        A.ABRAHAM,! 5 23 23  2  6     59   !-
+Averages                             ! 5 13 23  7 15  0  51   !
+
+
+Local Modes:
+Mode:Text
+Auto Fill Mode:0
+Indent Tabs Mode:0
+Start Column:38
+Number Width:2
+Number Precision:-1
+Num Of Scores:6
+...#:m(m.mLoad Library)ETH:Gradem.m^R Input Scores
+...%:m.m^R Sum Scores
+End:

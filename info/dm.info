@@ -1,0 +1,56 @@
+
+File: DM	Node: Top	Up: (DIR)
+
+DM is a macro library meant for people who don't want to go so far
+as to completely reorganize the keyboard. This is useful if you are
+planning to use EMACS at some other site.  If you use adaptations
+of EMACS which reorganize all the commands, you won't know what anything
+does when you try to use the standard EMACS at another site. DM keeps
+the flavor of vanilla EMACS but allows activation of the right-hand
+keypad on the Datamedias. If you want to utilize this library, put
+the following lines in your EMACS.INIT file:
+
+	m(m.m load)emacs;dm
+	eremacs;emacs init @y :m(hfx*)
+
+The dollar signs are <ESC>'s. These two lines tell EMACS to load
+the DM library every time you start EMACS. That way, you'll always
+have the right-hand keypad activated. They also tell EMACS to run
+the default EMACS.INIT in the EMACS directory each time so that you
+get the normal definitions.
+
+Commands in DM:
+
+	Since the control key on Datamedias is somewhat unfortunately
+placed, this package makes more use of the META (or EDIT) key. By
+prefixing the keys on the right-hand keypad with META utilizing this
+package, you can almost completely eliminate having to type CONTROLS
+for normal cursor movement. The commands are:
+
+
+	M->	forward char
+	M-<	back char
+	M-SPACE	forward char
+	M-DEL	delete last word
+	M-)	forward word
+	M-(	back word
+	M-]	goto end of paragraph
+	M-[	goto begin of paragraph
+	M-}	goto end of file
+	M-{	goto begin of file
+	M-^	up line
+	M-LF	down line
+	M-+	previous screen
+	M-\	nextscreen
+	M-RET	beginning of next line
+	M-~	Count number of lines between point and mark
+	M-=	Give current cursor position
+	NUL	Place mark
+	HOLD	Give help
+
+Note also that the NUL key on the keypad places the mark. The Hold key
+invokes HELP and M-= gives you your cursor position, etc. Also, this
+package does one other thing. It turns off file defaulting as in when
+EMACS defaults to file FOO in your directory.
+
+If you have any problems, contact me, McLure@SRI-KL.
